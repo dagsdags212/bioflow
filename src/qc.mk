@@ -71,15 +71,15 @@ help:
 params:
 	@echo "Global settings"
 	@echo "  READ_DIR       directory path containing read data"
-	@echo "  THREADS        number of cores"
+	@echo "  THREADS        number of cores (default: 4)"
 	@echo "Environment settings"
-	@echo "  ENV            environment name"
-	@echo "  ENV_MANAGER    environment manager"
+	@echo "  ENV            environment name (default: bwf-qc)"
+	@echo "  ENV_MANAGER    environment manager (default: micromamba)"
 	@echo "Trimming and filtering"
-	@echo "  MINLEN         minimum read length"
-	@echo "  MAXLEN         maximum read length"
-	@echo "  MINQUAL        minimum acceptable quality score"
-	@echo "  PE             if true, treat data as pair-end reads"
+	@echo "  MINLEN         minimum read length (default: 30)"
+	@echo "  MAXLEN         maximum read length (default: 150)"
+	@echo "  MINQUAL        minimum acceptable quality score (default: 20)"
+	@echo "  PE             treat data as pair-end reads (default: true)"
 
 
 # Create new self-contained environment
