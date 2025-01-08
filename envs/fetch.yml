@@ -1,4 +1,4 @@
-name: fetch
+name: bwf-fetch
 channels:
 - bioconda
 - conda-forge
