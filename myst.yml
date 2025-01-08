@@ -1,0 +1,25 @@
+# See docs at: https://mystmd.org/guide/frontmatter
+version: 1
+
+project:
+  id: 7c639b15-ef97-49c9-a7fa-6a40cfe1ca4f
+  title: bioworkflows
+  description: A collection of Makefiles for running common workflows in bioinformatics
+  keywords: [bioinformatics, pipelines, linux]
+  authors: [Jan Emmanuel Samson]
+  github: https://github.com/dagsdags212/bioworkflows
+
+  # Table of contents
+  toc:
+    - file: README.md
+    - file: docs/installation.md
+    - title: Workflows
+      children: 
+        - file: docs/workflows/fetch.md
+
+
+site:
+  template: book-theme
+  # options:
+  #   favicon: favicon.ico
+  #   logo: site_logo.png
