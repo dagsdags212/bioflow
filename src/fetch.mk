@@ -32,6 +32,7 @@ X ?=
 
 # Parameters for reference genomes
 ACC ?=
+INCLUDE_GFF ?= false
 
 # Parameters for PDB files
 PDB ?= 
@@ -49,7 +50,9 @@ dependencies := entrez-direct sra-tools ncbi-datasets-cli
 fastq_dump_opts = --split-3 --origfmt
 
 # ncbi-datasets parameters
-ncbi_datasets_opts = --include genome,gff3
+ifeq ($(INCLUDE_GFF),true)
+	ncbi_datasets_opts := --include genome,gff3
+endif
 
 # Display help message
 help:
