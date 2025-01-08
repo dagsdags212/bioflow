@@ -16,6 +16,7 @@ project:
     - title: Workflows
       children: 
         - file: docs/workflows/fetch.md
+        - file: docs/workflows/qc.md
 
 
 site:
