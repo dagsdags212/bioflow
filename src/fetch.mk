@@ -13,6 +13,7 @@ MAKEFLAGS += --warn-undefined-variables --no-builtin-rules
 PRJNA ?=
 SRR ?=
 X ?=
+PE ?= false
 
 # Parameters for reference genomes
 ACC ?=
@@ -31,7 +32,10 @@ ENV ?= fetch
 dependencies := entrez-direct sra-tools ncbi-datasets-cli
 
 # fastq-dump parameters
-fastq_dump_opts = --split-3 --origfmt
+fastq_dump_opts := --origfmt
+ifeq ($(PE),true)
+fastq_dump_opts += --split-3
+endif
 
 # ncbi-datasets parameters
 ifeq ($(INCLUDE_GFF),true)
