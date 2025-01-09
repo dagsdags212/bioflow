@@ -1,3 +1,11 @@
+---
+downloads:
+  - file: ../../src/fetch.mk
+    title: Makefile
+  - file: ../../envs/fetch.yml
+    title: env.yml
+---
+
 # fetch.mk
 
 The `fetch.mk` workflow can be used to download different types of biological data from online databases. Currently support data formats are listed in @supported-formats:
@@ -14,8 +22,6 @@ The `fetch.mk` workflow can be used to download different types of biological da
 
 :::
 
-
-
 ## sra
 
 Retrieve a set of sequencing reads from a project ID (PRJNA) or a single sequencing run (SRR). 
@@ -27,6 +33,7 @@ All reads are stored in the `reads` directory. When downloading multiple sets of
 - PRJNA: project identifier
 - SRR: sequencing run identifier
 - X: number of spots to download
+- PE: download pair-end reads (default: `true`)
 
 **{sc}`Example Usage`**
 

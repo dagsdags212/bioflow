@@ -94,11 +94,12 @@ endif
 # Retrieve reference genomes from NCBI
 ref:
 	mkdir -p ref
-	datasets download genome accession $(ACC) $(ncbi_datasets_opts) --filename $(ACC)
+	datasets download genome accession $(ACC) $(ncbi_datasets_opts) --filename "$(ACC).zip"
 	# Decompress and extract relevant files, delete the rest
 	unzip $(ACC).zip
-	mv $(ACC)/data/**/*.{fna,faa,gff3} ref/
-	rm -rf $(ACC) $(ACC).zip
+	find ncbi_dataset/ -name "*.fna" -exec mv -t ref/ {} +
+	find ncbi_dataset/ -name "*.gff" -exec mv -t ref/ {} +
+	rm -rf ncbi_dataset/ $(ACC).zip *.txt *.md
 
 # Retrieve structures files from PDB
 pdb:
