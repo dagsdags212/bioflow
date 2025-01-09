@@ -1,3 +1,3 @@
 # bioworkflows
 
-A collection of Makefiles for running commons tasks for bioinformatics analysis.
+A collection of Makefiles for running common tasks for bioinformatics analysis.

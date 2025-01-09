@@ -1,6 +1,6 @@
 # fetch.mk
 
-The **fetch.mk** workflow can be used to download different types of biological data from online databases. Currently support data formats are listed in @supported-formats:
+The `fetch.mk` workflow can be used to download different types of biological data from online databases. Currently support data formats are listed in @supported-formats:
 
 :::{table} Support data formats by `fetch.mk`
 :label: supported-formats
@@ -59,7 +59,7 @@ Include the annotation file.
 make -f src/fetch.mk ACC=GCF_003047755.2 INCLUDE_GFF=true
 ```
 
-### pdb
+## pdb
 
 Retrieve a structure file from the Protein Data Bank using its PDB ID.
 

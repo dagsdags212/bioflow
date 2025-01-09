@@ -15,8 +15,15 @@ project:
     - file: docs/installation.md
     - title: Workflows
       children: 
+        - file: docs/workflows/assembly.md
         - file: docs/workflows/fetch.md
         - file: docs/workflows/qc.md
+    - file: docs/environments.md
+
+  # Downloadable files
+  downloads:
+    - file: envs/assembly.yml
+      title: "assembly.yml"
 
 
 site:
@@ -24,3 +31,15 @@ site:
   # options:
   #   favicon: favicon.ico
   #   logo: site_logo.png
+
+  # Top navbar
+  nav:
+    - title: BioHub
+      children:
+        - title: Notebook
+          url: https://dagsdags212.github.io/biohub/pages/notebook.html
+        - title: Lab
+          url: https://dagsdags212.github.io/biohub/pages/lab.html
+        - title: Algorithms
+          url: https://dagsdags212.github.io/biohub/pages/algorithms.html
+
