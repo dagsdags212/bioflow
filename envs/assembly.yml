@@ -1,0 +1,9 @@
+name: bwf-assembly
+channels:
+- bioconda
+dependencies:
+- bandage
+- megahit
+- quast
+- spades
+
