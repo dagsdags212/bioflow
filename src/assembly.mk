@@ -20,10 +20,10 @@ PE ?= true
 
 # Separate reads if pair-end, otherwise store as single FASTQ file
 ifeq ($(PE),true)
-R1 = $(shell find $(READ_DIR) -type f -name "*_1*fastq*")
-R2 = $(shell find $(READ_DIR) -type f -name "*_2*fastq*")
+R1 = $(shell find $(READ_DIR) -type f -name "*_1.fastq*")
+R2 = $(shell find $(READ_DIR) -type f -name "*_2.fastq*")
 else
-R = $(shell find $(READ_DIR) -type f -name "*fastq*")
+R = $(shell find $(READ_DIR) -type f -not -name "*_[12].fastq*")
 endif
 
 # Number of cores
@@ -36,11 +36,13 @@ ENV_MANAGER ?= micromamba
 ENV ?= bwf-assembly
 
 # Check if dependencies are installed
-dependencies := megahit spades quast
+dependencies := megahit spades quast minia
+
+# List of support assemblers (maintain lexicographic order)
+ASSEMBLERS := minia megahit spades
 
 # Specify assembly program
 ASSEMBLER ?=
-ASSEMBLERS := megahit spades
 
 # Minimum contig length to keep
 MIN_CONTIG_LEN ?= 200
@@ -51,8 +53,14 @@ spades_opts := --careful -t $(THREADS)
 # Megahit flags
 megahit_opts := -t $(THREADS) --min-contig-len $(MIN_CONTIG_LEN) --cleaning-rounds 5
 
+# Minia flags
+minia_opts := -nb-cores $(THREADS) -traversal contig -kmer-size 31
+
 # Quast flags
-quast_opts := -t $(THREADS) --circos
+comma := ,
+null :=
+space := $(null) $(null)
+quast_opts := -t $(THREADS) --circos --labels "$(subst $(space),$(comma),$(ASSEMBLERS))"
 
 # Display help message
 help:
@@ -72,6 +80,7 @@ params:
 	@echo "Global settings"
 	@echo "  READ_DIR          path to directory containing reads"
 	@echo "  REF               path to reference genomes"
+	@echo "  PE                download reads in pair-end mode (default: true)"
 	@echo "  THREADS           number of cores (default: 4)"
 	@echo "Assembly settings"
 	@echo "  ASSEMBLER         program of choice to perform assembly (default: none)"
@@ -88,7 +97,7 @@ init:
 assemble:
 # Assemble reads using megahit
 ifeq ($(ASSEMBLER),megahit)
-	mkdir -p assembly/megahit
+	rm -rf assembly/megahit
 	megahit -o assembly/megahit $(megahit_opts) -1 $(R1) -2 $(R2)
 endif
 
@@ -98,14 +107,35 @@ ifeq ($(ASSEMBLER),spades)
 	spades.py -o assembly/spades $(spades_opts) -1 $(R1) -2 $(R2)
 endif
 
+# Assemble reads using minia
+ifeq ($(ASSEMBLER),minia)
+ifeq ($(PE),false)
+	mkdir -p assembly/minia
+	minia -in $(R) -out assembly/minia/final $(minia_opts)
+else
+	@echo "minia only supports single-ended reads as input"
+	@echo "download SE reads using the fetch.mk workflow"
+endif
+endif
+
 # Assemble reads using multiple programs
 ifndef ASSEMBLER
+ifeq ($(PE),true)
 	# Run megahit
-	mkdir -p assembly/megahit
+	rm -rf assembly/megahit
 	megahit -o assembly/megahit $(megahit_opts) -1 $(R1) -2 $(R2)
 	# Run spades
 	mkdir -p assembly/spades
 	spades.py -o assembly/spades $(spades_opts) -1 $(R1) -2 $(R2)
+endif
+	# Run minia
+ifeq ($(PE),false)
+	mkdir -p assembly/minia
+	minia -in $(R) -out assembly/minia/final $(minia_opts)
+else
+	@echo "minia only supports single-ended reads as input"
+	@echo "download SE reads using the fetch.mk workflow"
+endif
 endif
 
 # Compute assembly statistics for evaluation
@@ -120,8 +150,7 @@ ifeq ($(ASSEMBLER),spades)
 endif
 
 ifndef ASSEMBLER
-	quast $(quast_opts) --labels "megahit, spades" \
-		$(shell find assembly -maxdepth 2 -type f -regex '.*contigs.fa' -o -regex '.*contigs.fasta')
+	quast $(quast_opts) $(shell find assembly -maxdepth 2 -type f -name '*contigs.fasta' -o -name '*contigs.fa')
 endif
 
 # Generate assembly graphs using bandage
