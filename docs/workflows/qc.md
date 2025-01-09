@@ -1,3 +1,11 @@
+---
+downloads:
+  - file: ../../src/qc.mk
+    title: Makefile
+  - file: ../../envs/qc.yml
+    title: env.yml
+---
+
 # qc.mk
 
 The `qc.mk` workflow contains rules for performing quality control on sequencing reads.
