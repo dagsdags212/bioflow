@@ -2,8 +2,11 @@
 # Perform de novo and reference-based sequence assembly and annotation.
 #
 
+SHELL := bash
+.SHELLFLAGS := -eu -o pipefail -c
 .DELETE_ON_ERROR:
 .ONESHELL:
+MAKEFLAGS += --warn-undefined-variables --no-builtin-rules
 .PHONY: help init assemble evaluate visualize
 
 # Directory containing FASTQ reads

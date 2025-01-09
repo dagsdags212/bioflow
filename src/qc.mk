@@ -1,24 +1,12 @@
 # 
 # Perform quality checks and filtering on sequencing data.
 #
-# Parameters:
-# 	Global settings
-# 		READ_DIR - directory path containing read data
-# 		THREADS  - number of cores
-#
-# 	Environment settings
-# 		ENV         - environment name
-# 		ENV_MANAGER - environment manager
-#
-# 	Trimming and filtering
-# 		MINLEN  - minimum read length
-# 		MAXLEN  - maximum read length
-# 		MINQUAL - minimum acceptable quality score
-# 		PE      - if true, treat data as pair-end reads
-#
 
+SHELL := bash
+.SHELLFLAGS := -eu -o pipefail -c
 .DELETE_ON_ERROR:
 .ONESHELL:
+MAKEFLAGS += --warn-undefined-variables --no-builtin-rules
 .PHONY: help init fastqc fastp
 
 READ_DIR ?=

@@ -1,28 +1,12 @@
 # 
 # Retrieve read data from the Sequence Read Archive (SRA).
 #
-# Parameters:
-# 	ENV_MANAGER - environment manager installed in system
-# 	ENV - environment name
-# 	PRJNA - Sequencing project ID
-# 	SRR - Sequencing run accession
-# 	X - number of spots
-#
-# Usage:
-#   # print usage message
-#   make -f src/fetch.mk help
-#
-# 	# create new environment named 'fetch' and install dependencies using conda
-#   make -f src/fetch.mk init ENV_MANAGER=conda ENV=fetch
-#
-# 	# download reads from all samples, specifying number of spots
-# 	make -f src/fetch.mk sra PRJNA=PRJNA1066786 X=100000
-#
-# 	# download reads (all spots) from a single sequencing run
-# 	make -f src/fetch.mk sra SRR=SRR27644850
 
+SHELL := bash
+.SHELLFLAGS := -eu -o pipefail -c
 .DELETE_ON_ERROR:
 .ONESHELL:
+MAKEFLAGS += --warn-undefined-variables --no-builtin-rules
 .PHONY: help init sra ref pdb
 
 # Parameters for sequencing reads
