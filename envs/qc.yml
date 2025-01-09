@@ -1,0 +1,10 @@
+name: bwf-qc
+channels:
+- bioconda
+dependencies:
+- cutadapt
+- fastp
+- fastqc
+- multiqc
+- trimmomatic
+
