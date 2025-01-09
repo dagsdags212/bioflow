@@ -12,8 +12,8 @@ MAKEFLAGS += --warn-undefined-variables --no-builtin-rules
 READ_DIR ?=
 THREADS ?= 4
 
-# fastqc parameters
-READS = $(shell find $(READ_DIR) -type f -name "*fastq*")
+# Discover FASTQ files in specified directory to be used by FASTQC
+fastqc: READS = $(shell find $(READ_DIR) -type f -name "*fastq*")
 
 # fastp parameters
 MINLEN ?= 30
@@ -22,10 +22,10 @@ MINQUAL ?= 20
 PE ?= true
 
 ifeq ($(PE),true)
-R1 = $(shell find $(READ_DIR) -type f -name "*_1*fastq*")
-R2 = $(shell find $(READ_DIR) -type f -name "*_2*fastq*")
+R1 = $(shell find $(READ_DIR) -type f -name "*_1.fastq*")
+R2 = $(shell find $(READ_DIR) -type f -name "*_2.fastq*")
 else
-R = $(shell find $(READ_DIR) -type f -name "*fastq*")
+R = $(shell find $(READ_DIR) -type f -not -name "*_[12].fastq*")
 endif
 
 fastp_opts = --overrepresentation_analysis --correction --cut_right
@@ -59,6 +59,7 @@ help:
 params:
 	@echo "Global settings"
 	@echo "  READ_DIR       directory path containing read data"
+	@echo "  PE       			specify reads are pair-end (default: true)"
 	@echo "  THREADS        number of cores (default: 4)"
 	@echo "Environment settings"
 	@echo "  ENV            environment name (default: bwf-qc)"
@@ -82,9 +83,7 @@ fastqc:
 # Consolidate fastqc files into a single report
 multiqc: fastqc/
 	mkdir -p multiqc/
-	multiqc -o multiqc/ fastqc/
-
-fastp: $(READ_DIR)
+	multiqc -o multiqc/ fastqc/ fastp: $(READ_DIR)
 	mkdir -p fastp
 	mkdir -p fastp/reads
 	mkdir -p fastp/reports
