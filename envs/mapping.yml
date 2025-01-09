@@ -1,0 +1,9 @@
+name: bwf-mapping
+channels:
+- bioconda
+dependencies:
+- bowtie2
+- bwa
+- qualimap
+- samtools
+
