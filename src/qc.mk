@@ -84,6 +84,8 @@ fastqc:
 multiqc: fastqc/
 	mkdir -p multiqc/
 	multiqc -o multiqc/ fastqc/ fastp: $(READ_DIR)
+
+fastp: $(wildcard $(READ_DIR)/*.fastqc*)
 	mkdir -p fastp
 	mkdir -p fastp/reads
 	mkdir -p fastp/reports
