@@ -97,21 +97,21 @@ init:
 assemble:
 # Assemble reads using megahit
 ifeq ($(ASSEMBLER),megahit)
-	rm -rf assembly/megahit
-	megahit -o assembly/megahit $(megahit_opts) -1 $(R1) -2 $(R2)
+	if [ -d "output/megahit"]; then rm -rf output/megahit; fi
+	megahit -o output/megahit $(megahit_opts) -1 $(R1) -2 $(R2)
 endif
 
 # Assemble reads using spades
 ifeq ($(ASSEMBLER),spades)
-	mkdir -p assembly/spades
-	spades.py -o assembly/spades $(spades_opts) -1 $(R1) -2 $(R2)
+	mkdir -p output/spades
+	spades.py -o output/spades $(spades_opts) -1 $(R1) -2 $(R2)
 endif
 
 # Assemble reads using minia
 ifeq ($(ASSEMBLER),minia)
 ifeq ($(PE),false)
-	mkdir -p assembly/minia
-	minia -in $(R) -out assembly/minia/final $(minia_opts)
+	mkdir -p output/minia
+	minia -in $(R) -out output/minia/final $(minia_opts)
 else
 	@echo "minia only supports single-ended reads as input"
 	@echo "download SE reads using the fetch.mk workflow"
@@ -122,16 +122,16 @@ endif
 ifndef ASSEMBLER
 ifeq ($(PE),true)
 	# Run megahit
-	rm -rf assembly/megahit
-	megahit -o assembly/megahit $(megahit_opts) -1 $(R1) -2 $(R2)
+	if [ -d "output/megahit"]; then rm -rf output/megahit; fi
+	megahit -o output/megahit $(megahit_opts) -1 $(R1) -2 $(R2)
 	# Run spades
-	mkdir -p assembly/spades
-	spades.py -o assembly/spades $(spades_opts) -1 $(R1) -2 $(R2)
+	mkdir -p output/spades
+	spades.py -o output/spades $(spades_opts) -1 $(R1) -2 $(R2)
 endif
 	# Run minia
 ifeq ($(PE),false)
-	mkdir -p assembly/minia
-	minia -in $(R) -out assembly/minia/final $(minia_opts)
+	mkdir -p output/minia
+	minia -in $(R) -out output/minia/final $(minia_opts)
 else
 	@echo "minia only supports single-ended reads as input"
 	@echo "download SE reads using the fetch.mk workflow"
@@ -139,36 +139,36 @@ endif
 endif
 
 # Compute assembly statistics for evaluation
-evaluate: $(foreach asm,$(ASSEMBLERS),assembly/$(asm)/*contigs*)
+evaluate: $(foreach asm,$(ASSEMBLERS),output/$(asm)/*contigs*)
 	# Discover contig files in assembly directory and run quast
 ifeq ($(ASSEMBLER),megahit)
-	quast $(quast_opts) $(shell find assembly/megahit/ -maxdepth 1 -type f -regex '.*contigs.fa')
+	quast $(quast_opts) $(shell find output/megahit/ -maxdepth 1 -type f -regex '.*contigs.fa')
 endif
 
 ifeq ($(ASSEMBLER),spades)
-	quast $(quast_opts) $(shell find assembly/spades/ -maxdepth 1 -type f -regex '.*contigs.fasta')
+	quast $(quast_opts) $(shell find output/spades/ -maxdepth 1 -type f -regex '.*contigs.fasta')
 endif
 
 ifndef ASSEMBLER
-	quast $(quast_opts) $(shell find assembly -maxdepth 2 -type f -name '*contigs.fasta' -o -name '*contigs.fa')
+	quast -o output/quast $(quast_opts) $(shell find output -maxdepth 2 -type f -name '*contigs.fasta' -o -name '*contigs.fa')
 endif
 
 # Generate assembly graphs using bandage
 visualize:
-	mkdir -p assembly/bandage
+	mkdir -p output/bandage
 ifeq ($(ASSEMBLER),megahit)
 	# Convert contig FASTA to fastg file
-	megahit_toolkit contig2fastg 99 assembly/megahit/final.contigs.fa > assembly/megahit/assembly_graph.fastg
-	Bandage image assembly/megahit/assembly_graph.fastg assembly/bandage/megahit_assembly.png
+	megahit_toolkit contig2fastg 99 output/megahit/final.contigs.fa > output/megahit/assembly_graph.fastg
+	Bandage image output/megahit/assembly_graph.fastg output/bandage/megahit_assembly.png
 endif
 
 ifeq ($(ASSEMBLER),spades)
-	Bandage image assembly/spades/assembly_graph.fastg assembly/bandage/spades_assembly.png
+	Bandage image output/spades/assembly_graph.fastg output/bandage/spades_assembly.png
 endif
 
 ifndef ASSEMBLER
-	megahit_toolkit contig2fastg 99 assembly/megahit/final.contigs.fa > assembly/megahit/assembly_graph.fastg
-	Bandage image assembly/spades/assembly_graph.fastg assembly/bandage/megahit_assembly.png
-	Bandage image assembly/spades/assembly_graph.fastg assembly/bandage/spades_assembly.png
+	megahit_toolkit contig2fastg 99 output/megahit/final.contigs.fa > output/megahit/assembly_graph.fastg
+	Bandage image output/spades/assembly_graph.fastg output/bandage/megahit_assembly.png
+	Bandage image output/spades/assembly_graph.fastg output/bandage/spades_assembly.png
 endif
 

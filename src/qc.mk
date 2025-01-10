@@ -77,20 +77,20 @@ init:
 
 # Generate fastqc report for a set of reads
 fastqc:
-	mkdir -p fastqc/
-	fastqc -o fastqc/ --threads $(THREADS) $(READS)
+	mkdir -p output/fastqc/
+	fastqc -o output/fastqc/ --threads $(THREADS) $(READS)
 
 # Consolidate fastqc files into a single report
-multiqc: fastqc/
-	mkdir -p multiqc/
-	multiqc -o multiqc/ fastqc/ fastp: $(READ_DIR)
+multiqc: output/fastqc/
+	mkdir -p output/multiqc/
+	multiqc -o output/multiqc/ output/fastqc/
 
 fastp: $(wildcard $(READ_DIR)/*.fastqc*)
-	mkdir -p fastp
-	mkdir -p fastp/reads
-	mkdir -p fastp/reports
+	mkdir -p output/fastp
+	mkdir -p output/fastp/reads
+	mkdir -p output/fastp/reports
 ifeq ($(PE),true)
-	fastp -i $(R1) -I $(R2)	$(fastp_opts) -o fastp/reads/trimmed_$(shell basename $(R1)) -O fastp/reads/trimmed_$(shell basename $(R2))
+	fastp -i $(R1) -I $(R2)	$(fastp_opts) -o output/fastp/reads/trimmed_$(shell basename $(R1)) -O output/fastp/reads/trimmed_$(shell basename $(R2))
 else
-	fastp -i $(R)	$(fastp_opts) -o fastp/reads/trimmed_$(shell basename $(R))
+	fastp -i $(R)	$(fastp_opts) -o output/fastp/reads/trimmed_$(shell basename $(R))
 endif
