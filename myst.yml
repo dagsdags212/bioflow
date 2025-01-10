@@ -21,6 +21,7 @@ project:
         - file: docs/workflows/mapping.md
         - file: docs/workflows/qc.md
         - file: docs/workflows/variant_calling.md
+    - file: docs/tools.md
     - file: docs/environments.md
 
   # References
