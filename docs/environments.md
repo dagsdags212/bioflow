@@ -14,92 +14,33 @@ downloads:
 ::::{grid} 1 1 2 3
 
 :::{card}
-:header: annotation.mk
-```yaml
-name: bwf-annotation
-channels:
-- bioconda
-dependencies:
-- busco
+```{literalinclude} ../envs/annotation.yml
 ```
 :::
 
 :::{card}
-:header: assembly.mk
-```yaml
-name: bwf-assembly
-channels:
-- bioconda
-dependencies:
-- bandage
-- megahit
-- quast
-- spades
+```{literalinclude} ../envs/assembly.yml
 ```
 :::
 
 :::{card}
-:header: fetch.mk
-```yaml
-name: bwf-fetch
-channels:
-- bioconda
-- conda-forge
-dependencies:
-- entrez-direct
-- ncbi-datasets-cli
-- sra-tools
+```{literalinclude} ../envs/fetch.yml
 ```
 :::
 
 :::{card}
-:header: mapping.mk
-```yaml
-name: bwf-mapping
-channels:
-- bioconda
-dependencies:
-- bowtie2
-- bwa
-- qualimap
-- samtools
+```{literalinclude} ../envs/mapping.yml
 ```
 :::
 
 :::{card}
-:header: qc.mk
-```yaml
-name: bwf-qc
-channels:
-- bioconda
-dependencies:
-- cutadapt
-- fastp
-- fastqc
-- multiqc
-- trimmomatic
+```{literalinclude} ../envs/qc.yml
 ```
 :::
 
 :::{card}
-:header: variant_calling.mk
-```yaml
-name: bwf-vc
-channels:
-- bioconda
-- conda-forge
-dependencies:
-- bamtools
-- bcftools
-- bedtools
-- freebayes
-- matplotlib
-- rtg-tools
-- samtools
-- texlive-core
-- vcflib
+```{literalinclude} ../envs/vc.yml
 ```
 :::
-
 ::::
 
