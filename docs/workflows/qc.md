@@ -6,6 +6,7 @@ downloads:
     title: env.yml
 ---
 
+(bwf-qc)=
 # qc.mk
 
 The `qc.mk` workflow contains rules for performing quality control on sequencing reads.

@@ -11,7 +11,7 @@ project:
 
   # Table of contents
   toc:
-    - file: README.md
+    - file: docs/index.md
     - file: docs/installation.md
     - title: Workflows
       children: 

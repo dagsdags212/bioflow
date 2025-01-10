@@ -6,6 +6,7 @@ downloads:
     title: env.yml
 ---
 
+(bwf-fetch)=
 # fetch.mk
 
 The `fetch.mk` workflow can be used to download different types of biological data from online databases. Currently support data formats are listed in @supported-formats:

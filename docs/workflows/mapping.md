@@ -6,6 +6,7 @@ downloads:
     title: env.yml
 ---
 
+(bwf-mapping)=
 # mapping.mk
 
 The `assembly.mk` workflow contains rules for performing read alignment against a reference genome.

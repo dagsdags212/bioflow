@@ -4,6 +4,8 @@ downloads:
     title: assembly.yml
   - file: ../envs/fetch.yml
     title: fetch.yml
+  - file: ../envs/mapping.yml
+    title: mapping.yml
   - file: ../envs/qc.yml
     title: qc.yml
 ---

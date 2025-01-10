@@ -6,6 +6,7 @@ downloads:
     title: env.yml
 ---
 
+(bwf-assembly)=
 # assembly.mk
 
 The `assembly.mk` workflow contains rules for performing _de novo_ and reference-based sequence assembly.
