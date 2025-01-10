@@ -1,0 +1,6 @@
+name: bwf-annotation
+channels:
+- bioconda
+dependencies:
+- busco
+
