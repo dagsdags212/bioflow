@@ -17,6 +17,7 @@ project:
       children: 
         - file: docs/workflows/assembly.md
         - file: docs/workflows/fetch.md
+        - file: docs/workflows/mapping.md
         - file: docs/workflows/qc.md
     - file: docs/environments.md
 

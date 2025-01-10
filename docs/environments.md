@@ -40,6 +40,20 @@ dependencies:
 :::
 
 :::{card}
+:header: mapping.mk
+```yaml
+name: bwf-mapping
+channels:
+- bioconda
+dependencies:
+- bowtie2
+- bwa
+- qualimap
+- samtools
+```
+:::
+
+:::{card}
 :header: qc.mk
 ```yaml
 name: bwf-qc
