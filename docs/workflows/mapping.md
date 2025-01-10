@@ -11,6 +11,21 @@ downloads:
 
 The `assembly.mk` workflow contains rules for performing read alignment against a reference genome.
 
+:::{hint} Environment Setup
+:class: dropdown
+
+Prior to using the workflow, download the dependencies within a virtual environment using your manager of choice:
+
+```bash
+make -f src/mapping.mk init ENV_MANAGER=micromamba
+```
+
+Activate environment to expose dependencies:
+```bash
+micromamba activate bwf-mapping
+```
+:::
+
 ## map
 
 Map reads against a reference using `bwa`. 

@@ -15,6 +15,21 @@ The `assembly.mk` workflow contains rules for performing _de novo_ and reference
 Rules for reference-based assembly is in progress.
 :::
 
+:::{hint} Environment Setup
+:class: dropdown
+
+Prior to using the workflow, download the dependencies within a virtual environment using your manager of choice:
+
+```bash
+make -f src/assembly.mk init ENV_MANAGER=micromamba
+```
+
+Activate environment to expose dependencies:
+```bash
+micromamba activate bwf-assembly
+```
+:::
+
 ## assemble
 
 Run a _de novo_ assembly pipeline using `spades` and `megahit`. Each tool is designated a directory under `assembly` to store all output.

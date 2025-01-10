@@ -11,6 +11,21 @@ downloads:
 
 The `annotation.mk` workflow contains rules for conducting gene prediction and sequence annotation.
 
+:::{hint} Environment Setup
+:class: dropdown
+
+Prior to using the workflow, download the dependencies within a virtual environment using your manager of choice:
+
+```bash
+make -f src/annotation.mk init ENV_MANAGER=micromamba
+```
+
+Activate environment to expose dependencies:
+```bash
+micromamba activate bwf-annotation
+```
+:::
+
 ## annotate
 
 Run a `busco` annotation pipeline on a target sequence file.

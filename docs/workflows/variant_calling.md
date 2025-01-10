@@ -11,6 +11,21 @@ downloads:
 
 The `variant_calling.mk` workflow contains rules for identifying variants from mapped reads based on a reference genome.
 
+:::{hint} Environment Setup
+:class: dropdown
+
+Prior to using the workflow, download the dependencies within a virtual environment using your manager of choice:
+
+```bash
+make -f src/variant_calling.mk init ENV_MANAGER=micromamba
+```
+
+Activate environment to expose dependencies:
+```bash
+micromamba activate bwf-vc
+```
+:::
+
 ## call
 
 Perform variant calling with `freebayes`.

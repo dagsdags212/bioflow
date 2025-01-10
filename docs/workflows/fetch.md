@@ -23,6 +23,21 @@ The `fetch.mk` workflow can be used to download different types of biological da
 
 :::
 
+:::{hint} Environment Setup
+:class: dropdown
+
+Prior to using the workflow, download the dependencies within a virtual environment using your manager of choice:
+
+```bash
+make -f src/fetch.mk init ENV_MANAGER=micromamba
+```
+
+Activate environment to expose dependencies:
+```bash
+micromamba activate bwf-fetch
+```
+:::
+
 ## sra
 
 Retrieve a set of sequencing reads from a project ID (PRJNA) or a single sequencing run (SRR). 
