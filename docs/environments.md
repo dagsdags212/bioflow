@@ -14,6 +14,17 @@ downloads:
 ::::{grid} 1 1 2 3
 
 :::{card}
+:header: annotation.mk
+```yaml
+name: bwf-annotation
+channels:
+- bioconda
+dependencies:
+- busco
+```
+:::
+
+:::{card}
 :header: assembly.mk
 ```yaml
 name: bwf-assembly

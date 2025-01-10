@@ -15,17 +15,12 @@ project:
     - file: docs/installation.md
     - title: Workflows
       children: 
+        - file: docs/workflows/annotation.md
         - file: docs/workflows/assembly.md
         - file: docs/workflows/fetch.md
         - file: docs/workflows/mapping.md
         - file: docs/workflows/qc.md
     - file: docs/environments.md
-
-  # Downloadable files
-  downloads:
-    - file: envs/assembly.yml
-      title: "assembly.yml"
-
 
 site:
   template: book-theme
