@@ -20,7 +20,12 @@ project:
         - file: docs/workflows/fetch.md
         - file: docs/workflows/mapping.md
         - file: docs/workflows/qc.md
+        - file: docs/workflows/variant_calling.md
     - file: docs/environments.md
+
+  # References
+  references:
+    annotation: https://dagsdags212.github.io/bioworkflows/annotation
 
 site:
   template: book-theme

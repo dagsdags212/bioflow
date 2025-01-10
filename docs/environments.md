@@ -81,5 +81,25 @@ dependencies:
 ```
 :::
 
+:::{card}
+:header: variant_calling.mk
+```yaml
+name: bwf-vc
+channels:
+- bioconda
+- conda-forge
+dependencies:
+- bamtools
+- bcftools
+- bedtools
+- freebayes
+- matplotlib
+- rtg-tools
+- samtools
+- texlive-core
+- vcflib
+```
+:::
+
 ::::
 
