@@ -9,6 +9,8 @@ downloads:
 (bwf-annotation)=
 # annotation.mk
 
+## Overview
+
 The `annotation.mk` workflow contains rules for conducting gene prediction and sequence annotation.
 
 :::{hint} Environment Setup
@@ -26,7 +28,9 @@ micromamba activate bwf-annotation
 ```
 :::
 
-## annotate
+## Rules
+
+### annotate
 
 Run a `busco` annotation pipeline on a target sequence file.
 
@@ -52,7 +56,7 @@ make -f src/annotation.mk annotate \
     FA=output/megahit/final.contigs.fa MODE=genome DOMAIN=prokaryote
 ```
 
-## datasets
+### datasets
 
 Display all available BUSCO datasets.
 
@@ -74,7 +78,7 @@ Delete lineage data.
 make -f src/annotation.mk clean
 ```
 
-## predict
+### predict
 
 Conduct HMM-based gene prediction using `prodigal` and store output in GFF format by default.
 

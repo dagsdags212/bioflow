@@ -9,6 +9,8 @@ downloads:
 (bwf-qc)=
 # qc.mk
 
+## Overview
+
 The `qc.mk` workflow contains rules for performing quality control on sequencing reads.
 
 :::{hint} Environment Setup
@@ -26,7 +28,9 @@ micromamba activate bwf-qc
 ```
 :::
 
-## fastp
+## Rules
+
+### fastp
 
 Perform automatic adapter trimming and quality score filtering.
 
@@ -45,7 +49,7 @@ Generates a set of trimmed/filtered reads and summary reports as output. These a
 make -f src/qc.mk fastp READ_DIR=reads/
 ```
 
-## fastqc
+### fastqc
 
 Generate a FASTQC report on selected reads.
 
@@ -61,7 +65,7 @@ Generate reports from trimmed reads outputted by `fastp`.
 make -f src/qc.mk fastqc READ_DIR=fastp/reads
 ```
 
-## multiqc
+### multiqc
 
 Aggregate FASTQC output into a single interactive report. 
 

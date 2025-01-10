@@ -9,6 +9,8 @@ downloads:
 (bwf-fetch)=
 # fetch.mk
 
+## Overview
+
 The `fetch.mk` workflow can be used to download different types of biological data from online databases. Currently support data formats are listed in @supported-formats:
 
 :::{table} Support data formats by `fetch.mk`
@@ -38,7 +40,9 @@ micromamba activate bwf-fetch
 ```
 :::
 
-## sra
+## Rules
+
+### sra
 
 Retrieve a set of sequencing reads from a project ID (PRJNA) or a single sequencing run (SRR). 
 
@@ -63,7 +67,7 @@ Download 100000 reads from a single run.
 make -f src/fetch.mk SRR=SRR27644850 X=100000
 ```
 
-## ref
+### ref
 
 **{sc}`Parameters`**
 
@@ -82,7 +86,7 @@ Include the annotation file.
 make -f src/fetch.mk ACC=GCF_003047755.2 INCLUDE_GFF=true
 ```
 
-## pdb
+### pdb
 
 Retrieve a structure file from the Protein Data Bank using its PDB ID.
 

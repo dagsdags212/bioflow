@@ -9,6 +9,8 @@ downloads:
 (bwf-mapping)=
 # mapping.mk
 
+## Overview
+
 The `assembly.mk` workflow contains rules for performing read alignment against a reference genome.
 
 :::{hint} Environment Setup
@@ -26,7 +28,9 @@ micromamba activate bwf-mapping
 ```
 :::
 
-## map
+## Rules
+
+### map
 
 Map reads against a reference using `bwa`. 
 
@@ -64,7 +68,7 @@ make -f src/mapping.mk map \
     MAPPER=bwa THREADS=8
 ```
 
-## stats
+### stats
 
 Get an overview of the mapped reads metrics.
 
@@ -80,7 +84,7 @@ Print mapping metrics for all generated alignment files.
 make -f src/mapping.mk stats
 ```
 
-## evaluate
+### evaluate
 
 Assess the quality of the alignment file using `qualimap`.
 

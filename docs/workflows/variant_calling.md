@@ -9,6 +9,8 @@ downloads:
 (bwf-vc)=
 # variant_calling.mk
 
+## Overview
+
 The `variant_calling.mk` workflow contains rules for identifying variants from mapped reads based on a reference genome.
 
 :::{hint} Environment Setup
@@ -26,7 +28,9 @@ micromamba activate bwf-vc
 ```
 :::
 
-## call
+## Rules
+
+### call
 
 Perform variant calling with `freebayes`.
 
@@ -53,7 +57,7 @@ make -f src/variant_calling.mk call \
     REF=ref/ref.fna BAM=output/bwa/aln.bam PLOIDY=1
 ```
 
-## stats
+### stats
 
 Generate metric file for called variants.
 
@@ -69,7 +73,7 @@ make -f src/variant_calling.mk stats \
     REF=ref/ref.fna BAM=output/bwa/aln.bam PLOIDY=1
 ```
 
-## filter
+### filter
 
 Filter called variants based on a score threshold.
 
