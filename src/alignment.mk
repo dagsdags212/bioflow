@@ -71,8 +71,8 @@ help:
 	@echo
 	@echo "COMMANDS:"
 	@echo "  align      - perform iterative alignment of multiple sequences"
-	@echo "  view       - generate an HTML file for the alignment using JalView"
 	@echo "  list       - display list of supported sequence aligners"
+	@echo "  view       - generate an HTML file for the alignment using JalView"
 
 # Create new self-contained environment
 init:

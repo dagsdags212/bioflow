@@ -15,6 +15,7 @@ project:
     - file: docs/installation.md
     - title: Workflows
       children: 
+        - file: docs/workflows/alignment.md
         - file: docs/workflows/annotation.md
         - file: docs/workflows/assembly.md
         - file: docs/workflows/fetch.md

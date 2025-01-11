@@ -14,6 +14,11 @@ downloads:
 ::::{grid} 1 1 2 3
 
 :::{card}
+```{literalinclude} ../envs/alignment.yml
+```
+:::
+
+:::{card}
 ```{literalinclude} ../envs/annotation.yml
 ```
 :::

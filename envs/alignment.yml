@@ -1,0 +1,11 @@
+name: bwf-alignment
+channels:
+- bioconda
+- conda-forge
+dependencies:
+- clustalo
+- jalview
+- mafft
+- mummer
+- muscle
+
