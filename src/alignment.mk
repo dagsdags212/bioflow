@@ -7,7 +7,7 @@ SHELL := bash
 .DELETE_ON_ERROR: 
 .ONESHELL: 
 MAKEFLAGS += --warn-undefined-variables --no-builtin-rules
-.PHONY: help init params clean
+.PHONY: help params init clean
 
 # Formatting variables
 dot := .
@@ -85,9 +85,6 @@ init:
 # Display available parameters
 params:
 	@echo
-	@echo "Global settings"
-	@echo "  THREADS           number of cores (default: 8)"
-	@echo
 	@echo "Alignment settings"
 	@echo "  FA                path to FASTA file to align"
 	@echo "  DIR               path to directory containing FASTA files to align"
@@ -97,6 +94,9 @@ params:
 	@echo "  GEP               gap extension penalty (default: 0.0)"
 	@echo "  ITER              number of iterations for iterative refinemane (default: 3)"
 	@echo
+	@echo "Global settings"
+	@echo "  THREADS           number of cores (default: 8)"
+	@echo
 	@echo "Environment settings"
 	@echo "  ENV               environment name (default: bwf-alignment)"
 	@echo "  ENV_MANAGER       environment manager (default: micromamba)"
@@ -104,10 +104,12 @@ params:
 
 # Display supported aligners
 list:
+	@echo
 	@echo "Supported aligners:"
 	@echo "  - ClustalO"
 	@echo "  - MAFFT"
 	@echo "  - MUSCLE"
+	@echo
 
 # Create temporary files to be used for alignment
 /tmp/seqs.fa:

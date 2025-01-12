@@ -7,7 +7,7 @@ SHELL := bash
 .DELETE_ON_ERROR:
 .ONESHELL:
 MAKEFLAGS += --warn-undefined-variables --no-builtin-rules
-.PHONY: help init params clean split
+.PHONY: help params init clean split
 
 # Formatting variables
 dot := .
@@ -59,6 +59,7 @@ help:
 	@echo "  call       - perform variant calling of mapped reads based on a reference genome"
 	@echo "  filter     - only retain variants with scores above threshold"
 	@echo "  stats      - generate variant calling metrics"
+	@echo
 
 # Create new self-contained environment
 init:
@@ -66,16 +67,20 @@ init:
 
 # Display available parameters
 params:
-	@echo "Global settings"
-	@echo "  THREADS           number of cores (default: 4)"
+	@echo
 	@echo "Variant calling settings"
 	@echo "  REF               path to reference genome"
 	@echo "  BAM               path to binary alignment file"
 	@echo "  MINQUAL           set variant score threshold for filtering (default: 10)"
 	@echo "  PLOIDY            ploidy number of reference (default: 1)"
+	@echo
+	@echo "Global settings"
+	@echo "  THREADS           number of cores (default: 4)"
+	@echo
 	@echo "Environment settings"
 	@echo "  ENV               environment name (default: bwf-mapping)"
 	@echo "  ENV_MANAGER       environment manager (default: micromamba)"
+	@echo
 
 # Create index for reference genome
 $(REF).fai: $(REF)
@@ -111,3 +116,4 @@ filter: output/freebayes/$(BAM_ROOT).vcf
 
 clean:
 	rm -rf output/freebayes/ output/rtg/
+	rm -rf $(REF).fai

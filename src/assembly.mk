@@ -7,7 +7,13 @@ SHELL := bash
 .DELETE_ON_ERROR:
 .ONESHELL:
 MAKEFLAGS += --warn-undefined-variables --no-builtin-rules
-.PHONY: help init assemble evaluate visualize
+.PHONY: help params init assemble visualize
+
+# Formatting variables
+dot := .
+comma := ,
+empty := 
+space := $(empty) $(empty)
 
 # Directory containing FASTQ reads
 READ_DIR ?=
@@ -74,20 +80,25 @@ help:
 	@echo "  assemble   - generate sequence assembly using program of choice"
 	@echo "  evaluate   - compute contig statistics and compare assemblies"
 	@echo "  visualize  - visualize assembly with bandage"
+	@echo
 
 # Display available parameters
 params:
-	@echo "Global settings"
+	@echo
+	@echo "Assembly settings"
 	@echo "  READ_DIR          path to directory containing reads"
 	@echo "  REF               path to reference genomes"
 	@echo "  PE                download reads in pair-end mode (default: true)"
-	@echo "  THREADS           number of cores (default: 4)"
-	@echo "Assembly settings"
 	@echo "  ASSEMBLER         program of choice to perform assembly (default: none)"
 	@echo "  MIN_CONTIG_LEN    minimum contig length to retain (default: 200)"
+	@echo
+	@echo "Global settings"
+	@echo "  THREADS           number of cores (default: 4)"
+	@echo
 	@echo "Environment settings"
-	@echo "  ENV               environment name (default: bwf-qc)"
+	@echo "  ENV               environment name (default: bwf-assembly)"
 	@echo "  ENV_MANAGER       environment manager (default: micromamba)"
+	@echo
 
 # Create new self-contained environment
 init:
@@ -172,3 +183,5 @@ ifndef ASSEMBLER
 	Bandage image output/spades/assembly_graph.fastg output/bandage/spades_assembly.png
 endif
 
+clean:
+	rm -rf output/megahit output/spades output/minia

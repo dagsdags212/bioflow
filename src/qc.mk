@@ -7,7 +7,13 @@ SHELL := bash
 .DELETE_ON_ERROR:
 .ONESHELL:
 MAKEFLAGS += --warn-undefined-variables --no-builtin-rules
-.PHONY: help init fastqc fastp
+.PHONY: help params init clean
+
+# Formatting variables
+dot := .
+comma := ,
+empty := 
+space := $(empty) $(empty)
 
 READ_DIR ?=
 THREADS ?= 4
@@ -44,31 +50,36 @@ dependencies := fastqc multiqc trimmomatic fastp
 
 # Display help message
 help:
-	@echo ""
+	@echo
 	@echo "qc.mk: perform quality control on sequencing data"
-	@echo ""
+	@echo
 	@echo "Usage:"
 	@echo "  make -f src/qc.mk <command> [options]"
-	@echo ""
+	@echo
 	@echo "COMMANDS:"
 	@echo "  fastqc  - generate FASTQC report for a set of reads"
 	@echo "  multiqc - consolidate FASTQC output into a single report"
 	@echo "  fastp   - perform adapter trimming and quality filtering"
+	@echo
 
 # Display available parameters
 params:
-	@echo "Global settings"
+	@echo
+	@echo "Trimming and filtering"
 	@echo "  READ_DIR       directory path containing read data"
 	@echo "  PE       			specify reads are pair-end (default: true)"
-	@echo "  THREADS        number of cores (default: 4)"
-	@echo "Environment settings"
-	@echo "  ENV            environment name (default: bwf-qc)"
-	@echo "  ENV_MANAGER    environment manager (default: micromamba)"
-	@echo "Trimming and filtering"
 	@echo "  MINLEN         minimum read length (default: 30)"
 	@echo "  MAXLEN         maximum read length (default: 150)"
 	@echo "  MINQUAL        minimum acceptable quality score (default: 20)"
 	@echo "  PE             treat data as pair-end reads (default: true)"
+	@echo
+	@echo "Global settings"
+	@echo "  THREADS        number of cores (default: 4)"
+	@echo
+	@echo "Environment settings"
+	@echo "  ENV            environment name (default: bwf-qc)"
+	@echo "  ENV_MANAGER    environment manager (default: micromamba)"
+	@echo
 
 
 # Create new self-contained environment
@@ -94,3 +105,6 @@ ifeq ($(PE),true)
 else
 	fastp -i $(R)	$(fastp_opts) -o output/fastp/reads/trimmed_$(shell basename $(R))
 endif
+
+clean:
+	rm -rf output/fastqc/ output/multiqc/ output/fastp/

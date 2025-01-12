@@ -7,10 +7,13 @@ SHELL := bash
 .DELETE_ON_ERROR:
 .ONESHELL:
 MAKEFLAGS += --warn-undefined-variables --no-builtin-rules
-.PHONY: help init params clean
+.PHONY: help params init clean
 
 # Formatting variables
 dot := .
+comma := ,
+empty := 
+space := $(empty) $(empty)
 
 # Number of cores
 THREADS ?= 8
@@ -69,6 +72,7 @@ help:
 	@echo "  stats      - generate mappings statistics for all alignment files"
 	@echo "  evaluate   - compute MAPQ scores of mapped reads using qualimap"
 	@echo "  visualize  - visualize SAM/BAM alignments in IGV"
+	@echo
 
 # Create new self-contained environment
 init:
@@ -76,20 +80,24 @@ init:
 
 # Display available parameters
 params:
-	@echo "Global settings"
+	@echo
+	@echo "Mapping settings"
 	@echo "  READ_DIR          path of directory containing reads"
 	@echo "  REF               path to reference file"
 	@echo "  PE                if true, align pair-end reads (default: false)"
-	@echo "  THREADS           number of cores (default: 4)"
-	@echo "Mapping settings"
 	@echo "  SORT         	 	 sort reads in alignment file"
 	@echo "  MAPPER         	 program of choice to perform read mapping (default: bwa)"
 	@echo "  MINQUAL         	 minimum MAPQ score for filtering (default: 20)"
 	@echo "  OUTPUT         	 filename for output SAM file"
 	@echo "  OUTFMT         	 file format for alignment file (default: sam)"
+	@echo
+	@echo "Global settings"
+	@echo "  THREADS           number of cores (default: 4)"
+	@echo
 	@echo "Environment settings"
 	@echo "  ENV               environment name (default: bwf-mapping)"
 	@echo "  ENV_MANAGER       environment manager (default: micromamba)"
+	@echo
 
 $(REF).bwt:
 	# Index reference file
@@ -122,4 +130,4 @@ evaluate:
 	done
 
 clean:
-	rm -rf output/
+	rm -rf output/bwa output/qualimap

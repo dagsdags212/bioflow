@@ -7,7 +7,7 @@ SHELL := bash
 .DELETE_ON_ERROR:
 .ONESHELL:
 MAKEFLAGS += --warn-undefined-variables --no-builtin-rules
-.PHONY: help init params clean
+.PHONY: help params init clean
 
 # Formatting variables
 dot := .
@@ -85,6 +85,7 @@ help:
 	@echo "  models    - list available evolutionary models"
 	@echo "  init      - download all dependencies"
 	@echo "  params    - display complete list of parameters"
+	@echo
 
 # Create new self-contained environment
 init:
@@ -92,11 +93,8 @@ init:
 
 # Display available parameters
 params:
-	@echo ""
-	@echo "Global settings"
-	@echo "  THREADS           number of cores (default: 8)"
-	@echo ""
-	@echo "Alignment settings"
+	@echo
+	@echo "Sequence alignment"
 	@echo "  MSA               path to alignment file for generating trees"
 	@echo "  MODEL             specify evolutionary mode to use (default: GTRGAMMA)"
 	@echo "  N                 number of starting trees (ML) or replicates (bootstrap)"
@@ -104,11 +102,14 @@ params:
 	@echo "  RAPID_BOOTSTRAP   perform rapid bootstrapping [true|false](default: false)"
 	@echo "  SEED              provide a seed for ML/bootstrapping (default: 12345)"
 	@echo "  TOOL              specify tools for performing tree inference (default: raxml)"
-	@echo ""
+	@echo
+	@echo "Global settings"
+	@echo "  THREADS           number of cores (default: 8)"
+	@echo
 	@echo "Environment settings"
 	@echo "  ENV               environment name (default: bwf-phylo)"
 	@echo "  ENV_MANAGER       environment manager (default: micromamba)"
-	@echo ""
+	@echo
 
 # Display evolutionaryu models
 models:
@@ -150,3 +151,6 @@ ifeq ($(TOOL),raxml)
 	@mkdir -p output/raxml
 	raxml-ng --msa $< $(raxml_bootstrap_opts)
 endif
+
+clean:
+	rm -rf output/raxml output/iqtree

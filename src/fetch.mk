@@ -7,7 +7,13 @@ SHELL := bash
 .DELETE_ON_ERROR:
 .ONESHELL:
 MAKEFLAGS += --warn-undefined-variables --no-builtin-rules
-.PHONY: help init sra ref pdb
+.PHONY: help params init clean
+
+# Formatting variables
+dot := .
+comma := ,
+empty := 
+space := $(empty) $(empty)
 
 # Parameters for sequencing reads
 PRJNA ?=
@@ -44,20 +50,42 @@ endif
 
 # Display help message
 help:
-	@echo ""
+	@echo
 	@echo "fetch.mk: retrieve biological data of all forms"
-	@echo ""
+	@echo
 	@echo "Usage:"
 	@echo "  make -f src/fetch.mk <command> [options]"
-	@echo ""
+	@echo
 	@echo "COMMANDS:"
 	@echo "  sra - retrieve sequencing data from the SRA"
 	@echo "  ref - retrieve genome and annotation from NCBI"
 	@echo "  pdb - retrieve structure data from PDB"
+	@echo
+
+# Display available parameters
+params:
+	@echo
+	@echo "For retrieving GENOMES"
+	@echo "  ACC               sequence accession identifier"
+	@echo "  INCLUDE_GFF       download annotation file for fetched reference genome"
+	@echo
+	@echo "For retrieving READS"
+	@echo "  PRJNA             sequencing PROJECT identifier"
+	@echo "  SRR               sequencing RUN identifier"
+	@echo "  PE                if true, download reads in pair-end mode (default: false)"
+	@echo "  X                 number of spots to download"
+	@echo
+	@echo "For retrieving PROTEIN STRUCTURES"
+	@echo "  PDB               4-character protein identifier"
+	@echo
+	@echo "Environment settings"
+	@echo "  ENV               environment name (default: bwf-fetch)"
+	@echo "  ENV_MANAGER       environment manager (default: micromamba)"
+	@echo
 
 # Create new self-contained environment
 init:
-	$(ENV_MANAGER) create -n $(ENV) $(dependencies)
+	$(ENV_MANAGER) create -n $(ENV) $(dependencies) --yes
 
 # Retrive sequencing reads from the SRA
 sra:
@@ -108,3 +136,6 @@ pdb:
 	pdb_fetch $(PDB) > pdb/$(PDB).pdb
 
 # TODO: retrieve annotation data from genbank
+
+clean:
+	rm -rf reads/ ref/ pdb/

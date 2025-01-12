@@ -7,11 +7,13 @@ SHELL := bash
 .DELETE_ON_ERROR:
 .ONESHELL:
 MAKEFLAGS += --warn-undefined-variables --no-builtin-rules
-.PHONY: help init params clean datasets
+.PHONY: help params init clean datasets
 
 # Formatting variables
 dot := .
 comma := ,
+empty := 
+space := $(empty) $(empty)
 
 # Number of cores
 THREADS ?= 8
@@ -79,6 +81,7 @@ help:
 	@echo "  annotate   - run annotation pipeline on sequence file"
 	@echo "  datasets   - list available BUSCO datasets"
 	@echo "  predict    - run HMM-based gene prediction using Prodigal"
+	@echo
 
 # Create new self-contained environment
 init:
@@ -86,16 +89,20 @@ init:
 
 # Display available parameters
 params:
-	@echo "Global settings"
-	@echo "  THREADS           number of cores (default: 4)"
+	@echo
 	@echo "Annotation settings"
 	@echo "  FA                path to target FASTA file"
 	@echo "  MODE              BUSCO analysis mode to run [genome|protein|transcriptome] (default: genome)"
 	@echo "  DOMAIN            specify the domain where the input sequence belongs to [prokaryote|eukaryote]"
 	@echo "  PRODIGAL_OUTFMT   specify output format for Prodigal [gff|gbk|sco] (default: gff)"
+	@echo
+	@echo "Global settings"
+	@echo "  THREADS           number of cores (default: 4)"
+	@echo
 	@echo "Environment settings"
-	@echo "  ENV               environment name (default: bwf-mapping)"
+	@echo "  ENV               environment name (default: bwf-annotation)"
 	@echo "  ENV_MANAGER       environment manager (default: micromamba)"
+	@echo
 
 # List available BUSCO datasets
 datasets:
