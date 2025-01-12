@@ -43,7 +43,7 @@ MODEL ?= GTR+G
 SEED ?= 12345
 
 # Number of ML searches to perform
-N ?=
+N ?= 10
 
 # Perform rapid bootstrappint
 RAPID_BOOTSTRAP ?= true
@@ -112,9 +112,27 @@ params:
 
 # Display evolutionaryu models
 models:
-	@echo "Evolutionary models:"
-	@echo "  - CAT"
-	@echo "  - GAMMA"
+	@echo
+	@echo "Nucleotide substitutions models:"
+	@echo "  JC     - Jukes and Cantor (1969)"
+	@echo "  K80    - Kimura (1980)"
+	@echo "  K81    - Kimura [equal freq.](1981)"
+	@echo "  K81uf  - Kimura [unequal freq.](1981)"
+	@echo "  F81    - Felsenstein (1981)"
+	@echo "  HKY    - Hasegawa et al. (1985)"
+	@echo "  TN93   - Tamura and Nei [unequal freq.](1993)"
+	@echo "  TN93ef - Tamura and Nei [equal freq.](1993)"
+	@echo "  TVM    - Posada [unequal freq.](2003)"
+	@echo "  TVMef  - Posada [equal freq.](2003)"
+	@echo "  GTR    - Tavare (1986)"
+	@echo
+	@echo "Rate heterogeneity models:"
+	@echo "  G      - discrete GAMMA with 4 categories"
+	@echo "  GA     - discrete GAMMA with median categories"
+	@echo "  Gn     - discrete GAMMA with n categories"
+	@echo "  Rn     - free rate with n categories"
+	@echo "  Rn     - free rate with n categories"
+	@echo
 
 # Perform phylogenetic inference using tool of preference
 ML: $(MSA)
