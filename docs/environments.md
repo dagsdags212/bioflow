@@ -39,6 +39,11 @@ downloads:
 :::
 
 :::{card}
+```{literalinclude} ../envs/phylo.yml
+```
+:::
+
+:::{card}
 ```{literalinclude} ../envs/qc.yml
 ```
 :::

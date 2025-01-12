@@ -9,5 +9,6 @@ A collection of Makefiles for running common tasks for bioinformatics analysis.
 - [assembly.mk](./workflows/assembly.md)
 - [fetch.mk](./workflows/fetch.md)
 - [mapping.mk](./workflows/mapping.md)
+- [phylo.mk](./workflows/phylo.md)
 - [qc.mk](./workflows/qc.md)
 - [variant_calling.mk](./workflows/variant_calling.md)
