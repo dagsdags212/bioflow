@@ -1,4 +1,4 @@
-name: bwf-vc
+name: bf-vc
 channels:
 - bioconda
 - conda-forge

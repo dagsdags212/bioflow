@@ -1,4 +1,4 @@
-name: bwf-assembly
+name: bf-assembly
 channels:
 - bioconda
 dependencies:

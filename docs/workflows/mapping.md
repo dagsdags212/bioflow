@@ -6,7 +6,7 @@ downloads:
     title: env.yml
 ---
 
-(bwf-mapping)=
+(bf-mapping)=
 # mapping.mk
 
 ## Overview
@@ -24,7 +24,7 @@ make -f src/mapping.mk init ENV_MANAGER=micromamba
 
 Activate environment to expose dependencies:
 ```bash
-micromamba activate bwf-mapping
+micromamba activate bf-mapping
 ```
 :::
 

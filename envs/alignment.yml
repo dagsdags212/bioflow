@@ -1,4 +1,4 @@
-name: bwf-alignment
+name: bf-alignment
 channels:
 - bioconda
 - conda-forge

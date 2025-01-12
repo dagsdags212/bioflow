@@ -6,7 +6,7 @@ downloads:
     title: env.yml
 ---
 
-(bwf-alignment)=
+(bf-alignment)=
 # alignment.mk
 
 ## Overview
@@ -30,7 +30,7 @@ make -f src/alignment.mk init ENV_MANAGER=micromamba
 
 Activate environment to expose dependencies:
 ```bash
-micromamba activate bwf-alignment
+micromamba activate bf-alignment
 ```
 :::
 

@@ -6,7 +6,7 @@ downloads:
     title: env.yml
 ---
 
-(bwf-assembly)=
+(bf-assembly)=
 # assembly.mk
 
 ## Overview
@@ -28,7 +28,7 @@ make -f src/assembly.mk init ENV_MANAGER=micromamba
 
 Activate environment to expose dependencies:
 ```bash
-micromamba activate bwf-assembly
+micromamba activate bf-assembly
 ```
 :::
 

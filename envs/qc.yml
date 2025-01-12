@@ -1,4 +1,4 @@
-name: bwf-qc
+name: bf-qc
 channels:
 - bioconda
 dependencies:

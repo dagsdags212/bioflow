@@ -6,7 +6,7 @@ downloads:
     title: env.yml
 ---
 
-(bwf-fetch)=
+(bf-fetch)=
 # fetch.mk
 
 ## Overview
@@ -37,7 +37,7 @@ make -f src/fetch.mk init ENV_MANAGER=micromamba
 
 Activate environment to expose dependencies:
 ```bash
-micromamba activate bwf-fetch
+micromamba activate bf-fetch
 ```
 :::
 

@@ -6,7 +6,7 @@ downloads:
     title: env.yml
 ---
 
-(bwf-qc)=
+(bf-qc)=
 # qc.mk
 
 ## Overview
@@ -24,7 +24,7 @@ make -f src/qc.mk init ENV_MANAGER=micromamba
 
 Activate environment to expose dependencies:
 ```bash
-micromamba activate bwf-qc
+micromamba activate bf-qc
 ```
 :::
 

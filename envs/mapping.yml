@@ -1,4 +1,4 @@
-name: bwf-mapping
+name: bf-mapping
 channels:
 - bioconda
 dependencies:

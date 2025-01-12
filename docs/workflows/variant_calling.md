@@ -6,7 +6,7 @@ downloads:
     title: env.yml
 ---
 
-(bwf-vc)=
+(bf-vc)=
 # variant_calling.mk
 
 ## Overview
@@ -24,7 +24,7 @@ make -f src/variant_calling.mk init ENV_MANAGER=micromamba
 
 Activate environment to expose dependencies:
 ```bash
-micromamba activate bwf-vc
+micromamba activate bf-vc
 ```
 :::
 

@@ -6,7 +6,7 @@ downloads:
     title: env.yml
 ---
 
-(bwf-phylo)=
+(bf-phylo)=
 # phylo.mk
 
 ## Overview
@@ -26,7 +26,7 @@ make -f src/phylo.mk init ENV_MANAGER=micromamba
 
 Activate environment to expose dependencies:
 ```bash
-micromamba activate bwf-phylo
+micromamba activate bf-phylo
 ```
 :::
 

@@ -6,7 +6,7 @@ downloads:
     title: env.yml
 ---
 
-(bwf-annotation)=
+(bf-annotation)=
 # annotation.mk
 
 ## Overview
@@ -24,7 +24,7 @@ make -f src/annotation.mk init ENV_MANAGER=micromamba
 
 Activate environment to expose dependencies:
 ```bash
-micromamba activate bwf-annotation
+micromamba activate bf-annotation
 ```
 :::
 

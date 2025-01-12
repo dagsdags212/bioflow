@@ -4,7 +4,6 @@
 #   Output <path>.gif               Create a GIF output at the given <path>
 #   Output <path>.mp4               Create an MP4 output at the given <path>
 #   Output <path>.webm              Create a WebM output at the given <path>
-#
 # Require:
 #   Require <string>                Ensure a program is on the $PATH to proceed
 #
@@ -65,11 +64,11 @@ Set Height 1080
 Set WindowBarSize 80
 Set WindowBar "Colorful"
 
-Type "# Install bioworkflows using git" Sleep 1s
+Type "# Install bioflow using git" Sleep 1s
 Ctrl+C
-Type "git clone https://github.com/dagsdags212/bioworkflows.git" Sleep 500ms Enter
+Type "git clone https://github.com/dagsdags212/bioflow.git" Sleep 500ms Enter
 Sleep 2s
-Type "cd bioworkflows/" Sleep 500ms Enter
+Type "cd bioflow/" Sleep 500ms Enter
 Type "# List available workflows" Sleep 1s
 Ctrl+C
 Type "ls src/" Sleep 500ms Enter

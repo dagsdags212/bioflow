@@ -1,4 +1,4 @@
-name: bwf-annotation
+name: bf-annotation
 channels:
 - bioconda
 dependencies:
