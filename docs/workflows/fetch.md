@@ -13,15 +13,16 @@ downloads:
 
 The `fetch.mk` workflow can be used to download different types of biological data from online databases. Currently support data formats are listed in @supported-formats:
 
-:::{table} Support data formats by `fetch.mk`
+:::{table} Supported data formats by `fetch.mk`
 :label: supported-formats
 :align: center
 
-| Data Type | Format | Command |
-| ------ | ------ | ------ |
-| Sequencing reads | FASTQ | `sra` | 
-| Reference genomes | FASTA | `ref` |
-| Protein structures | PDB | `pdb` |
+| Data Type | Source |Format | Command |
+| ------ | ------ | ------ | ------ |
+| Sample reads | SRA | FASTQ | `sra` | 
+| Metagenomic reads | MGnify/SRA | FASTQ | `sra` | 
+| Reference genomes | NCBI | FASTA | `ref` |
+| Protein structures | RCSB | PDB | `pdb` |
 
 :::
 
@@ -44,7 +45,9 @@ micromamba activate bwf-fetch
 
 ### sra
 
-Retrieve a set of sequencing reads from a project ID (PRJNA) or a single sequencing run (SRR). 
+Retrieve a set of sequencing reads from a project ID (PRJNA) or a single sequencing run (SRR).
+
+Downloading metagenomic reads using a MGnify identifier is supported. Behind the scenes, a script converts the MGnify-formated accession into an SRA/ENA accession which is then use to fetch the reads from NCBI.
 
 All reads are stored in the `reads` directory. When downloading multiple sets of reads, a subdirectory for each set labeled after its SRR accession is created under `reads`.
 
@@ -59,12 +62,17 @@ All reads are stored in the `reads` directory. When downloading multiple sets of
 
 Download a set of complete sequencing reads.
 ```bash
-make -f src/fetch.mk PRJNA=PRJNA1066786
+make -f src/fetch.mk sra PRJNA=PRJNA1066786
 ```
 
 Download 100000 reads from a single run.
 ```bash
-make -f src/fetch.mk SRR=SRR27644850 X=100000
+make -f src/fetch.mk sra SRR=SRR27644850 X=100000
+```
+
+Download reads derived from a metagenomic sample stored in MGnify.
+```bash
+make -f src/fetch.mk sra PRJNA=MGYS00000259 X=10000
 ```
 
 ### ref
@@ -78,12 +86,12 @@ make -f src/fetch.mk SRR=SRR27644850 X=100000
 
 Download the canonical reference genome of the African Swine Fever virus.
 ```bash
-make -f src/fetch.mk ACC=GCF_003047755.2
+make -f src/fetch.mk ref ACC=GCF_003047755.2
 ```
 
 Include the annotation file.
 ```bash
-make -f src/fetch.mk ACC=GCF_003047755.2 INCLUDE_GFF=true
+make -f src/fetch.mk ref ACC=GCF_003047755.2 INCLUDE_GFF=true
 ```
 
 ### pdb
@@ -102,5 +110,5 @@ PDB identifiers are four-character alphanumerics such as _2hbs_.
 
 Download the SARS-CoV-2 spike glycoprotein with PDB ID `7FCD`.
 ```bash
-make -f src/fetch.mk PDB=7FCD
+make -f src/fetch.mk pdb PDB=7FCD
 ```

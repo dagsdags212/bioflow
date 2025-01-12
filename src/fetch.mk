@@ -21,6 +21,9 @@ SRR ?=
 X ?=
 PE ?= false
 
+# Convert MGNify ID to SRA accession
+MGYS = $(if $(findstring MGYS,$(PRJNA)),$(shell ./scripts/mgnify2sra.sh $(PRJNA)))
+
 # Parameters for reference genomes
 ACC ?=
 INCLUDE_GFF ?= false
@@ -89,11 +92,15 @@ init:
 
 # Retrive sequencing reads from the SRA
 sra:
-	mkdir -p reads
+	mkdir -p reads/
 ifdef PRJNA
 	# Fetch project metadata and extract a list of SRR accessions
 	@echo "Fetching runinfo for $(PRJNA)"
-	esearch -db sra -query $(PRJNA) | efetch -format runinfo \
+ifdef MGYS
+	@echo "Metagenomics samples detected"
+	@echo "Converting MGNify accesion to SRA accession"
+endif
+	esearch -db sra -query $(if $(MGYS),$(MGYS),$(PRJNA)) | efetch -format runinfo \
 		| cut -d, -f 1 | tail -n +2 > /tmp/fetch_acc.txt
 	# Create directoy for each SRR accession
 	cat /tmp/fetch_acc.txt | parallel -- mkdir -p reads/{}
@@ -139,3 +146,4 @@ pdb:
 
 clean:
 	rm -rf reads/ ref/ pdb/
+	rm /tmp/fetch_acc.txt
