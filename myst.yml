@@ -3,7 +3,7 @@ version: 1
 
 project:
   id: 7c639b15-ef97-49c9-a7fa-6a40cfe1ca4f
-  title: bioworkflows
+  title: bioflow
   description: A collection of Makefiles for running common workflows in bioinformatics
   keywords: [bioinformatics, pipelines, linux]
   authors: [Jan Emmanuel Samson]
@@ -29,7 +29,7 @@ project:
 site:
   template: book-theme
   options:
-    logo_text: bioworkflows
+    logo_text: bioflow
   #   favicon: favicon.ico
   #   logo: site_logo.png
 
