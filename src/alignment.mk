@@ -4,8 +4,8 @@
 
 SHELL := bash
 .SHELLFLAGS := -eu -o pipefail -c
-.DELETE_ON_ERROR:
-.ONESHELL:
+.DELETE_ON_ERROR: 
+.ONESHELL: 
 MAKEFLAGS += --warn-undefined-variables --no-builtin-rules
 .PHONY: help init params clean
 
@@ -27,6 +27,9 @@ ENV := bwf-alignment
 # Check if dependencies are installed
 dependencies := mafft muscle clustalo jalview
 
+# Run format convert scripts
+CONVERT = ../scripts/convert_aln.py
+
 # Path to FASTA file containing sequences to align
 FA ?=
 
@@ -43,8 +46,8 @@ GEP ?= 0.0
 # Number of cycles for interative refinement
 ITER ?= 1
 
-# Output format of resulting alignment
-OUTFMT ?= fasta
+# Set default output to FASTA format
+OUTFMT = fasta
 
 # Filename for output
 OUTNAME ?= aln
@@ -56,7 +59,7 @@ mafft_opts := --op $(GOP) --ep $(GEP) --thread $(THREADS) --maxiterate $(ITER) -
 muscle_opts := -html output/muscle/$(OUTNAME).$(OUTFMT).html
 
 # ClustalO flags
-clustal_opts := --threads $(THREADS) --iterations $(ITER) -v -v
+clustal_opts := --threads $(THREADS) --iterations $(ITER) --outfmt $(OUTFMT) -v -v 
 
 # JalView flags
 jalview_opts := --colour clustal --type html --headless --close --quit
@@ -73,6 +76,7 @@ help:
 	@echo "  align      - perform iterative alignment of multiple sequences"
 	@echo "  list       - display list of supported sequence aligners"
 	@echo "  view       - generate an HTML file for the alignment using JalView"
+	@echo
 
 # Create new self-contained environment
 init:
@@ -80,8 +84,10 @@ init:
 
 # Display available parameters
 params:
+	@echo
 	@echo "Global settings"
 	@echo "  THREADS           number of cores (default: 8)"
+	@echo
 	@echo "Alignment settings"
 	@echo "  FA                path to FASTA file to align"
 	@echo "  DIR               path to directory containing FASTA files to align"
@@ -90,9 +96,11 @@ params:
 	@echo "  GOP            	 gap opening penalty (default: 1.53)"
 	@echo "  GEP               gap extension penalty (default: 0.0)"
 	@echo "  ITER              number of iterations for iterative refinemane (default: 3)"
+	@echo
 	@echo "Environment settings"
 	@echo "  ENV               environment name (default: bwf-alignment)"
 	@echo "  ENV_MANAGER       environment manager (default: micromamba)"
+	@echo
 
 # Display supported aligners
 list:
@@ -115,14 +123,22 @@ ifeq ($(ALIGNER),mafft)
 	@mkdir -p output/mafft/
 	@echo "Aligning sequences with MAFFT"
 	mafft $(mafft_opts) $< > output/mafft/$(OUTNAME).$(OUTFMT)
+	$(CONVERT) output/mafft/$(OUTNAME).$(OUTFMT) fasta phylip-relaxed
+	$(CONVERT) output/mafft/$(OUTNAME).$(OUTFMT) fasta clustal
+
 else ifeq ($(ALIGNER),muscle)
 	@mkdir -p output/muscle/
 	@echo "Aligning sequences with MUSCLE"
 	muscle -super5 $< $(muscle_opts) -output output/muscle/$(OUTNAME).$(OUTFMT)
+	$(CONVERT) output/muscle/$(OUTNAME).$(OUTFMT) fasta phylip-relaxed
+	$(CONVERT) output/muscle/$(OUTNAME).$(OUTFMT) fasta clustal
+
 else ifeq ($(ALIGNER),clustalo)
 	@mkdir -p output/clustalo
 	@echo "Aligning sequences with ClustalO"
 	clustalo -i $< $(clustal_opts) -o output/clustalo/$(OUTNAME).$(OUTFMT)
+	$(CONVERT) output/clustalo/$(OUTNAME).$(OUTFMT) fasta phylip-relaxed
+	$(CONVERT) output/clustalo/$(OUTNAME).$(OUTFMT) fasta clustal
 endif
 
 view: $(shell find output/ -maxdepth 2 -name "*$(OUTNAME).$(OUTFMT)")

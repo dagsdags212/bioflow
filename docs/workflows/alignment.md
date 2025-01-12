@@ -42,6 +42,8 @@ Align sequences using one of the supported aligners.
 
 A multi-sequence FASTA file can serve as input thru the `FA` argument. Alternatively, specify a directory path containing multiple FASTA files for alignment using the `DIR` argument.
 
+The `align` command generates three output files containing the same alignment data but in different formats (fasta, clustal, phylip).
+
 **{sc}`Parameters`**
 
 - FA: path to a multi-sequence FASTA file
@@ -50,7 +52,6 @@ A multi-sequence FASTA file can serve as input thru the `FA` argument. Alternati
 - GOP: gap opening penalty (default: 1.53)
 - GEP: gap extension penalty (default: 0.0)
 - ITER: maximum number of iteration for refinement (default: 1)
-- OUTFMT: format of output alignment file (default: fasta)
 - OUTNAME: filename of output alignment file (default: aln)
 - THREADS: number of cores (default: 8)
 
@@ -69,11 +70,11 @@ make -f src/alignment.mk align \
     GOP=2 GEP=0.5
 ```
 
-Specify output filename and format.
+Specify output filename to generate _aln.fasta_, _aln.phylip_, and _aln.clustal_.
 ```bash
 make -f src/alignment.mk align \
     FA=seqs.fa ALIGNER=mafft \
-    OUTFMT=clustal OUTNAME=my_alignment
+    OUTNAME=aln
 ```
 
 ### list
@@ -95,17 +96,15 @@ make -f src/alignment.mk list
 
 Visualize the resulting alignment using `jalview`.
 
-The output is stored in the same directory of the alignment file in HTML format.
+Specify the `OUTNAME` parameter to only render the alignment files with the given prefix. The output is stored in the same directory in HTML format.
 
 **{sc}`Parameters`**
 
-- OUTFMT: format of output alignment file (default: fasta)
 - OUTNAME: filename of output alignment file (default: aln)
 
 **{sc}`Example Usage`**
 
 Specify `OUTNAME` and `OUTFMT` to generate visualization for aligner output.
 ```bash
-make -f src/alignment.mk view \
-    OUTFMT=clustal OUTNAME=my_alignment
+make -f src/alignment.mk view OUTNAME=aln
 ```
