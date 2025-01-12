@@ -1,5 +1,5 @@
 # 
-# Conduct phylogenetic tree inference from an alignment 
+# Conduct phylogenetic tree inference from an alignment
 #
 
 SHELL := bash
@@ -28,16 +28,16 @@ ENV := bwf-phylo
 dependencies := raxml iqtree blast bedtools
 
 # Path to alignment file
-ALN ?=
+MSA ?=
 
 # Prefered tools for running phylogenetic inferences
 TOOL ?= raxml
 
 # Output filename
-OUTNAME ?=
+PREFIX ?=
 
 # Model of evolution
-MODEL ?= GTRGAMMA
+MODEL ?= GTR+G
 
 # Specify seed
 SEED ?=
@@ -49,22 +49,18 @@ N ?=
 RAPID_BOOTSTRAP ?= true
 
 # Global RAxML flags
-raxml_global_opts := $(if $(OUTNAME),-n output/raxml/$(OUTNAME),-n output/raxml/result_)
-raxml_global_opts += $(if $(MODEL),-m $(MODEL))
-raxml_global_opts += $(if $(SEED),-p $(SEED),12345)
-raxml_global_opts += $(if $(N),-# $(N),20)
+raxml_global_opts := --threads $(THREADS)
+raxml_global_opts += $(if $(PREFIX),--prefix output/raxml/$(PREFIX),--prefix output/raxml/result)
+raxml_global_opts += $(if $(MODEL),--model $(MODEL))
+raxml_global_opts += $(if $(SEED),--seed $(SEED),--seed 12345)
 
 # RAxML flags for ML search
 raxml_ml_opts := $(raxml_global_opts)
+raxml_ml_opts += $(if $(N),--tree pars{$(N)})
 
 # RAxML flags for bootstraping
-raxml_bootstrap_opts := $(raxml_global_opts)
-
-ifeq ($(RAPID_BOOTSTRAP),true)
-	raxml_bootstrap_opts += -x $(SEED)
-else
-	raxml_bootstrap_opts += -b $(SEED)
-endif
+raxml_bootstrap_opts := $(raxml_global_opts) --bootstrap
+raxml_bootstrap_opts += $(if $(N),--bs-trees $(N))
 
 # IQTree flags
 iqtree_opts :=
@@ -90,19 +86,23 @@ init:
 
 # Display available parameters
 params:
+	@echo ""
 	@echo "Global settings"
 	@echo "  THREADS           number of cores (default: 8)"
+	@echo ""
 	@echo "Alignment settings"
-	@echo "  ALN               path to input alignment file for generating trees"
+	@echo "  MSA               path to alignment file for generating trees"
 	@echo "  MODEL             specify evolutionary mode to use (default: GTRGAMMA)"
-	@echo "  N                 number of bootstrap searches to perform"
-	@echo "  OUTNAME           filename for output tree"
+	@echo "  N                 number of starting trees (ML) or replicates (bootstrap)"
+	@echo "  PREFIX            add a prefix to the output file"
 	@echo "  RAPID_BOOTSTRAP   perform rapid bootstrapping [true|false](default: false)"
 	@echo "  SEED              provide a seed for ML/bootstrapping (default: 12345)"
 	@echo "  TOOL              specify tools for performing tree inference (default: raxml)"
+	@echo ""
 	@echo "Environment settings"
 	@echo "  ENV               environment name (default: bwf-phylo)"
 	@echo "  ENV_MANAGER       environment manager (default: micromamba)"
+	@echo ""
 
 # Display evolutionaryu models
 models:
@@ -111,15 +111,15 @@ models:
 	@echo "  - GAMMA"
 
 # Perform phylogenetic inference using tool of preference
-ML: $(ALN)
+ML: $(MSA)
 ifeq ($(TOOL),raxml)
 	@mkdir -p output/raxml
-	raxmlHPC -s $< $(raxml_ml_opts)
+	raxml-ng  --msa $< $(raxml_ml_opts)
 endif
 
 # Peform bootstrapping
-bootstrap: $(ALN)
+bootstrap: $(MSA)
 ifeq ($(TOOL),raxml)
 	@mkdir -p output/raxml
-	raxmlHPC -s $< $(raxml_bootstrap_opts)
+	raxml-ng --msa $< $(raxml_bootstrap_opts)
 endif
