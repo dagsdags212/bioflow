@@ -40,7 +40,7 @@ PREFIX ?=
 MODEL ?= GTR+G
 
 # Specify seed
-SEED ?=
+SEED ?= 12345
 
 # Number of ML searches to perform
 N ?=
@@ -49,10 +49,8 @@ N ?=
 RAPID_BOOTSTRAP ?= true
 
 # Global RAxML flags
-raxml_global_opts := --threads $(THREADS)
-raxml_global_opts += $(if $(PREFIX),--prefix output/raxml/$(PREFIX),--prefix output/raxml/result)
-raxml_global_opts += $(if $(MODEL),--model $(MODEL))
-raxml_global_opts += $(if $(SEED),--seed $(SEED),--seed 12345)
+raxml_global_opts := --threads $(THREADS) --model $(MODEL) --seed $(SEED)
+raxml_global_opts += output/raxml/$(if $(PREFIX),$(PREFIX),result)
 
 # RAxML flags for ML search
 raxml_ml_opts := $(raxml_global_opts)
@@ -62,8 +60,16 @@ raxml_ml_opts += $(if $(N),--tree pars{$(N)})
 raxml_bootstrap_opts := $(raxml_global_opts) --bootstrap
 raxml_bootstrap_opts += $(if $(N),--bs-trees $(N))
 
+# TODO: add support for PHYLIP
+
+# Phylip flags
+phylip_opts := 
+
+# TODO: add support for IQTREE
+
 # IQTree flags
-iqtree_opts :=
+iqtree_opts := --alisim output/iqtree/$(if $(PREFIX),$(PREFIX),result) -alninfo
+iqtree_opts += -af $(OUTFMT) -T $(THREADS) -m $(MODEL) --seed $(SEED)
 
 # Display help message
 help:
@@ -114,7 +120,10 @@ models:
 ML: $(MSA)
 ifeq ($(TOOL),raxml)
 	@mkdir -p output/raxml
-	raxml-ng  --msa $< $(raxml_ml_opts)
+	raxml-ng --msa $< $(raxml_ml_opts)
+else ifeq ($(TOOL),iqtree)
+	@mkdir -p output/iqtree
+	iqtree -s $< $(iqtree_opts)
 endif
 
 # Peform bootstrapping
