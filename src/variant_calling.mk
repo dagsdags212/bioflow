@@ -2,27 +2,22 @@
 # Detect variation from reads based on a reference genome
 #
 
-SHELL := bash
-.SHELLFLAGS := -eu -o pipefail -c
-.DELETE_ON_ERROR:
-.ONESHELL:
-MAKEFLAGS += --warn-undefined-variables --no-builtin-rules
+# import config variables
+include src/_config.mk
+
+# import global variables
+include src/_globals.mk
+
 .PHONY: help params init clean split
 
-# Formatting variables
-dot := .
-comma := ,
-empty := 
-space := $(empty) $(empty)
-
-# Number of cores
-THREADS ?= 4
-
-# Environment manager
-ENV_MANAGER := micromamba
+# Project root
+ROOT_DIR = $(shell dirname $(shell dirname $(realpath $(MAKEFILE_LIST))))
 
 # Conda environment
-ENV := bwf-vc
+ENV := bf-vc
+
+# Path to conda environment
+ENV_DIR = $(shell $(ENV_MANAGER) info | grep "envs directories" | cut -d ":" -f 2 | xargs)/$(ENV)
 
 # Check if dependencies are installed
 dependencies := freebayes samtools bamtools bedtools bcftools vcflib rtg-tools 

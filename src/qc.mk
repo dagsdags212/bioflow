@@ -2,21 +2,28 @@
 # Perform quality checks and filtering on sequencing data.
 #
 
-SHELL := bash
-.SHELLFLAGS := -eu -o pipefail -c
-.DELETE_ON_ERROR:
-.ONESHELL:
-MAKEFLAGS += --warn-undefined-variables --no-builtin-rules
+# import config variables
+include src/_config.mk
+
+# import global variables
+include src/_globals.mk
+
 .PHONY: help params init clean
 
-# Formatting variables
-dot := .
-comma := ,
-empty := 
-space := $(empty) $(empty)
+# Project root
+ROOT_DIR = $(shell dirname $(shell dirname $(realpath $(MAKEFILE_LIST))))
 
+# Conda environment
+ENV := bf-qc
+
+# Path to conda environment
+ENV_DIR = $(shell $(ENV_MANAGER) info | grep "envs directories" | cut -d ":" -f 2 | xargs)/$(ENV)
+
+# Check if dependencies are installed
+dependencies := fastqc multiqc trimmomatic fastp
+
+# Path to directory containing reads
 READ_DIR ?=
-THREADS ?= 4
 
 # Discover FASTQ files in specified directory to be used by FASTQC
 fastqc: READS = $(shell find $(READ_DIR) -type f -name "*fastq*")
@@ -38,15 +45,6 @@ fastp_opts = --overrepresentation_analysis --correction --cut_right
 fastp_opts += --length_required $(MINLEN) --length_limit $(MAXLEN) -q $(MINQUAL)
 fastp_opts += --html fastp/reports/fastp_report_$(shell date +%y%m%d%H%M%S).html
 fastp_opts += --json fastp/reports/fastp_report_$(shell date +%y%m%d%H%M%S).json
-
-# Environment manager
-ENV_MANAGER ?= micromamba
-
-# Conda environment
-ENV ?= bwf-qc
-
-# Check if dependencies are installed
-dependencies := fastqc multiqc trimmomatic fastp
 
 # Display help message
 help:
@@ -85,6 +83,11 @@ params:
 # Create new self-contained environment
 init:
 	$(ENV_MANAGER) create -n $(ENV) $(dependencies)
+	@# Extract bbtool scripts and add to env path
+	bbmap_tar=$(ROOT_DIR)/tools/tar/BBMap_39.14.tar.gz
+	tar -xzf $$bbmap_tar -C $(ROOT_DIR)/tools
+	mv $(ROOT_DIR)/tools/bbmap/* $(ENV_DIR)/bin/
+	rm -rf $(ROOT_DIR)/tools/bbmap/
 
 # Generate fastqc report for a set of reads
 fastqc:

@@ -2,27 +2,22 @@
 # Perform gene prediction to annotate genomes.
 #
 
-SHELL := bash
-.SHELLFLAGS := -eu -o pipefail -c
-.DELETE_ON_ERROR:
-.ONESHELL:
-MAKEFLAGS += --warn-undefined-variables --no-builtin-rules
-.PHONY: help params init clean datasets
+# import config variables
+include src/_config.mk
 
-# Formatting variables
-dot := .
-comma := ,
-empty := 
-space := $(empty) $(empty)
+# import global variables
+include src/_globals.mk
 
-# Number of cores
-THREADS ?= 8
+.PHONY: help params init clean
 
-# Environment manager
-ENV_MANAGER := micromamba
+# Project root
+ROOT_DIR = $(shell dirname $(shell dirname $(realpath $(MAKEFILE_LIST))))
 
 # Conda environment
-ENV := bwf-annotation
+ENV := bf-annotation
+
+# Path to conda environment
+ENV_DIR = $(shell $(ENV_MANAGER) info | grep "envs directories" | cut -d ":" -f 2 | xargs)/$(ENV)
 
 # Check if dependencies are installed
 dependencies := busco

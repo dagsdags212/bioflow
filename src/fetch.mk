@@ -2,18 +2,25 @@
 # Retrieve read data from the Sequence Read Archive (SRA).
 #
 
-SHELL := bash
-.SHELLFLAGS := -eu -o pipefail -c
-.DELETE_ON_ERROR:
-.ONESHELL:
-MAKEFLAGS += --warn-undefined-variables --no-builtin-rules
+# import config variables
+include src/_config.mk
+
+# import global variables
+include src/_globals.mk
+
 .PHONY: help params init clean
 
-# Formatting variables
-dot := .
-comma := ,
-empty := 
-space := $(empty) $(empty)
+# Project root
+ROOT_DIR = $(shell dirname $(shell dirname $(realpath $(MAKEFILE_LIST))))
+
+# Conda environment
+ENV := bf-fetch
+
+# Path to conda environment
+ENV_DIR = $(shell $(ENV_MANAGER) info | grep "envs directories" | cut -d ":" -f 2 | xargs)/$(ENV)
+
+# Check if dependencies are installed
+dependencies := entrez-direct sra-tools ncbi-datasets-cli
 
 # Parameters for sequencing reads
 PRJNA ?=
@@ -30,15 +37,6 @@ INCLUDE_GFF ?= false
 
 # Parameters for PDB files
 PDB ?= 
-
-# Environment manager
-ENV_MANAGER ?= micromamba
-
-# Conda environment
-ENV ?= fetch
-
-# Check if dependencies are installed
-dependencies := entrez-direct sra-tools ncbi-datasets-cli
 
 # fastq-dump parameters
 fastq_dump_opts := --origfmt

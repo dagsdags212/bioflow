@@ -2,27 +2,22 @@
 # Perform pairwise and multiple sequence alignment.
 #
 
-SHELL := bash
-.SHELLFLAGS := -eu -o pipefail -c
-.DELETE_ON_ERROR: 
-.ONESHELL: 
-MAKEFLAGS += --warn-undefined-variables --no-builtin-rules
+# import config variables
+include src/_config.mk
+
+# import global variables
+include src/_globals.mk
+
 .PHONY: help params init clean
 
-# Formatting variables
-dot := .
-comma := ,
-empty := 
-space := $(empty) $(empty)
-
-# Number of cores
-THREADS ?= 8
-
-# Environment manager
-ENV_MANAGER ?= micromamba
+# Project root
+ROOT_DIR = $(shell dirname $(shell dirname $(realpath $(MAKEFILE_LIST))))
 
 # Conda environment
-ENV := bwf-alignment
+ENV := bf-alignment
+
+# Path to conda environment
+ENV_DIR = $(shell $(ENV_MANAGER) info | grep "envs directories" | cut -d ":" -f 2 | xargs)/$(ENV)
 
 # Check if dependencies are installed
 dependencies := mafft muscle clustalo jalview

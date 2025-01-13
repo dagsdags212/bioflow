@@ -2,30 +2,25 @@
 # Perform reference-based mapping of sequencing reads.
 #
 
-SHELL := bash
-.SHELLFLAGS := -eu -o pipefail -c
-.DELETE_ON_ERROR:
-.ONESHELL:
-MAKEFLAGS += --warn-undefined-variables --no-builtin-rules
+# import config variables
+include src/_config.mk
+
+# import global variables
+include src/_globals.mk
+
 .PHONY: help params init clean
 
-# Formatting variables
-dot := .
-comma := ,
-empty := 
-space := $(empty) $(empty)
-
-# Number of cores
-THREADS ?= 8
-
-# Environment manager
-ENV_MANAGER := micromamba
+# Project root
+ROOT_DIR = $(shell dirname $(shell dirname $(realpath $(MAKEFILE_LIST))))
 
 # Conda environment
-ENV := bwf-mapping
+ENV := bf-mapping
+
+# Path to conda environment
+ENV_DIR = $(shell $(ENV_MANAGER) info | grep "envs directories" | cut -d ":" -f 2 | xargs)/$(ENV)
 
 # Check if dependencies are installed
-dependencies := bwa bowtie2 samtools qualimap
+dependencies := bwa bowtie2 samtools qualimapMSG
 
 # Tool of choice for read mapping
 MAPPER ?= bwa
@@ -86,7 +81,12 @@ help:
 
 # Create new self-contained environment
 init:
-	$(ENV_MANAGER) create -n $(ENV) $(dependencies)
+	$(ENV_MANAGER) create -n $(ENV) $(dependencies) --yes
+	@# Extract bbtool scripts and add to env path
+	bbmap_tar=$(ROOT_DIR)/tools/tar/BBMap_39.14.tar.gz
+	tar -xzf $$bbmap_tar -C $(ROOT_DIR)/tools
+	mv $(ROOT_DIR)/tools/bbmap/* $(ENV_DIR)/bin/
+	rm -rf $(ROOT_DIR)/tools/bbmap/
 
 # Display available parameters
 params:
@@ -108,9 +108,6 @@ params:
 	@echo "  ENV               environment name (default: bwf-mapping)"
 	@echo "  ENV_MANAGER       environment manager (default: micromamba)"
 	@echo
-
-test:
-	@echo $(IDX)
 
 $(IDX): $(REF)
 	# Index reference file
