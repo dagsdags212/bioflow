@@ -11,14 +11,13 @@ include src/_globals.mk
 .PHONY: help params init assemble visualize
 
 # Project root
-ROOT_DIR = $(shell dirname $(shell dirname $(realpath $(MAKEFILE_LIST))))
+ROOT_DIR = $(shell dirname $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST)))))
 
 # Conda environment
 ENV := bf-assembly
 
 # Path to conda environment
 ENV_DIR = $(shell $(ENV_MANAGER) info | grep "envs directories" | cut -d ":" -f 2 | xargs)/$(ENV)
-
 
 # Check if dependencies are installed
 dependencies := megahit spades quast minia

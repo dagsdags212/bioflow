@@ -11,7 +11,7 @@ include src/_globals.mk
 .PHONY: help params init clean
 
 # Project root
-ROOT_DIR = $(shell dirname $(shell dirname $(realpath $(MAKEFILE_LIST))))
+ROOT_DIR = $(shell dirname $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST)))))
 
 # Conda environment
 ENV := bf-qc
@@ -79,10 +79,9 @@ params:
 	@echo "  ENV_MANAGER    environment manager (default: micromamba)"
 	@echo
 
-
 # Create new self-contained environment
 init:
-	$(ENV_MANAGER) create -n $(ENV) $(dependencies)
+	$(ENV_MANAGER) create -n $(ENV) $(dependencies) --yes
 	@# Extract bbtool scripts and add to env path
 	bbmap_tar=$(ROOT_DIR)/tools/tar/BBMap_39.14.tar.gz
 	tar -xzf $$bbmap_tar -C $(ROOT_DIR)/tools

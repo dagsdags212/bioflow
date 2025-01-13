@@ -11,7 +11,7 @@ include src/_globals.mk
 .PHONY: help params init clean
 
 # Project root
-ROOT_DIR = $(shell dirname $(shell dirname $(realpath $(MAKEFILE_LIST))))
+ROOT_DIR = $(shell dirname $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST)))))
 
 # Conda environment
 ENV := bf-mapping
