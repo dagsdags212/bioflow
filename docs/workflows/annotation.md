@@ -98,3 +98,21 @@ Save output in GenBank Flat File Format (gbk).
 ```bash
 make -f src/annotation.mk predict FA=output/megahit/final.contigs.fa PRODIGAL_OUTFMT=gbk
 ```
+
+### view
+
+Visualize annotated genome using Artemis.
+
+Run `annotate` prior to invoking this command to generate the `prokka` annotation.
+
+**{sc}`Parameters`**
+
+- FA: path to target sequence file
+
+**{sc}`Example Usage`**
+
+Visualize annotation by `prokka` alongside the reference genome.
+```bash
+make -f src/annotation.mk view FA=output/megahit/final.contigs.fa
+```
+

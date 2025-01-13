@@ -15,12 +15,11 @@ ROOT_DIR = $(shell dirname $(shell dirname $(realpath $(firstword $(MAKEFILE_LIS
 
 # Conda environment
 ENV := bf-annotation
-
 # Path to conda environment
 ENV_DIR = $(shell $(ENV_MANAGER) info | grep "envs directories" | cut -d ":" -f 2 | xargs)/$(ENV)
 
 # Check if dependencies are installed
-dependencies := busco
+dependencies := prokka busco artemis
 
 # Sequence to annotate
 FA ?=
@@ -29,8 +28,9 @@ FA ?=
 PRODIGAL_OUTFMT ?= gff
 
 # Prodigal flags
-prodigal_opts := -o output/prodigal/predicted_genes.$(PRODIGAL_OUTFMT) 
-prodigal_opts += -a output/prodigal/predicted_proteins.faa -f $(PRODIGAL_OUTFMT)
+prodigal_opts := -o output/prodigal/predicted.$(PRODIGAL_OUTFMT) 
+prodigal_opts += -a output/prodigal/predicted.faa -f $(PRODIGAL_OUTFMT)
+prodigal_opts += -s output/prodigal/predicted.txt
 
 # BUSCO flags
 busco_opts := -c $(THREADS) -f
@@ -41,9 +41,7 @@ MODE ?= genome
 # Only specify BUSCO mode if parameters is valid (genome, transcriptome)
 ifeq ($(MODE),genome)
 busco_opts += -m genome
-endif
-
-ifeq ($(MODE),transcriptome)
+else ifeq ($(MODE),transcriptome)
 busco_opts += -m transcriptome
 endif
 
@@ -64,6 +62,9 @@ ifndef DOMAIN
 busco_opts += --auto-lineage
 endif
 
+# Prokka flags
+prokka_opts := --gffver 3 --force
+
 # Display help message
 help:
 	@echo
@@ -76,6 +77,7 @@ help:
 	@echo "  annotate   - run annotation pipeline on sequence file"
 	@echo "  datasets   - list available BUSCO datasets"
 	@echo "  predict    - run HMM-based gene prediction using Prodigal"
+	@echo "  view       - visualize the annotated genome using Artemis"
 	@echo
 
 # Create new self-contained environment
@@ -105,14 +107,24 @@ datasets:
 
 # Run ab initio gene prediction using prodigal
 predict:
-	mkdir -p output/prodigal/
+	@mkdir -p output/prodigal/
 	prodigal -i $(FA) $(prodigal_opts)
 
 # Run BUSCO annotation pipeline
 annotate:
-	mkdir -p output/busco/
+	@# annotate using BUSCO
+	@mkdir -p output/busco/
+	@echo "Annotating $(FA) with BUSCO"
 	busco -i $(FA) -o output/busco/ $(busco_opts)
 
+	@# annotate using Prokka
+	@mkdir -p output/prokka/
+	@echo "Annotating $(FA) with Prokka"
+	prokka $(prokka_opts) --outdir output/prokka/ $(FA)
+
+view: $(wildcard output/prokka/*.gff) $(FA)
+	art $(FA) +$<
+
 clean:
-	rm -rf output/busco/ output/prodigal/
+	rm -rf output/busco/ output/prodigal/ output/prokka/
 	rm -rf busco_downloads/
