@@ -40,13 +40,23 @@ REF ?=
 PE ?= false
 
 # Name and extension for output alignment file
-OUTPUT ?=
+OUTPUT ?= aln
 
 # Alignment file format
 OUTFMT ?= sam
 
 # Name of alignment file
-OUTNAME := output/bwa/$(if $(OUTPUT),$(OUTPUT)$(dot)sorted$(dot)$(OUTFMT),aln$(dot)sorted$(dot)$(OUTFMT))
+OUTNAME := $(if $(OUTPUT),$(OUTPUT).sorted.$(OUTFMT),aln.sorted.$(OUTFMT))
+
+# Set required index files based on specified mapping tool
+BWA_SFX = amb ann bwt pac sa
+BOWTIE_SFX = 1.bt2 2.bt2 3.bt2 4.bt2 rev.1.bt2 rev.2.bt2
+
+ifeq ($(MAPPER),bwa)
+IDX = $(addprefix $(REF).,$(BWA_SFX))
+else ifeq ($(MAPPER),bowtie)
+IDX = $(addprefix $(REF).,$(BOWTIE_SFX))
+endif
 
 # Separate reads if pair-end, otherwise store as single FASTQ file
 ifeq ($(PE),true)
@@ -99,25 +109,42 @@ params:
 	@echo "  ENV_MANAGER       environment manager (default: micromamba)"
 	@echo
 
-$(REF).bwt:
-	# Index reference file
-	bwa index $(REF)
+test:
+	@echo $(IDX)
 
-map: $(REF).bwt
+$(IDX): $(REF)
+	# Index reference file
+ifeq ($(MAPPER),bwa)
+	bwa index $(REF)
+else ifeq ($(MAPPER),bowtie)
+	bowtie2-build $(REF) $(basename $(REF))
+endif
+
+map: $(IDX)
 ifeq ($(MAPPER),bwa)
 	@mkdir -p output/bwa
 ifeq ($(PE),true)
 	# Map, sort, and convert pair-end reads to reference
-	bwa mem $(REF) $(R1) $(R2) | samtools sort | samtools view -h -O $(OUTFMT) > $(OUTNAME)
+	bwa mem $(REF) $(R1) $(R2) | samtools sort - | samtools view -h -O $(OUTFMT) -o output/bwa/$(OUTNAME)
 else
 	# Map, sort, and convert single-end reads to reference
-	bwa mem $(REF) $(R) | samtools sort | samtools view -h -O $(OUTFMT) > $(OUTNAME)
-endif
+	bwa mem $(REF) $(R) | samtools sort - | samtools view -h -O $(OUTFMT) -o output/bwa/$(OUTNAME)
+
 endif
 
+else ifeq ($(MAPPER),bowtie)
+	@mkdir -p output/bowtie
+ifeq ($(PE),true)
+	bowtie2 -x $(basename $(REF))	-1 $(R1) -2 $(R2) | samtools sort - | samtools view -h -O $(OUTFMT) -o output/bowtie/$(OUTNAME)
+else
+	bowtie2 -x $(basename $(REF)) -U $(R) | samtools sort - | samtools view -h -O $(OUTFMT) -o output/bowtie/$(OUTNAME)
+endif
+
+endif
+
+# Print mapping statistics for all SAM/BAM files
 stats:
-	# Print mapping statistics for all SAM/BAM files
-	for aln in $(shell find output/ -maxdepth 2 -name "*.sam" -o -name "*.bam"); do \
+	@for aln in $(shell find output/ -maxdepth 2 -name "*.sam" -o -name "*.bam"); do \
 		echo; \
 		echo "=============== $$aln ==============="; \
 		samtools flagstat $$aln; \
@@ -126,8 +153,10 @@ stats:
 evaluate:
 	@mkdir -p output/qualimap
 	for bam in $(shell find output/ -maxdepth 2 -name "*sorted.bam"); do \
-		qualimap bamqc -outdir output/qualimap -outformat HTML -bam $$bam; \
+		outdir=output/qualimap/$$(basename $${bam%%.*}); \
+		mkdir -p $${outdir}; \
+		qualimap bamqc -outdir $${outdir} -outformat HTML -bam $$bam; \
 	done
 
 clean:
-	rm -rf output/bwa output/qualimap
+	rm -rf output/bwa/ output/bowtie/ output/qualimap/

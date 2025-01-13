@@ -13,6 +13,11 @@ downloads:
 
 The `assembly.mk` workflow contains rules for performing read alignment against a reference genome.
 
+Supported aligners include:
+
+- [bwa](https://github.com/lh3/bwa)
+- [bowtie2](https://github.com/BenLangmead/bowtie2)
+
 :::{hint} Environment Setup
 :class: dropdown
 
@@ -46,11 +51,18 @@ The reference file is first indexed prior to mapping. By default, the output ali
 - PE: treat reads as pair-end (default: true)
 
 **{sc}`Example Usage`**
-Map pair-end reads against a reference.
+Map pair-end reads against a reference using `bwa`.
 ```bash
 make -f src/mapping.mk map \
     READ_DIR=reads/ REF=ref.fa PE=true \
     MAPPER=bwa THREADS=8
+```
+
+Map pair-end reads against a reference using `bowtie`.
+```bash
+make -f src/mapping.mk map \
+    READ_DIR=reads/ REF=ref.fa PE=true \
+    MAPPER=bowtie THREADS=8
 ```
 
 Map single-end reads against a reference and save as a BAM file.
