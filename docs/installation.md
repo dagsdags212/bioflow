@@ -1,4 +1,6 @@
-# Installation
+# Getting Started
+
+## Installation
 
 Create a local copy of the github repository:
 ```bash
@@ -9,6 +11,31 @@ cd bioworkflows
 :::{figure} ./assets/recordings/install.gif
 Install bioworkflows using `git`.
 :::
+
+## Installing GNU Make
+
+Prior to running a workflow, ensure that [GNU Make](https://www.gnu.org/software/make/) is installed in your system. Check if the program is installed:
+```bash
+make -v
+```
+
+If not, the software is available thru APT (`apt-get`) in UNIX-based systems, Homebrew (`brew`) in MacOS, and Chocolatey (`choco`) in Windows.
+
+To learn more about GNU Make, read the official manual [here](https://www.gnu.org/software/make/manual/make.html).
+
+## Running a Workflow
+
+Once `make` is installed in your system, run a supported pipeline by invoking the following command:
+```bash
+make -f src/<workflow> [arguments]
+```
+
+`<workflow>` is the Makefile which stores the workflow and `[arguments]` is a set of optional/required parameters used for a specific workflow. All workflows are stored under the `src` directory. 
+
+To get a complete list of arguments for a workflow, invoke the following command:
+```bash
+make -f src/<workflow> help
+```
 
 ## Managing Environments
 
