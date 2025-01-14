@@ -17,12 +17,13 @@ The `fetch.mk` workflow can be used to download different types of biological da
 :label: supported-formats
 :align: center
 
-| Data Type | Source |Format | Command |
+| Data Type | Source | Format | Command |
 | ------ | ------ | ------ | ------ |
 | Sample reads | SRA | FASTQ | `sra` | 
 | Metagenomic reads | MGnify/SRA | FASTQ | `sra` | 
 | Reference genomes | NCBI | FASTA | `ref` |
 | Protein structures | RCSB | PDB | `pdb` |
+| Journal metadata | PubMed | text | `pubmed` |
 
 :::
 
