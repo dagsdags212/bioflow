@@ -112,3 +112,25 @@ Download the SARS-CoV-2 spike glycoprotein with PDB ID `7FCD`.
 ```bash
 make -f src/fetch.mk pdb PDB=7FCD
 ```
+
+### pubmed
+
+Retrieve a list of PubMed articles from a query string. 
+
+By default, the query results are printed to the standard output. Use the redirect operator (`>`) to save the results to a text file.
+
+**{sc}`Parameters`**
+
+- QUERY: a search term used to query PubMed
+
+**{sc}`Example Usage`**
+
+Search for a list of articles on ASFV assemblies:
+```bash
+make -f src/fetch.mk pubmed QUERY="African swine fever virus assemblies"
+```
+
+Save the results to a text file:
+```bash
+make -f src/fetch.mk pubmed QUERY="African swine fever virus assemblies" > asfv_assemblies.journals.txt
+```

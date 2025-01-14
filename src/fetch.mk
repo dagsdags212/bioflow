@@ -38,6 +38,9 @@ INCLUDE_GFF ?= false
 # Parameters for PDB files
 PDB ?= 
 
+# Query string of pubmed search
+QUERY ?=
+
 # fastq-dump parameters
 fastq_dump_opts := --origfmt
 ifeq ($(PE),true)
@@ -141,6 +144,12 @@ pdb:
 	pdb_fetch $(PDB) > pdb/$(PDB).pdb
 
 # TODO: retrieve annotation data from genbank
+pubmed:
+ifdef QUERY
+	@./scripts/query_pubmed.sh '$(QUERY)'
+else
+	@echo "Error: query string not provided"	
+endif
 
 clean:
 	rm -rf reads/ ref/ pdb/
