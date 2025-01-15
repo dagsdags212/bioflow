@@ -61,15 +61,17 @@ help:
 	@echo "  make -f src/fetch.mk <command> [options]"
 	@echo
 	@echo "COMMANDS:"
-	@echo "  sra - retrieve sequencing data from the SRA"
-	@echo "  ref - retrieve genome and annotation from NCBI"
-	@echo "  pdb - retrieve structure data from PDB"
+	@echo "  genbank - retrive a GenBank record from NCBI"
+	@echo "  pdb     - retrieve structure data from PDB"
+	@echo "  pubmed  - retrieve a list of Pubmed journals"
+	@echo "  sra     - retrieve sequencing data from the SRA"
+	@echo "  ref     - retrieve genome and annotation from NCBI"
 	@echo
 
 # Display available parameters
 params:
 	@echo
-	@echo "For retrieving GENOMES"
+	@echo "For retrieving SEQUENCE RECORDS"
 	@echo "  ACC               sequence accession identifier"
 	@echo "  INCLUDE_GFF       download annotation file for fetched reference genome"
 	@echo
@@ -81,6 +83,9 @@ params:
 	@echo
 	@echo "For retrieving PROTEIN STRUCTURES"
 	@echo "  PDB               4-character protein identifier"
+	@echo
+	@echo "For retrieving JOURNAL METADATA"
+	@echo "  QUERY             search string used to query Pubmed"
 	@echo
 	@echo "Environment settings"
 	@echo "  ENV               environment name (default: bwf-fetch)"
@@ -137,13 +142,29 @@ ref:
 	find ncbi_dataset/ -name "*.gff" -exec mv -t ref/ {} +
 	rm -rf ncbi_dataset/ $(ACC).zip *.txt *.md
 
+# Retrieve a genbank file from NCBI
+genbank:
+ifdef ACC
+	@echo
+	@echo "Fetching GenBank record for $(ACC)" 1>&2
+	@echo
+	@efetch -db nuccore -id ${ACC} -format gb
+else
+	@echo "Error: accession not provided"
+endif
+
 # Retrieve structures files from PDB
 pdb:
-	mkdir -p pdb
-	@echo "Fetching $(PDB) from PDB"
-	pdb_fetch $(PDB) > pdb/$(PDB).pdb
+ifdef PDB
+	@echo
+	@echo "Fetching structure file for $(PDB)" 1>&2
+	@echo
+	pdb_fetch $(PDB)
+else
+	@echo "Error: PDB ID not provided"
+endif
 
-# TODO: retrieve annotation data from genbank
+# Query Pubmed for a list of jounrnals base on a search string
 pubmed:
 ifdef QUERY
 	@./scripts/query_pubmed.sh '$(QUERY)'
@@ -152,5 +173,5 @@ else
 endif
 
 clean:
-	rm -rf reads/ ref/ pdb/
+	rm -rf reads/ ref/
 	rm /tmp/fetch_acc.txt

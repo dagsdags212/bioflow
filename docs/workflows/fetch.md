@@ -24,6 +24,7 @@ The `fetch.mk` workflow can be used to download different types of biological da
 | Reference genomes | NCBI | FASTA | `ref` |
 | Protein structures | RCSB | PDB | `pdb` |
 | Journal metadata | PubMed | text | `pubmed` |
+| Sequence records | NCBI |  genbank/gb | `genbank` |
 
 :::
 
@@ -134,4 +135,21 @@ make -f src/fetch.mk pubmed QUERY="African swine fever virus assemblies"
 Save the results to a text file:
 ```bash
 make -f src/fetch.mk pubmed QUERY="African swine fever virus assemblies" > asfv_assemblies.journals.txt
+```
+
+### genbank
+
+Retrieve a Genbank record from an accession ID.
+
+Similar to the output of `pubmed`, query results are printed to stdout. Use the redirect operator (`>`) to save the results to a text file.
+
+**{sc}`Parameters`**
+
+- ACC: accession identifer of a nucleotide sequence
+
+**{sc}`Example Usage`**
+
+Fetch the Genbank record of the Wuhan isolate of SARS-CoV-2.
+```bash
+make -f src/fetch.mk genbank ACC=NC_045512
 ```
