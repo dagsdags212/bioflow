@@ -2,11 +2,20 @@
 # Conduct phylogenetic tree inference from an alignment
 #
 
+# Absoluate path for the `bioflow/src` directory
+SRC_ROOT := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+
+# Absolute path for `bioflow` directory
+PROJECT_ROOT := $(shell dirname $(SRC_ROOT))
+
+# Absoluate path for the `bioflow/config` directory
+CONFIG_ROOT := $(PROJECT_ROOT)/config
+
 # import config variables
-include src/_config.mk
+include $(CONFIG_ROOT)/_config.mk
 
 # import global variables
-include src/_globals.mk
+include $(CONFIG_ROOT)/_globals.mk
 
 .PHONY: help params init clean
 

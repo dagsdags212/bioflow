@@ -2,11 +2,20 @@
 # Retrieve read data from the Sequence Read Archive (SRA).
 #
 
+# Absoluate path for the `bioflow/src` directory
+SRC_ROOT := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+
+# Absolute path for `bioflow` directory
+PROJECT_ROOT := $(shell dirname $(SRC_ROOT))
+
+# Absoluate path for the `bioflow/config` directory
+CONFIG_ROOT := $(PROJECT_ROOT)/config
+
 # import config variables
-include src/_config.mk
+include $(CONFIG_ROOT)/_config.mk
 
 # import global variables
-include src/_globals.mk
+include $(CONFIG_ROOT)/_globals.mk
 
 .PHONY: help params init clean
 
@@ -103,7 +112,7 @@ ifdef PRJNA
 	# Fetch project metadata and extract a list of SRR accessions
 	@echo "Fetching runinfo for $(PRJNA)"
 ifdef MGYS
-	@echo "Metagenomics samples detected"
+	@echo "Metagenomic samples detected"
 	@echo "Converting MGNify accesion to SRA accession"
 endif
 	esearch -db sra -query $(if $(MGYS),$(MGYS),$(PRJNA)) | efetch -format runinfo \
