@@ -103,9 +103,13 @@ fastqc: output/fastqc
 
 # Consolidate fastqc files into a single report
 multiqc: /tmp/most_recent_fastqc_report.txt output/multiqc
-	multiqc -o $(subst fastqc,multiqc,$(shell cat $<)) $(shell cat $<)
+ifeq ($(TARGET),all)
+	@multiqc -o multiqc/all output/fastqc
+else
+	@multiqc -o $(subst fastqc,multiqc,$(shell cat $<)) $(shell cat $<)
+endif
 
-fastp: output/fastp $(wildcard $(READ_DIR)/*.fastqc*)
+fastp: output/fastp $(wildcard $(READ_DIR)/*.fastq*)
 	@mkdir -p output/fastp/reads
 	@mkdir -p output/fastp/reports
 ifeq ($(PE),true)
