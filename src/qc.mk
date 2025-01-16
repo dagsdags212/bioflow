@@ -25,8 +25,8 @@ dependencies := fastqc multiqc trimmomatic fastp
 # Path to directory containing reads
 READ_DIR ?=
 
-# Discover FASTQ files in specified directory to be used by FASTQC
-fastqc: READS = $(shell find $(READ_DIR) -type f -name "*fastq*")
+# Target directory to run fastqc (default: READ_DIR)
+TARGET ?= $(READ_DIR)
 
 # fastp parameters
 MINLEN ?= 30
@@ -88,20 +88,26 @@ init:
 	mv $(ROOT_DIR)/tools/bbmap/* $(ENV_DIR)/bin/
 	rm -rf $(ROOT_DIR)/tools/bbmap/
 
+output/fastqc output/multiqc output/fastp:
+	mkdir -p $@
+
+# Discover FASTQ files in specified directory to be used by FASTQC
+fastqc: READS = $(shell find $(if $(TARGET),$(TARGET),$(READ_DIR)) -type f -name "*.fastq" -o -name "*.fastq.gz")
+
 # Generate fastqc report for a set of reads
-fastqc:
-	mkdir -p output/fastqc/
-	fastqc -o output/fastqc/ --threads $(THREADS) $(READS)
+fastqc: output/fastqc
+	@outdir=output/fastqc/report$(shell ls output/fastqc | wc -l)
+	@echo $${outdir} > /tmp/most_recent_fastqc_report.txt
+	@mkdir -p $${outdir}
+	@fastqc -o $${outdir} --threads $(THREADS) $(READS)
 
 # Consolidate fastqc files into a single report
-multiqc: output/fastqc/
-	mkdir -p output/multiqc/
-	multiqc -o output/multiqc/ output/fastqc/
+multiqc: /tmp/most_recent_fastqc_report.txt output/multiqc
+	multiqc -o $(subst fastqc,multiqc,$(shell cat $<)) $(shell cat $<)
 
-fastp: $(wildcard $(READ_DIR)/*.fastqc*)
-	mkdir -p output/fastp
-	mkdir -p output/fastp/reads
-	mkdir -p output/fastp/reports
+fastp: output/fastp $(wildcard $(READ_DIR)/*.fastqc*)
+	@mkdir -p output/fastp/reads
+	@mkdir -p output/fastp/reports
 ifeq ($(PE),true)
 	fastp -i $(R1) -I $(R2)	$(fastp_opts) -o output/fastp/reads/trimmed_$(shell basename $(R1)) -O output/fastp/reads/trimmed_$(shell basename $(R2))
 else
