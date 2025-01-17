@@ -5,7 +5,12 @@
 Create a local copy of the github repository:
 ```bash
 git clone https://github.com/dagsdags212/bioflow.git
-cd bioworkflows
+cd bioflow
+```
+
+A bash script is provided to install the entry points of each workflow to your system. Inside the `bioflow` directory, run the `install.sh` script:
+```bash
+./install.sh
 ```
 
 :::{figure} ./assets/recordings/install.gif
@@ -25,16 +30,32 @@ To learn more about GNU Make, read the official manual [here](https://www.gnu.or
 
 ## Running a Workflow
 
-Once `make` is installed in your system, run a supported pipeline by invoking the following command:
+Upon running the install script, all makefiles are accessible within the `$HOME/.local/share/bioflow/bin/` directory. We could run them as a normal makefile by invoking `make`, specifying the path of the workflow using the `-f` flag:
 ```bash
-make -f src/<workflow> [arguments]
+make -f <workflow> [arguments]
 ```
 
-`<workflow>` is the Makefile which stores the workflow and `[arguments]` is a set of optional/required parameters used for a specific workflow. All workflows are stored under the `src` directory. 
+`<workflow>` is the Makefile which stores the workflow and `[arguments]` is a set of optional/required parameters used for a specific workflow. All workflows are stored under the `src` directory. However, this is **not** the recommended approach.
 
-To get a complete list of arguments for a workflow, invoke the following command:
+Each workflow is provided with an entry point that can be treated as an executable. All commands are prefixed with `bf-` and a complete list is provided below:
+
+- `bf-align` for sequence alignment
+- `bf-annotate` for gene prediction and genome annotation
+- `bf-assembly` for sequence assembly and draft genome assessment
+- `bf-fetch` for retrieving biological data
+- `bf-map` for read mapping
+- `bf-phylo` for tree inference
+- `bf-qc` for quality control, adapter trimming, and quality filtering
+- `bf-vc` for variant calling
+
+As an example, we could download all sequencing reads associated with a PRJNA accession by running the following command:
 ```bash
-make -f src/<workflow> help
+bf-fetch sra PRJNA=PRJNA1066786
+```
+
+To get a complete list of arguments for the `bf-fetch` workflow, invoke the following command:
+```bash
+bf-fetch help
 ```
 
 ## Managing Environments
@@ -43,7 +64,7 @@ The project supports the use of [conda](https://docs.conda.io/projects/conda/en/
 
 For example, we could create a micromamba environment for the **fetch.mk** workflow by running:
 ```bash
-make -f src/fetch.mk init ENV_MANAGER=micromamba
+bf-fetch init ENV_MANAGER=micromamba
 ```
 
 :::{figure} ./assets/recordings/install_deps.gif

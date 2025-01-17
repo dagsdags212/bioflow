@@ -64,13 +64,18 @@ Set Height 1080
 Set WindowBarSize 80
 Set WindowBar "Colorful"
 
-Type "# Install bioflow using git" Sleep 1s
+Type "# Clone bioflow repo using git" Sleep 1s
 Ctrl+C
 Type "git clone https://github.com/dagsdags212/bioflow.git" Sleep 500ms Enter
 Sleep 2s
-Type "cd bioflow/" Sleep 500ms Enter
-Type "# List available workflows" Sleep 1s
+Type "# Move into the directory" Sleep 1s
 Ctrl+C
-Type "ls src/" Sleep 500ms Enter
-
+Type "cd bioflow/" Sleep 500ms Enter
+Sleep 2s
+Type "# Install entry points for the workflows" Sleep 1s
+Ctrl+C
+Type "./install.sh" Sleep 500ms Enter
+Sleep 1s
+Type "# Done!" Sleep 1s
+Ctrl+C
 Sleep 2s
