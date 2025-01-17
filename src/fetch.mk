@@ -19,9 +19,6 @@ include $(CONFIG_ROOT)/_globals.mk
 
 .PHONY: help params init clean
 
-# Project root
-ROOT_DIR = $(shell dirname $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST)))))
-
 # Conda environment
 ENV := bf-fetch
 
@@ -38,7 +35,7 @@ X ?=
 PE ?= false
 
 # Convert MGNify ID to SRA accession
-MGYS = $(if $(findstring MGYS,$(PRJNA)),$(shell ./scripts/mgnify2sra.sh $(PRJNA)))
+MGYS = $(if $(findstring MGYS,$(PRJNA)),$(shell . $(PROJECT_ROOT)/scripts/mgnify2sra.sh $(PRJNA)))
 
 # Parameters for reference genomes
 ACC ?=
@@ -57,17 +54,18 @@ fastq_dump_opts += --split-3
 endif
 
 # ncbi-datasets parameters
+ncbi_datasets_opts :=
 ifeq ($(INCLUDE_GFF),true)
-	ncbi_datasets_opts := --include genome,gff3
+ncbi_datasets_opts += --include genome,gff3
 endif
 
 # Display help message
 help:
 	@echo
-	@echo "fetch.mk: retrieve biological data of all forms"
+	@echo "fetch.mk: retrieve a variety of biological file formats"
 	@echo
 	@echo "Usage:"
-	@echo "  make -f src/fetch.mk <command> [options]"
+	@echo "  bf-fetch <command> [options]"
 	@echo
 	@echo "COMMANDS:"
 	@echo "  genbank - retrive a GenBank record from NCBI"
@@ -97,7 +95,7 @@ params:
 	@echo "  QUERY             search string used to query Pubmed"
 	@echo
 	@echo "Environment settings"
-	@echo "  ENV               environment name (default: bwf-fetch)"
+	@echo "  ENV               environment name (default: bf-fetch)"
 	@echo "  ENV_MANAGER       environment manager (default: micromamba)"
 	@echo
 
@@ -107,7 +105,7 @@ init:
 
 # Retrive sequencing reads from the SRA
 sra:
-	mkdir -p reads/
+	@mkdir -p reads/
 ifdef PRJNA
 	# Fetch project metadata and extract a list of SRR accessions
 	@echo "Fetching runinfo for $(PRJNA)"
@@ -115,35 +113,35 @@ ifdef MGYS
 	@echo "Metagenomic samples detected"
 	@echo "Converting MGNify accesion to SRA accession"
 endif
-	esearch -db sra -query $(if $(MGYS),$(MGYS),$(PRJNA)) | efetch -format runinfo \
+	@esearch -db sra -query $(if $(MGYS),$(MGYS),$(PRJNA)) | efetch -format runinfo \
 		| cut -d, -f 1 | tail -n +2 > /tmp/fetch_acc.txt
 	# Create directoy for each SRR accession
-	cat /tmp/fetch_acc.txt | parallel -- mkdir -p reads/{}
+	@cat /tmp/fetch_acc.txt | parallel -- mkdir -p reads/{}
 ifdef X
 	# Limit number of spots to X
 	@echo "Downloading $(X) spots for each sample"
-	cat /tmp/fetch_acc.txt | parallel -j 3 -- 'fastq-dump -O reads/{} -X $(X) $(fastq_dump_opts) {}'
+	@cat /tmp/fetch_acc.txt | parallel -j 3 -- 'fastq-dump -O reads/{} -X $(X) $(fastq_dump_opts) {}'
 else
 	# Download all spots
 	@echo "Downloading all spots for each sample"
-	cat /tmp/fetch_acc.txt | parallel -j 3 -- 'fastq-dump -O reads/{} $(fastq_dump_opts) {}'
+	@cat /tmp/fetch_acc.txt | parallel -j 3 -- 'fastq-dump -O reads/{} $(fastq_dump_opts) {}'
 endif
 endif
 
 ifdef SRR
-	mkdir -p reads/$(SRR)
+	@mkdir -p reads/$(SRR)
 ifdef X
 	@echo "Downloading $(X) spots for $(SRR)"
-	fastq-dump -O reads/$(SRR) -X $(X) $(fastq_dump_opts) $(SRR)
+	@fastq-dump -O reads/$(SRR) -X $(X) $(fastq_dump_opts) $(SRR)
 else
 	@echo "Downloading all spots for $(SRR)"
-	fastq-dump -O reads/$(SRR) $(fastq_dump_opts) $(SRR)
+	@fastq-dump -O reads/$(SRR) $(fastq_dump_opts) $(SRR)
 endif
 endif
 
 # Retrieve reference genomes from NCBI
 ref:
-	mkdir -p ref
+	@mkdir -p ref/
 	datasets download genome accession $(ACC) $(ncbi_datasets_opts) --filename "$(ACC).zip"
 	# Decompress and extract relevant files, delete the rest
 	unzip $(ACC).zip
@@ -154,31 +152,27 @@ ref:
 # Retrieve a genbank file from NCBI
 genbank:
 ifdef ACC
-	@echo
-	@echo "Fetching GenBank record for $(ACC)" 1>&2
-	@echo
+	@printf "Fetching GenBank record for $(ACC)\n" 1>&2
 	@efetch -db nuccore -id ${ACC} -format gb
 else
-	@echo "Error: accession not provided"
+	@printf "Error: accession not provided\n" 1>&2
 endif
 
 # Retrieve structures files from PDB
 pdb:
 ifdef PDB
-	@echo
-	@echo "Fetching structure file for $(PDB)" 1>&2
-	@echo
+	@printf "Fetching structure file for $(PDB)\n" 1>&2
 	pdb_fetch $(PDB)
 else
-	@echo "Error: PDB ID not provided"
+	@printf "Error: PDB ID not provided" 1>&2
 endif
 
 # Query Pubmed for a list of jounrnals base on a search string
 pubmed:
 ifdef QUERY
-	@./scripts/query_pubmed.sh '$(QUERY)'
+	@. $(PROJECT_ROOT)/scripts/query_pubmed.sh '$(QUERY)'
 else
-	@echo "Error: query string not provided"	
+	@printf "Error: query string not provided" 1?	
 endif
 
 clean:
