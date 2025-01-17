@@ -1,9 +1,11 @@
 name: bf-fetch
 channels:
-- bioconda
-- conda-forge
+  - bioconda
+  - conda-forge
 dependencies:
-- entrez-direct
-- ncbi-datasets-cli
-- sra-tools
+  - entrez-direct
+  - ncbi-datasets-cli
+  - pdb-tools
+  - sra-tools
 
+prefix: "/home/dagsdags/.micromamba/envs/bf-fetch"
