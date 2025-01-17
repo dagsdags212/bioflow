@@ -13,7 +13,7 @@ project:
   toc:
     - file: docs/index.md
     - file: docs/installation.md
-    - title: Workflows
+    - title: Modules
       children: 
         - file: docs/workflows/alignment.md
         - file: docs/workflows/annotation.md
