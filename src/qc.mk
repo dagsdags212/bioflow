@@ -11,11 +11,14 @@ PROJECT_ROOT := $(shell dirname $(SRC_ROOT))
 # Absoluate path for the `bioflow/config` directory
 CONFIG_ROOT := $(PROJECT_ROOT)/config
 
-# import config variables
-include $(CONFIG_ROOT)/_config.mk
+# import Make-specific configuration
+include $(CONFIG_ROOT)/_preamble.mk
 
 # import global variables
 include $(CONFIG_ROOT)/_globals.mk
+
+# import module configuration
+include $(CONFIG_ROOT)/_tools.mk
 
 .PHONY: help params init clean
 
@@ -23,19 +26,19 @@ include $(CONFIG_ROOT)/_globals.mk
 ROOT_DIR = $(shell dirname $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST)))))
 
 # Conda environment
-ENV := bf-qc
+ENV = bf-qc
 
 # Path to conda environment
 ENV_DIR = $(shell $(ENV_MANAGER) info | grep "envs directories" | cut -d ":" -f 2 | xargs)/$(ENV)
 
 # Check if dependencies are installed
-dependencies := fastqc multiqc trimmomatic fastp
+dependencies = fastqc multiqc trimmomatic fastp
 
-# Path to directory containing reads
-READ_DIR ?=
+# Run a command within the module environment
+RUN = $(ENV_MANAGER) run -n $(ENV)
 
 # Target directory to run fastqc (default: READ_DIR)
-TARGET ?= $(READ_DIR)
+TARGET ?= 
 
 # fastp parameters
 MINLEN ?= 30
@@ -50,7 +53,11 @@ else
 R = $(shell find $(READ_DIR) -type f -not -name "*_[12].fastq*")
 endif
 
-fastp_opts = --overrepresentation_analysis --correction --cut_right
+# fastqc options
+fastqc_opts := --svg --threads $(THREADS)
+
+# fastp options
+fastp_opts := --overrepresentation_analysis --correction --cut_right
 fastp_opts += --length_required $(MINLEN) --length_limit $(MAXLEN) -q $(MINQUAL)
 fastp_opts += --html fastp/reports/fastp_report_$(shell date +%y%m%d%H%M%S).html
 fastp_opts += --json fastp/reports/fastp_report_$(shell date +%y%m%d%H%M%S).json
@@ -73,8 +80,7 @@ help:
 params:
 	@echo
 	@echo "Trimming and filtering"
-	@echo "  READ_DIR       directory path containing read data"
-	@echo "  PE       			specify reads are pair-end (default: true)"
+	@echo "  TARGET         directory path containing read data"
 	@echo "  MINLEN         minimum read length (default: 30)"
 	@echo "  MAXLEN         maximum read length (default: 150)"
 	@echo "  MINQUAL        minimum acceptable quality score (default: 20)"
@@ -90,15 +96,15 @@ params:
 
 # Create new self-contained environment
 init:
-	$(ENV_MANAGER) create -n $(ENV) $(dependencies) --yes
-	@# Extract bbtool scripts and add to env path
+	@$(ENV_MANAGER) create -n $(ENV) $(dependencies) --yes
+	# Extract bbtool scripts and add to env path
 	bbmap_tar=$(ROOT_DIR)/tools/tar/BBMap_39.14.tar.gz
 	tar -xzf $$bbmap_tar -C $(ROOT_DIR)/tools
 	mv $(ROOT_DIR)/tools/bbmap/* $(ENV_DIR)/bin/
 	rm -rf $(ROOT_DIR)/tools/bbmap/
 
 output/fastqc output/multiqc output/fastp:
-	mkdir -p $@
+	@mkdir -p $@
 
 # Discover FASTQ files in specified directory to be used by FASTQC
 fastqc: READS = $(shell find $(if $(TARGET),$(TARGET),$(READ_DIR)) -type f -name "*.fastq" -o -name "*.fastq.gz")
@@ -108,23 +114,23 @@ fastqc: output/fastqc
 	@outdir=output/fastqc/report$(shell ls output/fastqc | wc -l)
 	@echo $${outdir} > /tmp/most_recent_fastqc_report.txt
 	@mkdir -p $${outdir}
-	@fastqc -o $${outdir} --threads $(THREADS) $(READS)
+	@$(RUN) fastqc -o $${outdir} --threads $(THREADS) $(READS)
 
 # Consolidate fastqc files into a single report
 multiqc: /tmp/most_recent_fastqc_report.txt output/multiqc
 ifeq ($(TARGET),all)
-	@multiqc -o multiqc/all output/fastqc
+	@$(RUN) multiqc -o multiqc/all output/fastqc
 else
-	@multiqc -o $(subst fastqc,multiqc,$(shell cat $<)) $(shell cat $<)
+	@$(RUN) multiqc -o $(subst fastqc,multiqc,$(shell cat $<)) $(shell cat $<)
 endif
 
 fastp: output/fastp $(wildcard $(READ_DIR)/*.fastq*)
 	@mkdir -p output/fastp/reads
 	@mkdir -p output/fastp/reports
 ifeq ($(PE),true)
-	fastp -i $(R1) -I $(R2)	$(fastp_opts) -o output/fastp/reads/trimmed_$(shell basename $(R1)) -O output/fastp/reads/trimmed_$(shell basename $(R2))
+	$(RUN) fastp -i $(R1) -I $(R2)	$(fastp_opts) -o output/fastp/reads/trimmed_$(shell basename $(R1)) -O output/fastp/reads/trimmed_$(shell basename $(R2))
 else
-	fastp -i $(R)	$(fastp_opts) -o output/fastp/reads/trimmed_$(shell basename $(R))
+	$(RUN) fastp -i $(R)	$(fastp_opts) -o output/fastp/reads/trimmed_$(shell basename $(R))
 endif
 
 clean:

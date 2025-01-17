@@ -11,11 +11,14 @@ PROJECT_ROOT := $(shell dirname $(SRC_ROOT))
 # Absoluate path for the `bioflow/config` directory
 CONFIG_ROOT := $(PROJECT_ROOT)/config
 
-# import config variables
-include $(CONFIG_ROOT)/_config.mk
+# import Make-specific configuration
+include $(CONFIG_ROOT)/_preamble.mk
 
 # import global variables
 include $(CONFIG_ROOT)/_globals.mk
+
+# import module configuration
+include $(CONFIG_ROOT)/_tools.mk
 
 .PHONY: help params init clean split
 
