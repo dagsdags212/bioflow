@@ -11,7 +11,7 @@ downloads:
 
 ## Overview
 
-The `assembly.mk` workflow contains rules for performing read alignment against a reference genome.
+The `mapping.mk` workflow contains rules for performing read alignment against a reference genome. Its entry point is the `bf-map` command.
 
 Supported aligners include:
 
@@ -24,7 +24,7 @@ Supported aligners include:
 Prior to using the workflow, download the dependencies within a virtual environment using your manager of choice:
 
 ```bash
-make -f src/mapping.mk init ENV_MANAGER=micromamba
+bf-map init ENV_MANAGER=micromamba
 ```
 
 Activate environment to expose dependencies:
@@ -53,28 +53,28 @@ The reference file is first indexed prior to mapping. By default, the output ali
 **{sc}`Example Usage`**
 Map pair-end reads against a reference using `bwa`.
 ```bash
-make -f src/mapping.mk map \
+bf-map map \
     READ_DIR=reads/ REF=ref.fa PE=true \
     MAPPER=bwa THREADS=8
 ```
 
 Map pair-end reads against a reference using `bowtie`.
 ```bash
-make -f src/mapping.mk map \
+bf-map map \
     READ_DIR=reads/ REF=ref.fa PE=true \
     MAPPER=bowtie THREADS=8
 ```
 
 Map single-end reads against a reference and save as a BAM file.
 ```bash
-make -f src/mapping.mk map \
+bf-map map \
     READ_DIR=reads/ REF=ref.fa PE=false \
     OUTFMT=bam MAPPER=bwa THREADS=8
 ```
 
 Specify output name for alignment file.
 ```bash
-make -f src/mapping.mk map \
+bf-map map \
     READ_DIR=reads/ REF=ref.fa PE=false \
     OUTFMT=bam OUTPUT=myaln \
     MAPPER=bwa THREADS=8
@@ -93,7 +93,7 @@ This command does not accept parameters.
 **{sc}`Example Usage`**
 Print mapping metrics for all generated alignment files.
 ```bash
-make -f src/mapping.mk stats
+bf-map stats
 ```
 
 ### evaluate
@@ -113,5 +113,5 @@ This command does not accept parameters.
 **{sc}`Example Usage`**
 Run `qualimap` on all sorted BAM files.
 ```bash
-make -f src/mapping.mk evaluate
+bf-map evaluate
 ```

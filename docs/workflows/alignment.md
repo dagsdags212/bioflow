@@ -11,7 +11,7 @@ downloads:
 
 ## Overview
 
-The `alignment.mk` workflow contains rules for performing pairwise and multiple sequence alignment.
+The `alignment.mk` workflow contains rules for performing pairwise and multiple sequence alignment. Its entry point is the `bf-align` command.
 
 Supported alignment tools:
 
@@ -25,7 +25,7 @@ Supported alignment tools:
 Prior to using the workflow, download the dependencies within a virtual environment using your manager of choice:
 
 ```bash
-make -f src/alignment.mk init ENV_MANAGER=micromamba
+bf-align init ENV_MANAGER=micromamba
 ```
 
 Activate environment to expose dependencies:
@@ -59,20 +59,20 @@ The `align` command generates three output files containing the same alignment d
 
 Align a multi-sequence FASTA file using `mafft`.
 ```bash
-make -f src/alignment.mk align \
+bf-align align \
     FA=seqs.fa ALIGNER=mafft
 ```
 
 Customize scoring function for gap openings and extensions.
 ```bash
-make -f src/alignment.mk align \
+bf-align align \
     FA=seqs.fa ALIGNER=mafft \
     GOP=2 GEP=0.5
 ```
 
 Specify output filename to generate _aln.fasta_, _aln.phylip_, and _aln.clustal_.
 ```bash
-make -f src/alignment.mk align \
+bf-align align \
     FA=seqs.fa ALIGNER=mafft \
     OUTNAME=aln
 ```
@@ -89,7 +89,7 @@ This command does not accept parameters.
 
 List available aligners.
 ```bash
-make -f src/alignment.mk list
+bf-align list
 ```
 
 ### view
@@ -106,5 +106,5 @@ Specify the `OUTNAME` parameter to only render the alignment files with the give
 
 Specify `OUTNAME` and `OUTFMT` to generate visualization for aligner output.
 ```bash
-make -f src/alignment.mk view OUTNAME=aln
+bf-align view OUTNAME=aln
 ```

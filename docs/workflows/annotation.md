@@ -11,7 +11,7 @@ downloads:
 
 ## Overview
 
-The `annotation.mk` workflow contains rules for conducting gene prediction and sequence annotation.
+The `annotation.mk` workflow contains rules for conducting gene prediction and sequence annotation. Its entry point is the `bf-annotate` command.
 
 :::{hint} Environment Setup
 :class: dropdown
@@ -19,7 +19,7 @@ The `annotation.mk` workflow contains rules for conducting gene prediction and s
 Prior to using the workflow, download the dependencies within a virtual environment using your manager of choice:
 
 ```bash
-make -f src/annotation.mk init ENV_MANAGER=micromamba
+bf-annotate init ENV_MANAGER=micromamba
 ```
 
 Activate environment to expose dependencies:
@@ -46,13 +46,13 @@ All output is stored in the directory at `output/busco`.
 
 Run annotation pipeline on a draft assembly.
 ```bash
-make -f src/annotation.mk annotate \
+bf-annotate annotate \
     FA=output/megahit/final.contigs.fa MODE=genome
 ```
 
 Specify domain where the sequence file belongs to.
 ```bash
-make -f src/annotation.mk annotate \
+bf-annotate annotate \
     FA=output/megahit/final.contigs.fa MODE=genome DOMAIN=prokaryote
 ```
 
@@ -70,12 +70,12 @@ This command does not accept parameters.
 
 List all datasets.
 ```bash
-make -f src/annotation.mk datasets
+bf-annotate datasets
 ```
 
 Delete lineage data.
 ```bash
-make -f src/annotation.mk clean
+bf-annotate clean
 ```
 
 ### predict
@@ -91,12 +91,12 @@ Conduct HMM-based gene prediction using `prodigal` and store output in GFF forma
 
 Run gene prediction on a draft assembly.
 ```bash
-make -f src/annotation.mk predict FA=output/megahit/final.contigs.fa
+bf-annotate predict FA=output/megahit/final.contigs.fa
 ```
 
 Save output in GenBank Flat File Format (gbk).
 ```bash
-make -f src/annotation.mk predict FA=output/megahit/final.contigs.fa PRODIGAL_OUTFMT=gbk
+bf-annotate predict FA=output/megahit/final.contigs.fa PRODIGAL_OUTFMT=gbk
 ```
 
 ### view
@@ -113,6 +113,6 @@ Run `annotate` prior to invoking this command to generate the `prokka` annotatio
 
 Visualize annotation by `prokka` alongside the reference genome.
 ```bash
-make -f src/annotation.mk view FA=output/megahit/final.contigs.fa
+bf-annotate view FA=output/megahit/final.contigs.fa
 ```
 

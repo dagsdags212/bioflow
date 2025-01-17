@@ -11,7 +11,7 @@ downloads:
 
 ## Overview
 
-The `fetch.mk` workflow can be used to download different types of biological data from online databases. Currently support data formats are listed in @supported-formats:
+The `fetch.mk` workflow can be used to download different types of biological data from online databases. Its entry point is the `bf-fetch` command. Currently supported data formats are listed in @supported-formats:
 
 :::{table} Supported data formats by `fetch.mk`
 :label: supported-formats
@@ -34,7 +34,7 @@ The `fetch.mk` workflow can be used to download different types of biological da
 Prior to using the workflow, download the dependencies within a virtual environment using your manager of choice:
 
 ```bash
-make -f src/fetch.mk init ENV_MANAGER=micromamba
+bf-fetch init ENV_MANAGER=micromamba
 ```
 
 Activate environment to expose dependencies:
@@ -64,17 +64,17 @@ All reads are stored in the `reads` directory. When downloading multiple sets of
 
 Download a set of complete sequencing reads.
 ```bash
-make -f src/fetch.mk sra PRJNA=PRJNA1066786
+bf-fetch sra PRJNA=PRJNA1066786
 ```
 
 Download 100000 reads from a single run.
 ```bash
-make -f src/fetch.mk sra SRR=SRR27644850 X=100000
+bf-fetch sra SRR=SRR27644850 X=100000
 ```
 
 Download reads derived from a metagenomic sample stored in MGnify.
 ```bash
-make -f src/fetch.mk sra PRJNA=MGYS00000259 X=10000
+bf-fetch sra PRJNA=MGYS00000259 X=10000
 ```
 
 ### ref
@@ -88,12 +88,12 @@ make -f src/fetch.mk sra PRJNA=MGYS00000259 X=10000
 
 Download the canonical reference genome of the African Swine Fever virus.
 ```bash
-make -f src/fetch.mk ref ACC=GCF_003047755.2
+bf-fetch ref ACC=GCF_003047755.2
 ```
 
 Include the annotation file.
 ```bash
-make -f src/fetch.mk ref ACC=GCF_003047755.2 INCLUDE_GFF=true
+bf-fetch ref ACC=GCF_003047755.2 INCLUDE_GFF=true
 ```
 
 ### pdb
@@ -112,7 +112,7 @@ PDB identifiers are four-character alphanumerics such as _2hbs_.
 
 Download the SARS-CoV-2 spike glycoprotein with PDB ID `7FCD`.
 ```bash
-make -f src/fetch.mk pdb PDB=7FCD
+bf-fetch pdb PDB=7FCD
 ```
 
 ### pubmed
@@ -129,12 +129,12 @@ By default, the query results are printed to the standard output. Use the redire
 
 Search for a list of articles on ASFV assemblies:
 ```bash
-make -f src/fetch.mk pubmed QUERY="African swine fever virus assemblies"
+bf-fetch pubmed QUERY="African swine fever virus assemblies"
 ```
 
 Save the results to a text file:
 ```bash
-make -f src/fetch.mk pubmed QUERY="African swine fever virus assemblies" > asfv_assemblies.journals.txt
+bf-fetch pubmed QUERY="African swine fever virus assemblies" > asfv_assemblies.journals.txt
 ```
 
 ### genbank
@@ -151,5 +151,5 @@ Similar to the output of `pubmed`, query results are printed to stdout. Use the 
 
 Fetch the Genbank record of the Wuhan isolate of SARS-CoV-2.
 ```bash
-make -f src/fetch.mk genbank ACC=NC_045512
+bf-fetch genbank ACC=NC_045512
 ```

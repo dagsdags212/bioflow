@@ -66,10 +66,10 @@ Set WindowBarSize 80
 
 Type "# Install workflow dependencies" Sleep 2s
 Ctrl+C
-Type "make -f src/qc.mk" Sleep 1s Backspace 5
-Type "assembly.mk" Sleep 1s Backspace 11
-Type "annotation.mk" Sleep 1s Backspace 13
-Type "fetch.mk" Sleep 1s
+Type "bf-qc" Sleep 1s Backspace 2
+Type "assemble" Sleep 1s Backspace 8
+Type "annotate" Sleep 1s Backspace 8
+Type "fetch" Sleep 1s
 Type " init ENV_MANAGER=conda" Sleep 1s Backspace 5
 Type "mamba" Sleep 1s Backspace 5
 Type "micromamba" Sleep 2s

@@ -11,7 +11,7 @@ downloads:
 
 ## Overview
 
-The `phylo.mk` workflow contains rules for performing phylogenetic tree inference using `raxml-ng` and `iqtree`.
+The `phylo.mk` workflow contains rules for performing phylogenetic tree inference using `raxml-ng` and `iqtree`. Its entry point is the `bf-phylo` command.
 
 Inference is conducted using either [maximum likelihood](wiki:Maximum_likelihood_estimation) or [bootstrapping](wiki:Bootstrapping_(statistics)) methods. To generate the alignment, refer to the [alignment workflow](./alignment.md).
 
@@ -21,7 +21,7 @@ Inference is conducted using either [maximum likelihood](wiki:Maximum_likelihood
 Prior to using the workflow, download the dependencies within a virtual environment using your manager of choice:
 
 ```bash
-make -f src/phylo.mk init ENV_MANAGER=micromamba
+bf-phylo init ENV_MANAGER=micromamba
 ```
 
 Activate environment to expose dependencies:
@@ -49,13 +49,13 @@ Generate multiple phylogenies using bootstrapping and extract the best tree.
 
 Perform bootstrapping wit 20 iterations using `raxml`.
 ```bash
-make -f src/phylo.mk bootstrap \
+bf-phylo bootstrap \
     TOOL=raxml N=20
 ```
 
 Prepend _bootstrap_ to output files of `iqtree`.
 ```bash
-make -f src/phylo.mk bootstrap \
+bf-phylo bootstrap \
     TOOL=iqtree PREFIX=bootstrap
 ```
 
@@ -76,7 +76,7 @@ Compute for maximum-likelihood tree.
 
 Generate ML tree with 20 searches using `raxml`.
 ```bash
-make -f src/phylo.mk ML \
+bf-phylo ML \
     TOOL=raxml N=20
 ```
 
@@ -92,5 +92,5 @@ This command does not accept parameters.
 
 Print available evolutionary models.
 ```bash
-make -f src/alignment.mk models
+bf-phylo models
 ```

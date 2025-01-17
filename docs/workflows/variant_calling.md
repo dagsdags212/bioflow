@@ -11,7 +11,7 @@ downloads:
 
 ## Overview
 
-The `variant_calling.mk` workflow contains rules for identifying variants from mapped reads based on a reference genome.
+The `variant_calling.mk` workflow contains rules for identifying variants from mapped reads based on a reference genome. Its entry point is the `bf-vc` command.
 
 :::{hint} Environment Setup
 :class: dropdown
@@ -19,7 +19,7 @@ The `variant_calling.mk` workflow contains rules for identifying variants from m
 Prior to using the workflow, download the dependencies within a virtual environment using your manager of choice:
 
 ```bash
-make -f src/variant_calling.mk init ENV_MANAGER=micromamba
+bf-vc init ENV_MANAGER=micromamba
 ```
 
 Activate environment to expose dependencies:
@@ -47,13 +47,13 @@ This commands expects a reference file in FASTA format and an alignment file in 
 
 Call variants from a BAM file.
 ```bash
-make -f src/variant_calling.mk call \
+bf-vc call \
     REF=ref/ref.fna BAM=output/bwa/aln.bam
 ```
 
 Indicate ploidy number of source organism.
 ```bash
-make -f src/variant_calling.mk call \
+bf-vc call \
     REF=ref/ref.fna BAM=output/bwa/aln.bam PLOIDY=1
 ```
 
@@ -69,7 +69,7 @@ This command does not accept parameters.
 
 Produce a summary file containing metrics on called variants.
 ```bash
-make -f src/variant_calling.mk stats \
+bf-vc stats \
     REF=ref/ref.fna BAM=output/bwa/aln.bam PLOIDY=1
 ```
 
@@ -85,7 +85,7 @@ Filter called variants based on a score threshold.
 
 Filter variants with a score less than 15.
 ```bash
-make -f src/variant_calling.mk filter \
+bf-vc filter \
     REF=ref/ref.fna BAM=output/bwa/aln.bam \
     MINQUAL=15
 ```
