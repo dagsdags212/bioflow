@@ -17,6 +17,8 @@ A bash script is provided to install the entry points of each workflow to your s
 Install bioworkflows using `git`.
 :::
 
+Once installation is complete, restart your shell to register all the workflow commands.
+
 ## Installing GNU Make
 
 Prior to running a workflow, ensure that [GNU Make](https://www.gnu.org/software/make/) is installed in your system. Check if the program is installed:
