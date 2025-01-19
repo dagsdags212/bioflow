@@ -7,6 +7,15 @@ MK_ROOT = $(shell dirname $(abspath $(firstword $(MAKEFILE_LIST))))
 # Absoluate path for the `bioflow/config` directory
 CONFIG_ROOT := ${BIOFLOW_PREFIX}/config
 
+# Absoulate path to conda environment files
+ENV_ROOT := ${BIOFLOW_PREFIX}/envs
+
+# Conda environment for module
+ENV := bf-fetch
+
+# Execute within the module environment
+RUN = $(ENV_MANAGER) run -n $(ENV)
+
 # import Make-specific configuration
 include $(CONFIG_ROOT)/_preamble.mk
 
@@ -31,7 +40,7 @@ endif
 # Display help message
 help:
 	@echo
-	@echo "fetch.mk: retrieve a variety of biological file formats"
+	@echo "bf-fetch: a module for retrieving biological data"
 	@echo
 	@echo "Usage:"
 	@echo "  bf-fetch <command> [options]"
@@ -72,7 +81,7 @@ params:
 
 # Create new self-contained environment
 init:
-	$(ENV_MANAGER) create -n $(ENV) $(dependencies) --yes
+	$(ENV_MANAGER) create -f $(ENV_ROOT)/$(ENV).yml
 
 
 # Retrive sequencing reads from the SRA

@@ -1,9 +1,0 @@
-name: bf-fetch
-channels:
-  - bioconda
-  - conda-forge
-dependencies:
-  - entrez-direct
-  - ncbi-datasets-cli
-  - pdb-tools
-  - sra-tools
