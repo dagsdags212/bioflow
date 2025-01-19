@@ -20,8 +20,11 @@ PE ?=
 # === Parameters for the `ref` command ===
 ACC ?= 
 
-# If true, include annotation file for the reference
+# If true, include annotation file for the assembly
 WITH_GFF ?= false
+
+# If true, include genbank record for the sequence file
+WITH_GB ?= false
 
 # === Parameters for the `pdb` command ===
 # Protein structure ID
