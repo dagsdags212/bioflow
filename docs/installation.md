@@ -8,7 +8,7 @@ git clone https://github.com/dagsdags212/bioflow.git
 cd bioflow
 ```
 
-A bash script is provided to install the entry points of each workflow to your system. Inside the `bioflow` directory, run the `install.sh` script:
+A bash script is provided to install the entry points of each workflow to your system. Inside the `bioflow` directory, run the `install.sh` script in the context of the current shell:
 ```bash
 ./install.sh
 ```

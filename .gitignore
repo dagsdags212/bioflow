@@ -1,6 +1,6 @@
-Makefile
 data/
 busco_downloads/
+TODO.md
 
 # MyST build outputs
 _build
