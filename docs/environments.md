@@ -29,7 +29,7 @@ downloads:
 :::
 
 :::{card}
-```{literalinclude} ../envs/fetch.yml
+```{literalinclude} ../envs/bf-fetch.yml
 ```
 :::
 
