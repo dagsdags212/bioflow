@@ -37,11 +37,10 @@ help:
 	@echo "  bf-fetch <command> [options]"
 	@echo
 	@echo "COMMANDS:"
-	@echo "  genbank - retrive a GenBank record from NCBI"
-	@echo "  pdb     - retrieve structure data from PDB"
-	@echo "  pubmed  - retrieve a list of Pubmed journals"
-	@echo "  sra     - retrieve sequencing data from the SRA"
-	@echo "  ref     - retrieve genome and annotation from NCBI"
+	@echo "  reads   - retrieve sequencing data from the SRA"
+	@echo "  seq     - retrieve genomic sequence data from NCBI"
+	@echo "  pdb     - retrieve protein structures from PDB"
+	@echo "  pubmed  - query PubMed for a list of related journals"
 	@echo
 
 
@@ -50,7 +49,8 @@ params:
 	@echo
 	@echo "For retrieving SEQUENCE RECORDS"
 	@echo "  ACC               sequence accession identifier"
-	@echo "  INCLUDE_GFF       download annotation file for fetched reference genome"
+	@echo "  INCLUDE_GFF       download annotation file for the accession (if available)"
+	@echo "  INCLUDE_GB        download GenBank record for the accession"
 	@echo
 	@echo "For retrieving READS"
 	@echo "  PRJNA             sequencing PROJECT identifier"
@@ -74,10 +74,10 @@ params:
 init:
 	$(ENV_MANAGER) create -n $(ENV) $(dependencies) --yes
 
+
 # Retrive sequencing reads from the SRA
 fetch_reads_opts := $(if $(filter true, $(PE)), -p)
 fetch_reads_opts += $(if $(X), -x $(X))
-
 
 reads:
 # Fetch project metadata and extract a list of SRR accessions
@@ -91,34 +91,28 @@ else
 endif
 
 
-# Retrieve sequence files from NCBI
+# Retrieve sequence files and records from NCBI
 seq:
-	@. $(MK_ROOT)/fetch_sequence.sh -a $(ACC) $(if $(filter true, $(WITH_GFF)), -g)
-
-# Retrieve a genbank file from NCBI
-genbank:
 ifdef ACC
-	@printf "Fetching GenBank record for $(ACC)\n" 1>&2
-	@efetch -db nuccore -id ${ACC} -format gb
+	@. $(MK_ROOT)/fetch_sequence.sh -a $(ACC) $(if $(filter true, $(WITH_GFF)), -g) $(if $(filter true, $(WITH_GB)), -b)
 else
-	@printf "Error: accession not provided\n" 1>&2
+	@echo "Error: sequence accession not provided"
 endif
 
 # Retrieve structures files from PDB
 pdb:
 ifdef PDB
-	@printf "Fetching structure file for $(PDB)\n" 1>&2
-	pdb_fetch $(PDB)
+	@. $(MK_ROOT)/fetch_structure.sh $(PDB)
 else
-	@printf "Error: PDB ID not provided" 1>&2
+	@echo "Error: protein accession not provided"
 endif
 
 # Query Pubmed for a list of jounrnals base on a search string
 pubmed:
 ifdef QUERY
-	@. $(PROJECT_ROOT)/scripts/query_pubmed.sh '$(QUERY)'
+	@. $(MK_ROOT)/query_pubmed.sh '$(QUERY)'
 else
-	@printf "Error: query string not provided" 1?	
+	@echo "Error: query string not provided"
 endif
 
 clean:

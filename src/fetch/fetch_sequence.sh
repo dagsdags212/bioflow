@@ -7,6 +7,7 @@ usage() {
   echo "  -h  display this help message"
   echo "  -a  NCBI sequence accession"
   echo "  -g  include the GFF file"
+  echo "  -b  include GenBank record"
   echo "  -v  print tool version"
   exit
 }
@@ -16,7 +17,7 @@ validate_accession() {
   local gene_regex="^[0-9]{8}$"
   local protein_regex="^[A-Z0-9]{4}$"
   local assembly_regex="^GC[AF]_[0-9]{9}\.[0-9]$"
-  local dna_regex="^[ANPX][ACGTWZMR]_?[0-9]{6,9}\.[0-9]$"
+  local dna_regex="^[AMNPX][ACFGTWZMR]_?[0-9]{6,9}\.[0-9]$"
 
   if [[ "${acc}" =~ ${dna_regex} ]]; then
     echo "Detected nuccore accession"
@@ -42,8 +43,14 @@ validate_accession() {
 
 download_dna() {
   local acc=$1
+  local gb=$2
+
   echo "Downloading sequence file for ${acc}"
   efetch -db nuccore -id ${acc} -format fasta >data/${acc%%.*}.fa
+  if [[ "${gb}" == true ]]; then
+    echo "Including GenBank record"
+    efetch -db nuccore -id ${acc} -format genbank >data/${acc%%.*}.gb
+  fi
   echo "Done!"
 }
 
@@ -76,10 +83,11 @@ download_assembly() {
 download_sequence() {
   local acc=$1
   local gff=$2
+  local gb=$3
   mkdir -p data/
 
   case ${SEQTYPE} in
-  dna) download_dna ${acc} ;;
+  dna) download_dna ${acc} ${gb} ;;
   gene) download_gene_info ${acc} ;;
   assembly) download_assembly ${acc} ${gff} ;;
   *) echo "Error: cannot retrieve data" && exit 1 ;;
@@ -91,7 +99,10 @@ declare -A params
 # Set GFF to false by default
 params[GFF]=false
 
-optspec="hga:"
+# Set GB to false by default
+params[GB]=false
+
+optspec="hgba:"
 while getopts "${optspec}" optchar; do
   case "${optchar}" in
   h)
@@ -103,6 +114,9 @@ while getopts "${optspec}" optchar; do
   g)
     params[GFF]=true
     ;;
+  b)
+    params[GB]=true
+    ;;
   *)
     echo "Error: invalid option passed"
     usage
@@ -112,11 +126,10 @@ done
 
 main() {
   validate_accession ${params[ACC]}
-  if [[ "${params[GFF]}" == true ]]; then
-    download_sequence ${ACC} true
-  else
-    download_sequence ${ACC} false
-  fi
+  [[ "${params[GFF]}" == true && "${params[GB]}" == true ]] && download_sequence ${ACC} true true
+  [[ "${params[GFF]}" == true && "${params[GB]}" == false ]] && download_sequence ${ACC} true false
+  [[ "${params[GFF]}" == false && "${params[GB]}" == true ]] && download_sequence ${ACC} false true
+  [[ "${params[GFF]}" == false && "${params[GB]}" == false ]] && download_sequence ${ACC} false false
 }
 
 main
