@@ -34,10 +34,10 @@ create_setup_file() {
   # Treat each makefile an executable
   echo "Generating entry point for each module"
 
-  echo "alias bffetch=\"make -s -C ${BIOFLOW_PREFIX}/src/fetch\"" >>${target}
+  echo "alias bf-fetch=\"make -s -C ${BIOFLOW_PREFIX}/src/fetch\"" >>${target}
+  echo "alias bf-align=\"make -s -C ${BIOFLOW_PREFIX}/src/alignment\"" >>${target}
 
   # TODO: migrate to new module structure
-  echo "alias bf-align=\"make -f ${BIOFLOW_PREFIX}/src/alignment.mk\"" >>${target}
   echo "alias bf-phylo=\"make -f ${BIOFLOW_PREFIX}/src/phylo.mk\"" >>${target}
   echo "alias bf-vc=\"make -f ${BIOFLOW_PREFIX}/src/variant_calling.mk\"" >>${target}
   echo "alias bf-map=\"make -f ${BIOFLOW_PREFIX}/src/mapping.mk\"" >>${target}

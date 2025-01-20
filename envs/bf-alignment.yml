@@ -1,0 +1,14 @@
+name: bf-alignment
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - clustalo
+  - jalview
+  - mafft
+  - mummer
+  - muscle
+  - pip:
+    - bio==1.7.1
+    - ipykernel==6.29.5
+    - refgenie==0.12.1

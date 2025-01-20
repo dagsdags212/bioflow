@@ -1,8 +1,8 @@
 ---
 downloads:
-  - file: ../../src/alignment.mk
+  - file: ../../src/alignment/Makefile
     title: Makefile
-  - file: ../../envs/alignment.yml
+  - file: ../../envs/bf-alignment.yml
     title: env.yml
 ---
 
@@ -11,7 +11,7 @@ downloads:
 
 ## Overview
 
-The `alignment.mk` workflow contains rules for performing pairwise and multiple sequence alignment. Its entry point is the `bf-align` command.
+The `alignment` module contains rules for performing pairwise and multiple sequence alignment. Its entry point is the `bf-align` command.
 
 Supported alignment tools:
 
@@ -34,9 +34,25 @@ micromamba activate bf-alignment
 ```
 :::
 
-## Rules
+## Commands
 
-### align
+### pairwise
+
+Perform alignment on two input sequences.
+
+**{sc}`Parameters`**
+
+- S1: a reference sequence
+- S2: a query sequence
+
+**{sc}`Example Usage`**
+
+Align two sequences given by `S1` and `S2`:
+```bash
+bf-align pairwise S1=ACGTAG S2=TAGTAC
+```
+
+### msa
 
 Align sequences using one of the supported aligners.
 
@@ -51,7 +67,7 @@ The `align` command generates three output files containing the same alignment d
 - ALIGNER: specify tool for performing alignment (default: mafft)
 - GOP: gap opening penalty (default: 1.53)
 - GEP: gap extension penalty (default: 0.0)
-- ITER: maximum number of iteration for refinement (default: 1)
+- PERM: maximum number of iteration for refinement (default: 1)
 - OUTNAME: filename of output alignment file (default: aln)
 - THREADS: number of cores (default: 8)
 
@@ -59,27 +75,27 @@ The `align` command generates three output files containing the same alignment d
 
 Align a multi-sequence FASTA file using `mafft`.
 ```bash
-bf-align align \
-    FA=seqs.fa ALIGNER=mafft
+bf-align msa FA=seqs.fa ALIGNER=mafft
 ```
 
 Customize scoring function for gap openings and extensions.
 ```bash
-bf-align align \
-    FA=seqs.fa ALIGNER=mafft \
-    GOP=2 GEP=0.5
+bf-align msa FA=seqs.fa GOP=2 GEP=0.5 ALIGNER=MAFFT
 ```
 
 Specify output filename to generate _aln.fasta_, _aln.phylip_, and _aln.clustal_.
 ```bash
-bf-align align \
-    FA=seqs.fa ALIGNER=mafft \
-    OUTNAME=aln
+bf-align msa FA=seqs.fa ALIGNER=mafft OUTNAME=aln
+```
+
+Align all FASTA files located within the `seqs/` directory using MUSCLE and set number of threads to 8:
+```bash
+bf-align msa DIR=seqs/ ALIGNER=muscle THREADS=8
 ```
 
 ### list
 
-Display all supported alignment tools.
+Display all currently supported alignment tools.
 
 **{sc}`Parameters`**
 
@@ -90,21 +106,4 @@ This command does not accept parameters.
 List available aligners.
 ```bash
 bf-align list
-```
-
-### view
-
-Visualize the resulting alignment using `jalview`.
-
-Specify the `OUTNAME` parameter to only render the alignment files with the given prefix. The output is stored in the same directory in HTML format.
-
-**{sc}`Parameters`**
-
-- OUTNAME: filename of output alignment file (default: aln)
-
-**{sc}`Example Usage`**
-
-Specify `OUTNAME` and `OUTFMT` to generate visualization for aligner output.
-```bash
-bf-align view OUTNAME=aln
 ```
