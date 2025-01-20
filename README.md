@@ -4,7 +4,7 @@ A collection of Makefiles for running common tasks for bioinformatics analysis.
 
 ### Modules
 
-| File | Functionality |
+| Makefile | Functionality |
 | ---- | ------------ |
 | `alignment.mk` | pairwise alignment, multiple sequence alignment |
 | `annotation.mk` | gene prediction, assembly annotation |
@@ -17,7 +17,7 @@ A collection of Makefiles for running common tasks for bioinformatics analysis.
 
 ### Documentation
 
-Full documentation is found in the official [bioflow](https://dagsdags212.github.io/bioworkflows/) website. 
+Full documentation is found in the official [bioflow](https://dagsdags212.github.io/bioflow/) website. 
 
-Installation and setup instructions can be found [here](https://dagsdags212.github.io/bioworkflows/installation).
+Installation and setup instructions can be found [here](https://dagsdags212.github.io/bioflow/installation).
 
