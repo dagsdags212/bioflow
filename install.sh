@@ -36,6 +36,7 @@ create_setup_file() {
 
   echo "alias bf-fetch=\"make -s -C ${BIOFLOW_PREFIX}/src/fetch\"" >>${target}
   echo "alias bf-align=\"make -s -C ${BIOFLOW_PREFIX}/src/alignment\"" >>${target}
+  echo "alias bf-annotate=\"make -s -C ${BIOFLOW_PREFIX}/src/annotation\"" >>${target}
 
   # TODO: migrate to new module structure
   echo "alias bf-phylo=\"make -f ${BIOFLOW_PREFIX}/src/phylo.mk\"" >>${target}
@@ -43,7 +44,6 @@ create_setup_file() {
   echo "alias bf-map=\"make -f ${BIOFLOW_PREFIX}/src/mapping.mk\"" >>${target}
   echo "alias bf-qc=\"make -f ${BIOFLOW_PREFIX}/src/qc.mk\"" >>${target}
   echo "alias bf-assemble=\"make -f ${BIOFLOW_PREFIX}/src/assembly.mk\"" >>${target}
-  echo "alias bf-annotate=\"make -f ${BIOFLOW_PREFIX}/src/annotation.mk\"" >>${target}
 }
 
 append_to_rc() {

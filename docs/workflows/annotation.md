@@ -1,6 +1,6 @@
 ---
 downloads:
-  - file: ../../src/annotation.mk
+  - file: ../../src/annotation/Makefile
     title: Makefile
   - file: ../../envs/annotation.yml
     title: env.yml
@@ -11,7 +11,7 @@ downloads:
 
 ## Overview
 
-The `annotation.mk` workflow contains rules for conducting gene prediction and sequence annotation. Its entry point is the `bf-annotate` command.
+The `annotation` module contains rules for performing _de novo_ gene prediction and sequence annotation. Its entry point is the `bf-annotate` command.
 
 :::{hint} Environment Setup
 :class: dropdown
@@ -32,28 +32,30 @@ micromamba activate bf-annotation
 
 ### annotate
 
-Run a `busco` annotation pipeline on a target sequence file.
+Run both [BUSCO](https://busco.ezlab.org/) and [Prokka](https://github.com/tseemann/prokka) annotation pipelines on a target sequence file.
 
-All output is stored in the directory at `output/busco`.
+The program output is separately stored within the `output` directory.
 
 **{sc}`Parameters`**
 
 - FA: path to target sequence file
 - MODE: specify BUSCO analysis mode (default: genome)
+- PRODIGAL_OUTFMT: specify output format for Prodigal (default: gff)
+- PRODIGAL_OUTNAME: specify filename for Prodigal output
+- PROKKA_OUTNAME: specify filename for Prokka output
+- DOMAIN: indicate the domain of the sequence source (default: prokaryote)
 - THREADS: number of cores (default: 8)
 
 **{sc}`Example Usage`**
 
 Run annotation pipeline on a draft assembly.
 ```bash
-bf-annotate annotate \
-    FA=output/megahit/final.contigs.fa MODE=genome
+bf-annotate annotate FA=output/megahit/final.contigs.fa MODE=genome
 ```
 
 Specify domain where the sequence file belongs to.
 ```bash
-bf-annotate annotate \
-    FA=output/megahit/final.contigs.fa MODE=genome DOMAIN=prokaryote
+bf-annotate annotate FA=output/megahit/final.contigs.fa MODE=genome DOMAIN=prokaryote
 ```
 
 ### datasets
@@ -98,21 +100,3 @@ Save output in GenBank Flat File Format (gbk).
 ```bash
 bf-annotate predict FA=output/megahit/final.contigs.fa PRODIGAL_OUTFMT=gbk
 ```
-
-### view
-
-Visualize annotated genome using Artemis.
-
-Run `annotate` prior to invoking this command to generate the `prokka` annotation.
-
-**{sc}`Parameters`**
-
-- FA: path to target sequence file
-
-**{sc}`Example Usage`**
-
-Visualize annotation by `prokka` alongside the reference genome.
-```bash
-bf-annotate view FA=output/megahit/final.contigs.fa
-```
-
