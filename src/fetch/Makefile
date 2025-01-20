@@ -81,9 +81,9 @@ reads:
 # Fetch project metadata and extract a list of SRR accessions
 ifdef PRJNA
 	@. $(MK_ROOT)/fetch_runinfo.sh $(PRJNA) | cut -d, -f1 | tail -n +2 \
-		| parallel ". $(MK_ROOT)/fetch_reads.sh $(fetch_reads_opts) -a {}"
+		| parallel ". $(MK_ROOT)/fetch_reads.sh {} $(fetch_reads_opts)"
 else ifdef SRR
-	@. $(MK_ROOT)/fetch_reads.sh $(fetch_reads_opts) -a $(SRR)
+	@. $(MK_ROOT)/fetch_reads.sh $(SRR) $(fetch_reads_opts)
 else
 	@echo "Error: please provide either a project (PRJNA) or read (SRR) accession"
 endif
@@ -94,7 +94,7 @@ fetch_sequence_opts += $(if $(filter true,$(WITH_GB)),-b)
 # Retrieve sequence files and records from NCBI
 seq:
 ifdef ACC
-	@. $(MK_ROOT)/fetch_sequence.sh $(fetch_sequence_opts) -a $(ACC)
+	@. $(MK_ROOT)/fetch_sequence.sh $(ACC) $(fetch_sequence_opts)
 else
 	@echo "Error: sequence accession not provided"
 endif
@@ -116,4 +116,4 @@ else
 endif
 
 clean:
-	rm -rf reads/ ref/
+	rm -rf reads/ data/

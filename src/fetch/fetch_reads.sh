@@ -3,20 +3,24 @@
 usage() {
   echo "Retrieve sequencing reads from the SRA"
   echo
-  echo "Usage: fetch_reads.sh [-h] [-v] [-a ACCESSION] [-x SPOTS]"
+  echo "Usage:"
+  echo "fetch_reads.sh [-h] [-x SPOTS] <acc>"
+  echo
+  echo "  <acc>  SRA read accession"
+  echo
+  echo "Options:"
   echo "  -h  display this help message"
-  echo "  -a  sequence project accession to fetch"
   echo "  -x  number of spots to download"
   echo "  -v  print tool version"
   exit
 }
 
 validate_read_accession() {
-  local ACC=$1
-  local SRA_REGEX=^[SED]R[PSXR].*
+  local acc=$1
+  local sra_regex="^[SED]R[PSXR].*"
 
-  if [[ "${ACC}" =~ ${SRA_REGEX} ]]; then
-    declare -g ACC=${ACC}
+  if [[ "${acc}" =~ ${sra_regex} ]]; then
+    declare -g ACC=${acc}
   else
     echo "Error: invalid read accession"
     exit 1
@@ -24,37 +28,37 @@ validate_read_accession() {
 }
 
 download_reads_se() {
-  local ACC=$1
-  local X=$2
-  local target=reads/${ACC}
+  local acc=$1
+  local x=$2
+  local target=reads/${acc}
 
-  if [[ -n ${X} ]]; then
-    echo "Downloading ${X} spots for ${ACC}"
-    fastq-dump -X ${X} --origfmt -v -O ${target} ${ACC}
+  if [[ "${x}" != "" ]]; then
+    echo "Downloading ${x} spots for ${acc}"
+    fastq-dump -X ${x} --origfmt -v -O ${target} ${acc}
   else
-    echo "Downloading ${ACC}"
-    fastq-dump --origfmt -v -O ${target} ${ACC}
+    echo "Downloading ${acc}"
+    fastq-dump --origfmt -v -O ${target} ${acc}
   fi
 }
 
 download_reads_pe() {
-  local ACC=$1
-  local X=$2
-  local target=reads/${ACC}
+  local acc=$1
+  local x=$2
+  local target=reads/${acc}
 
   mkdir -p ${target}
-  if [[ -n ${X} ]]; then
-    echo "Downloading ${X} spots for ${ACC}"
-    fastq-dump -X ${X} --split-3 --origfmt -v -O ${target} ${ACC}
+  if [[ "${x}" != "" ]]; then
+    echo "Downloading ${x} spots for ${acc}"
+    fastq-dump -X ${x} --split-3 --origfmt -v -O ${target} ${acc}
   else
-    echo "Downloading ${ACC}"
-    fastq-dump --split-3 --origfmt -v -O ${target} ${ACC}
+    echo "Downloading ${acc}"
+    fastq-dump --split-3 --origfmt -v -O ${target} ${acc}
   fi
 }
 
 declare -A params
 
-optspec="hpx:a:"
+optspec="hpx:"
 while getopts "${optspec}" optchar; do
   case "${optchar}" in
   h)
@@ -62,9 +66,6 @@ while getopts "${optspec}" optchar; do
     ;;
   x)
     params[X]="$OPTARG"
-    ;;
-  a)
-    params[ACC]="$OPTARG"
     ;;
   p)
     params[PE]=true
@@ -77,17 +78,26 @@ while getopts "${optspec}" optchar; do
 done
 
 main() {
-  if [[ ! -n "${params[ACC]}" ]]; then
+  local acc=$1
+  if [[ ! -n "${acc}" ]]; then
     echo "Error: accession not provided" && exit 1
   fi
 
-  validate_read_accession ${params[ACC]}
+  validate_read_accession ${acc}
 
   if [[ "${params[PE]}" == true ]]; then
-    download_reads_pe ${ACC} ${params[X]}
+    if [[ "${params[X]}" != "" ]]; then
+      download_reads_pe ${ACC} ${params[X]}
+    else
+      download_reads_pe ${ACC}
+    fi
   else
-    download_reads_se ${ACC} ${params[X]}
+    if [[ "${params[X]}" != "" ]]; then
+      download_reads_se ${ACC} ${params[X]}
+    else
+      download_reads_se ${ACC}
+    fi
   fi
 }
 
-main
+main $1

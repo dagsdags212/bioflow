@@ -3,9 +3,13 @@
 usage() {
   echo "Retrieve a sequence file from NCBI"
   echo
-  echo "Usage: fetch_sequence.sh [-h] [-v] [-a ACCESSION]"
+  echo "Usage:"
+  echo "  fetch_sequence.sh [-h] [-v] <acc>"
+  echo
+  echo "  <acc>  NCBI sequence accession"
+  echo
+  echo "Options:"
   echo "  -h  display this help message"
-  echo "  -a  NCBI sequence accession"
   echo "  -g  include the GFF file"
   echo "  -b  include GenBank record"
   echo "  -v  print tool version"
@@ -45,13 +49,12 @@ download_dna() {
   local acc=$1
   local gb=$2
 
-  echo "Downloading sequence file for ${acc}"
-  efetch -db nuccore -id ${acc} -format fasta >data/${acc%%.*}.fa
+  echo "Downloading sequence file for ${acc}" 1>&2
+  efetch -db nuccore -id ${acc} -format fasta >data/${acc%%.*}.fa && echo "Done!" 1>&2
   if [[ "${gb}" == true ]]; then
     echo "Including GenBank record"
-    efetch -db nuccore -id ${acc} -format genbank >data/${acc%%.*}.gb
+    efetch -db nuccore -id ${acc} -format genbank >data/${acc%%.*}.gb && echo "Done!" 1>&2
   fi
-  echo "Done!"
 }
 
 download_gene_info() {
@@ -60,8 +63,7 @@ download_gene_info() {
   gene_acc=$(efetch -db gene -id ${acc} -format tabular | cut -f12 | tail -n1)
   echo "Accession found: ${acc} > ${gene_acc}"
   echo "Downloading FASTA file for ${gene_acc}"
-  efetch -db nuccore -id ${gene_acc} -format fasta >data/${acc%%.*}.fa
-  echo "Done!"
+  efetch -db nuccore -id ${gene_acc} -format fasta >data/${acc%%.*}.fa && echo "Done!" 1>&2
 }
 
 download_assembly() {
@@ -102,14 +104,11 @@ params[GFF]=false
 # Set GB to false by default
 params[GB]=false
 
-optspec="hgba:"
+optspec="hgb"
 while getopts "${optspec}" optchar; do
   case "${optchar}" in
   h)
     usage
-    ;;
-  a)
-    params[ACC]="$OPTARG"
     ;;
   g)
     params[GFF]=true
@@ -125,11 +124,19 @@ while getopts "${optspec}" optchar; do
 done
 
 main() {
-  validate_accession ${params[ACC]}
-  [[ "${params[GFF]}" == true && "${params[GB]}" == true ]] && download_sequence ${ACC} true true
-  [[ "${params[GFF]}" == true && "${params[GB]}" == false ]] && download_sequence ${ACC} true false
-  [[ "${params[GFF]}" == false && "${params[GB]}" == true ]] && download_sequence ${ACC} false true
-  [[ "${params[GFF]}" == false && "${params[GB]}" == false ]] && download_sequence ${ACC} false false
+  local acc=$1
+  validate_accession ${acc}
+  if [[ "${params[GFF]}" == true && "${params[GB]}" == true ]]; then
+    download_sequence ${ACC} true true
+  elif [[ "${params[GFF]}" == true && "${params[GB]}" == false ]]; then
+    download_sequence ${ACC} true false
+  elif [[ "${params[GFF]}" == false && "${params[GB]}" == true ]]; then
+    download_sequence ${ACC} false true
+  elif [[ "${params[GFF]}" == false && "${params[GB]}" == false ]]; then
+    download_sequence ${ACC} false false
+  else
+    exit 10
+  fi
 }
 
-main
+main $1

@@ -3,8 +3,12 @@
 usage() {
   echo "Fetch metadata from a project accession"
   echo
-  echo "Usage: fetch_runinfo.sh [-h] ACCESSION"
-  echo "  accession  sequencing project accession"
+  echo "Usage:"
+  echo "  fetch_runinfo.sh [-h] <acc>"
+  echo ""
+  echo "  acc  sequencing project accession"
+  echo
+  echo "Options:"
   echo "  -h         display this help message"
   exit
 }
