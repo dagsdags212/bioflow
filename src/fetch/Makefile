@@ -27,16 +27,6 @@ include $(CONFIG_ROOT)/fetch.mk
 
 .PHONY: help params init clean
 
-# ncbi-datasets parameters
-ncbi_datasets_opts :=
-ifeq ($(INCLUDE_GFF),true)
-ncbi_datasets_opts += --include genome,gff3
-endif
-
-%.runinfo.csv:
-	@. $(MK_ROOT)/fetch_runinfo.sh $(PRJNA)
-
-
 # Display help message
 help:
 	@echo
@@ -45,7 +35,7 @@ help:
 	@echo "Usage:"
 	@echo "  bf-fetch <command> [options]"
 	@echo
-	@echo "COMMANDS:"
+	@echo "Commands:"
 	@echo "  reads   - retrieve sequencing data from the SRA"
 	@echo "  seq     - retrieve genomic sequence data from NCBI"
 	@echo "  pdb     - retrieve protein structures from PDB"
@@ -83,7 +73,6 @@ params:
 init:
 	$(ENV_MANAGER) create -f $(ENV_ROOT)/$(ENV).yml
 
-
 # Retrive sequencing reads from the SRA
 fetch_reads_opts := $(if $(filter true, $(PE)), -p)
 fetch_reads_opts += $(if $(X), -x $(X))
@@ -99,11 +88,13 @@ else
 	@echo "Error: please provide either a project (PRJNA) or read (SRR) accession"
 endif
 
+fetch_sequence_opts := $(if $(filter true,$(WITH_GFF)),-g)
+fetch_sequence_opts += $(if $(filter true,$(WITH_GB)),-b)
 
 # Retrieve sequence files and records from NCBI
 seq:
 ifdef ACC
-	@. $(MK_ROOT)/fetch_sequence.sh -a $(ACC) $(if $(filter true, $(WITH_GFF)), -g) $(if $(filter true, $(WITH_GB)), -b)
+	@. $(MK_ROOT)/fetch_sequence.sh $(fetch_sequence_opts) -a $(ACC)
 else
 	@echo "Error: sequence accession not provided"
 endif
@@ -126,4 +117,3 @@ endif
 
 clean:
 	rm -rf reads/ ref/
-	rm /tmp/fetch_acc.txt
