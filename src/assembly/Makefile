@@ -21,38 +21,37 @@ RUN = $(ENV_MANAGER) run -n $(ENV)
 # List of support assemblers (maintain lexicographic order)
 ASSEMBLERS := minia megahit spades
 
-# Quast flags
-comma := ,
-null :=
-space := $(null) $(null)
-quast_opts := -t $(THREADS) --circos --labels "$(subst $(space),$(comma),$(ASSEMBLERS))"
-
 # Display help message
 help:
 	@echo
-	@echo "assembly.mk: assemble contigs from sequencing reads"
+	@echo "assembly.mk: build contigs from sequencing reads"
 	@echo ""
 	@echo "Usage:"
-	@echo "  make -f src/qc.mk <command> [options]"
+	@echo "  bf-assemble <command> [options]"
 	@echo
 	@echo "COMMANDS:"
 	@echo "  assemble   - generate sequence assembly using program of choice"
-	@echo "  evaluate   - compute contig statistics and compare assemblies"
-	@echo "  visualize  - visualize assembly with bandage"
+	@echo "  params     - list all available options"
+	@echo "  init       - download conda environment"
+	@echo "  clean      - delete all output produced by this module"
 	@echo
 
 # Display available parameters
 params:
 	@echo
 	@echo "Assembly settings"
-	@echo "  READ_DIR          path to directory containing reads"
-	@echo "  REF               path to reference genomes"
-	@echo "  PE                download reads in pair-end mode (default: true)"
-	@echo "  ASSEMBLER         program of choice to perform assembly (default: none)"
+	@echo "  ASSEMBLER         program of choice to perform assembly (default: megahit)"
+	@echo "  PE1               path to FASTQ file for pair-end #1"
+	@echo "  PE2               path to FASTQ file for pair-end #2"
+	@echo "  SE                path to single-end FASTQ file"
+	@echo "  K                 k-mer length to use"
 	@echo "  MIN_CONTIG_LEN    minimum contig length to retain (default: 200)"
+	@echo "  PLATFORM          specify sequencing platform for spades"
+	@echo "  PREFIX            prepend prefix to output files of minia (default: final)"
 	@echo
 	@echo "Global settings"
 	@echo "  THREADS           number of cores (default: 4)"
+	@echo "  OUTDIR            path to directory for storing output files"
 	@echo
 	@echo "Environment settings"
 	@echo "  ENV               environment name (default: bwf-assembly)"
@@ -61,10 +60,11 @@ params:
 
 # Create new self-contained environment
 init:
-	$(ENV_MANAGER) create -n $(ENV) $(dependencies)
+	$(ENV_MANAGER) create -f $(ENV_ROOT)/bf-assembly.yml
 
 # Perform assembly with a specified tool.
 assemble:
+# Assemble reads using megahit
 ifeq ($(ASSEMBLER),megahit)
 ifdef SE
 	make -f $(MK_ROOT)/run_megahit.mk SE=$(SE) \
@@ -95,41 +95,6 @@ else ifdef PE1
 	make -f $(MK_ROOT)/run_minia.mk PE1=$(PE1) PE2=$(PE2) \
 		THREADS=$(THREADS) K=$(K) PREFIX=$(PREFIX) OUTDIR=$(OUTDIR)
 endif
-endif
-
-
-# Compute assembly statistics for evaluation
-evaluate: $(foreach asm,$(ASSEMBLERS),output/$(asm)/*contigs*)
-	# Discover contig files in assembly directory and run quast
-ifeq ($(ASSEMBLER),megahit)
-	quast $(quast_opts) $(shell find output/megahit/ -maxdepth 1 -type f -regex '.*contigs.fa')
-endif
-
-ifeq ($(ASSEMBLER),spades)
-	quast $(quast_opts) $(shell find output/spades/ -maxdepth 1 -type f -regex '.*contigs.fasta')
-endif
-
-ifndef ASSEMBLER
-	quast -o output/quast $(quast_opts) $(shell find output -maxdepth 2 -type f -name '*contigs.fasta' -o -name '*contigs.fa')
-endif
-
-# Generate assembly graphs using bandage
-visualize:
-	mkdir -p output/bandage
-ifeq ($(ASSEMBLER),megahit)
-	# Convert contig FASTA to fastg file
-	megahit_toolkit contig2fastg 99 output/megahit/final.contigs.fa > output/megahit/assembly_graph.fastg
-	Bandage image output/megahit/assembly_graph.fastg output/bandage/megahit_assembly.png
-endif
-
-ifeq ($(ASSEMBLER),spades)
-	Bandage image output/spades/assembly_graph.fastg output/bandage/spades_assembly.png
-endif
-
-ifndef ASSEMBLER
-	megahit_toolkit contig2fastg 99 output/megahit/final.contigs.fa > output/megahit/assembly_graph.fastg
-	Bandage image output/spades/assembly_graph.fastg output/bandage/megahit_assembly.png
-	Bandage image output/spades/assembly_graph.fastg output/bandage/spades_assembly.png
 endif
 
 clean:
