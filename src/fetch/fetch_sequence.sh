@@ -40,7 +40,7 @@ validate_accession() {
     declare -g ACC=${acc}
     declare -g SEQTYPE=assembly
   else
-    echo "Error: provided accession is invalid"
+    echo "Error: provided accession (${acc}) is invalid"
     exit 1
   fi
 }
@@ -48,44 +48,48 @@ validate_accession() {
 download_dna() {
   local acc=$1
   local gb=$2
+  local target=${PWD}/data/${acc%%.*}
 
   echo "Downloading sequence file for ${acc}" 1>&2
-  efetch -db nuccore -id ${acc} -format fasta >data/${acc%%.*}.fa && echo "Done!" 1>&2
+  efetch -db nuccore -id ${acc} -format fasta >${target}.fa
   if [[ "${gb}" == true ]]; then
-    echo "Including GenBank record"
-    efetch -db nuccore -id ${acc} -format genbank >data/${acc%%.*}.gb && echo "Done!" 1>&2
+    efetch -db nuccore -id ${acc} -format genbank >${target}.gb
   fi
+  echo "Done!" 1>&2
 }
 
 download_gene_info() {
   local acc=$1
-  echo "Retrieving genomic accession of ${acc}"
+  local target=${PWD}/data/${acc%%.*}
+
+  echo "Retrieving genomic accession of ${acc}" 1>&2
   gene_acc=$(efetch -db gene -id ${acc} -format tabular | cut -f12 | tail -n1)
-  echo "Accession found: ${acc} > ${gene_acc}"
-  echo "Downloading FASTA file for ${gene_acc}"
-  efetch -db nuccore -id ${gene_acc} -format fasta >data/${acc%%.*}.fa && echo "Done!" 1>&2
+  echo "Accession found: ${acc} > ${gene_acc}" 1>&2
+  echo "Downloading FASTA file for ${gene_acc}" 1>&2
+  efetch -db nuccore -id ${gene_acc} -format fasta >${target}.fa && echo "Done!" 1>&2
 }
 
 download_assembly() {
   local acc=$1
   local gff=$2
+  local target=${PWD}/${acc%%.*}
 
   echo "Downloading assembly file for ${acc}"
   if [[ "${gff}" == true ]]; then
-    echo "Including annotation file in GFF3 format"
-    datasets download genome accession ${acc} --include genome,gff3 --filename ${acc%%.*}.zip
+    datasets download genome accession ${acc} --include genome,gff3 --filename ${target}.zip
   else
-    datasets download genome accession ${acc} --include genome --filename ${acc%%.*}.zip
+    datasets download genome accession ${acc} --include genome --filename ${target}.zip
   fi
-  unzip ${acc%%.*}.zip -d ${acc%%.*}
-  rm -f ${acc%%.*}.zip
-  echo "Done!"
+  unzip ${target}.zip -d ${target}
+  rm -f ${target}.zip
+  echo "Done!" 1>&2
 }
 
 download_sequence() {
   local acc=$1
   local gff=$2
   local gb=$3
+
   mkdir -p data/
 
   case ${SEQTYPE} in
@@ -111,9 +115,11 @@ while getopts "${optspec}" optchar; do
     usage
     ;;
   g)
+    echo "Including annotation file" 1>&2
     params[GFF]=true
     ;;
   b)
+    echo "Including Genbank report" 1>&2
     params[GB]=true
     ;;
   *)
@@ -139,4 +145,6 @@ main() {
   fi
 }
 
-main $1
+ARG1=${@:${OPTIND}:1}
+
+main ${ARG1}

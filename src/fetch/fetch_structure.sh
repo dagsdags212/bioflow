@@ -28,8 +28,9 @@ fetch_structure() {
   local acc=$1
 
   mkdir -p data/
-  echo "Attempting to fetch structure file for ${acc}"
-  pdb_fetch ${acc} >${acc}.pdb
+  echo "Attempting to fetch structure file for ${acc}" 1>&2
+  pdb_fetch ${acc} >${PWD}/data/${acc}.pdb
+  echo 1>&2 "Done!"
 }
 
 optspec="h"

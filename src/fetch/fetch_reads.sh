@@ -30,8 +30,9 @@ validate_read_accession() {
 download_reads_se() {
   local acc=$1
   local x=$2
-  local target=reads/${acc}
+  local target=${PWD}/reads/${acc}
 
+  mkdir -p ${target}
   if [[ "${x}" != "" ]]; then
     echo "Downloading ${x} spots for ${acc}"
     fastq-dump -X ${x} --origfmt -v -O ${target} ${acc}
@@ -44,7 +45,7 @@ download_reads_se() {
 download_reads_pe() {
   local acc=$1
   local x=$2
-  local target=reads/${acc}
+  local target=${PWD}/reads/${acc}
 
   mkdir -p ${target}
   if [[ "${x}" != "" ]]; then
