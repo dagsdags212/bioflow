@@ -2,73 +2,24 @@
 # Perform de novo and reference-based sequence assembly and annotation.
 #
 
-# Absoluate path for the `bioflow/src` directory
-SRC_ROOT := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
-
-# Absolute path for `bioflow` directory
-PROJECT_ROOT := $(shell dirname $(SRC_ROOT))
+MK_ROOT = $(shell dirname $(abspath $(firstword $(MAKEFILE_LIST))))
 
 # Absoluate path for the `bioflow/config` directory
-CONFIG_ROOT := $(PROJECT_ROOT)/config
+CONFIG_ROOT := ${BIOFLOW_PREFIX}/config
 
-# import Make-specific configuration
-include $(CONFIG_ROOT)/_preamble.mk
+# Absoulate path to conda environment files
+ENV_ROOT := ${BIOFLOW_PREFIX}/envs
 
-# import global variables
-include $(CONFIG_ROOT)/_globals.mk
+# Conda environment for module
+ENV := bf-assembly
 
-# import module configuration
-include $(CONFIG_ROOT)/_tools.mk
+# Execute within the module environment
+RUN = $(ENV_MANAGER) run -n $(ENV)
 
 .PHONY: help params init assemble visualize
 
-# Project root
-ROOT_DIR = $(shell dirname $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST)))))
-
-# Conda environment
-ENV := bf-assembly
-
-# Path to conda environment
-ENV_DIR = $(shell $(ENV_MANAGER) info | grep "envs directories" | cut -d ":" -f 2 | xargs)/$(ENV)
-
-# Check if dependencies are installed
-dependencies := megahit spades quast minia
-
-# Directory containing FASTQ reads
-READ_DIR ?=
-
-# Path to reference genomes
-REF ?=
-
-# Specify if reads are pair-end
-PE ?= true
-
-# Separate reads if pair-end, otherwise store as single FASTQ file
-ifeq ($(PE),true)
-R1 = $(shell find $(READ_DIR) -type f -name "*_1.fastq*")
-R2 = $(shell find $(READ_DIR) -type f -name "*_2.fastq*")
-else
-R = $(shell find $(READ_DIR) -type f -not -name "*_[12].fastq*")
-endif
-
-
 # List of support assemblers (maintain lexicographic order)
 ASSEMBLERS := minia megahit spades
-
-# Specify assembly program
-ASSEMBLER ?=
-
-# Minimum contig length to keep
-MIN_CONTIG_LEN ?= 200
-
-# Spades flags
-spades_opts := --careful -t $(THREADS)
-
-# Megahit flags
-megahit_opts := -t $(THREADS) --min-contig-len $(MIN_CONTIG_LEN) --cleaning-rounds 5
-
-# Minia flags
-minia_opts := -nb-cores $(THREADS) -traversal contig -kmer-size 31
 
 # Quast flags
 comma := ,
@@ -112,50 +63,40 @@ params:
 init:
 	$(ENV_MANAGER) create -n $(ENV) $(dependencies)
 
-# Generate contigs from a set of reads
+# Perform assembly with a specified tool.
 assemble:
-# Assemble reads using megahit
 ifeq ($(ASSEMBLER),megahit)
-	if [ -d "output/megahit"]; then rm -rf output/megahit; fi
-	megahit -o output/megahit $(megahit_opts) -1 $(R1) -2 $(R2)
+ifdef SE
+	make -f $(MK_ROOT)/run_megahit.mk SE=$(SE) \
+		THREADS=$(THREADS) MIN_CONTIG_LEN=$(MIN_CONTIG_LEN) OUTDIR=$(OUTDIR)
+else ifdef PE1
+	make -f $(MK_ROOT)/run_megahit.mk PE1=$(PE1) PE2=$(PE2) \
+		THREADS=$(THREADS) MIN_CONTIG_LEN=$(MIN_CONTIG_LEN) OUTDIR=$(OUTDIR)
+endif
 endif
 
 # Assemble reads using spades
 ifeq ($(ASSEMBLER),spades)
-	mkdir -p output/spades
-	spades.py -o output/spades $(spades_opts) -1 $(R1) -2 $(R2)
+ifdef SE
+	make -f $(MK_ROOT)/run_spades.mk SE=$(SE) \
+		THREADS=$(THREADS) K=$(K) PLATFORM=$(PLATFORM) OUTDIR=$(OUTDIR)
+else ifdef PE1
+	make -f $(MK_ROOT)/run_spades.mk PE1=$(PE1) PE2=$(PE2) \
+		THREADS=$(THREADS) K=$(K) PLATFORM=$(PLATFORM) OUTDIR=$(OUTDIR)
+endif
 endif
 
 # Assemble reads using minia
 ifeq ($(ASSEMBLER),minia)
-ifeq ($(PE),false)
-	mkdir -p output/minia
-	minia -in $(R) -out output/minia/final $(minia_opts)
-else
-	@echo "minia only supports single-ended reads as input"
-	@echo "download SE reads using the fetch.mk workflow"
+ifdef SE
+	make -f $(MK_ROOT)/run_minia.mk SE=$(SE) \
+		THREADS=$(THREADS) K=$(K) PREFIX=$(PREFIX) OUTDIR=$(OUTDIR)
+else ifdef PE1
+	make -f $(MK_ROOT)/run_minia.mk PE1=$(PE1) PE2=$(PE2) \
+		THREADS=$(THREADS) K=$(K) PREFIX=$(PREFIX) OUTDIR=$(OUTDIR)
 endif
 endif
 
-# Assemble reads using multiple programs
-ifndef ASSEMBLER
-ifeq ($(PE),true)
-	# Run megahit
-	if [ -d "output/megahit"]; then rm -rf output/megahit; fi
-	megahit -o output/megahit $(megahit_opts) -1 $(R1) -2 $(R2)
-	# Run spades
-	mkdir -p output/spades
-	spades.py -o output/spades $(spades_opts) -1 $(R1) -2 $(R2)
-endif
-	# Run minia
-ifeq ($(PE),false)
-	mkdir -p output/minia
-	minia -in $(R) -out output/minia/final $(minia_opts)
-else
-	@echo "minia only supports single-ended reads as input"
-	@echo "download SE reads using the fetch.mk workflow"
-endif
-endif
 
 # Compute assembly statistics for evaluation
 evaluate: $(foreach asm,$(ASSEMBLERS),output/$(asm)/*contigs*)
