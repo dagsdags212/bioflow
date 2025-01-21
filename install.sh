@@ -38,11 +38,11 @@ create_setup_file() {
   echo "alias bf-align=\"make -f ${BIOFLOW_PREFIX}/src/alignment/Makefile\"" >>${target}
   echo "alias bf-annotate=\"make -f ${BIOFLOW_PREFIX}/src/annotation/Makefile\"" >>${target}
   echo "alias bf-assemble=\"make -f ${BIOFLOW_PREFIX}/src/assembly/Makefile\"" >>${target}
+  echo "alias bf-map=\"make -f ${BIOFLOW_PREFIX}/src/mapping/Makefile\"" >>${target}
 
   # TODO: migrate to new module structure
   echo "alias bf-phylo=\"make -f ${BIOFLOW_PREFIX}/src/phylo.mk\"" >>${target}
   echo "alias bf-vc=\"make -f ${BIOFLOW_PREFIX}/src/variant_calling.mk\"" >>${target}
-  echo "alias bf-map=\"make -f ${BIOFLOW_PREFIX}/src/mapping.mk\"" >>${target}
   echo "alias bf-qc=\"make -f ${BIOFLOW_PREFIX}/src/qc.mk\"" >>${target}
 }
 
