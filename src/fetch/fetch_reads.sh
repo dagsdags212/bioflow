@@ -4,13 +4,14 @@ usage() {
   echo "Retrieve sequencing reads from the SRA"
   echo
   echo "Usage:"
-  echo "fetch_reads.sh [-h] [-x SPOTS] <acc>"
+  echo "fetch_reads.sh [-h] [options] <acc>"
   echo
   echo "  <acc>  SRA read accession"
   echo
   echo "Options:"
   echo "  -h  display this help message"
   echo "  -x  number of spots to download"
+  echo "  -x  if true, downlad in pair-end mode"
   echo "  -v  print tool version"
   exit
 }
@@ -59,6 +60,10 @@ download_reads_pe() {
 
 declare -A params
 
+# Default option values
+params[PE]=false
+params[X]=""
+
 optspec="hpx:"
 while getopts "${optspec}" optchar; do
   case "${optchar}" in
@@ -101,4 +106,6 @@ main() {
   fi
 }
 
-main $1
+ARG1=${@:${OPTIND}:1}
+
+main ${ARG1}
