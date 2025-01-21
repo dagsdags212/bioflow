@@ -2,8 +2,7 @@ name: bf-assembly
 channels:
 - bioconda
 dependencies:
-- bandage
 - megahit
-- quast
 - spades
+- minia
 
