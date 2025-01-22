@@ -1,6 +1,6 @@
 ---
 downloads:
-  - file: ../../src/mapping.mk
+  - file: ../../src/mapping/Makefile
     title: Makefile
   - file: ../../envs/mapping.yml
     title: env.yml
@@ -11,7 +11,7 @@ downloads:
 
 ## Overview
 
-The `mapping.mk` workflow contains rules for performing read alignment against a reference genome. Its entry point is the `bf-map` command.
+The `mapping` module contains rules for performing read alignment against a reference genome. Its entry point is the `bf-map` command.
 
 Supported aligners include:
 
@@ -43,48 +43,43 @@ The reference file is first indexed prior to mapping. By default, the output ali
 
 **{sc}`Parameters`**
 
-- READ_DIR: path to directory storing reads
+- MAPPER: specified tool for performing read mapping (default: bwa).
 - REF: path to reference file (FASTA)
-- OUTFMT: alignment format to output (default: sam)
-- MAPPER: specified tool for read mapping (default: bwa)
+- PE1: path to reads for first pair-end file.
+- PE2: path to reads for pair-end file.
+- SE: path to reads for single-end file.
+- OUTDIR: path to directory for storing output.
+- PREFIX: filename of resulting alignment file.
 - THREADS: number of cores (default: 8)
-- PE: treat reads as pair-end (default: true)
 
 **{sc}`Example Usage`**
-Map pair-end reads against a reference using `bwa`.
+Map pair-end reads against a reference using `bwa`:
 ```bash
-bf-map map \
-    READ_DIR=reads/ REF=ref.fa PE=true \
-    MAPPER=bwa THREADS=8
+bf-map map PE1=reads1.fq PE2=reads2.fq REF=ref.fa MAPPER=bwa
 ```
 
-Map pair-end reads against a reference using `bowtie`.
+Map pair-end reads against a reference using `bowtie`. Specify the number of worker threads:
 ```bash
-bf-map map \
-    READ_DIR=reads/ REF=ref.fa PE=true \
-    MAPPER=bowtie THREADS=8
+bf-map map PE1=reads1.fq PE2=reads2.fq REF=ref.fa MAPPER=bowtie \
+    THREADS=8 PREFIX=bt OUTDIR=output/bowtie
 ```
 
-Map single-end reads against a reference and save as a BAM file.
+Map single-end reads against a reference using `bowtie`:
 ```bash
-bf-map map \
-    READ_DIR=reads/ REF=ref.fa PE=false \
-    OUTFMT=bam MAPPER=bwa THREADS=8
+bf-map map SE=reads.fq REF=ref.fa MAPPER=bowtie
 ```
 
-Specify output name for alignment file.
+Specify output name and directory for the alignment file:
 ```bash
-bf-map map \
-    READ_DIR=reads/ REF=ref.fa PE=false \
-    OUTFMT=bam OUTPUT=myaln \
-    MAPPER=bwa THREADS=8
+bf-map map SE=reads.fq REF=ref.fq MAPPER=bowtie \
+    PREFIX=bt OUTDIR=output/bam THREADS=8
 ```
 
 ### stats
 
 Get an overview of the mapped reads metrics.
 
-All alignment files stored in the `output` directory are discovered and their mapping metrics are printed to stdout.
+All sorted BAM files within the current working directory are automatically discovered. Mapping metrics for each file are printer to `stdout`.
 
 **{sc}`Parameters`**
 
@@ -100,7 +95,7 @@ bf-map stats
 
 Assess the quality of the alignment file using `qualimap`.
 
-Similar to `stats`, this command checks the `output` directory for alignment files. For each BAM file, a summary report is generated in HTML format.
+Similar to `stats`, this command checks the current working directory for alignment files. For each BAM file, a summary report is generated in HTML format.
 
 ```{note}
 BAM files must be sorted prior to evaluation.

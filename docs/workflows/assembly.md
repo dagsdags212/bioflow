@@ -42,7 +42,7 @@ Run a _de novo_ assembly pipeline using `spades` and `megahit`. Each tool is des
 
 - ASSEMBLER: specified tool for running the assembly (default: megahit).
 - PE1: path to reads for first pair-end file.
-- PE2: path to reads for pair-end file.
+- PE2: path to reads for second pair-end file.
 - SE: path to single-end reads; PE1 and PE2 are ignored if SE is specified.
 - MIN_CONTIG_LEN: minimum contig length for filtering contigs (default: 200).
 - KMER_SIZE: k-mer length to use (default: 31).
