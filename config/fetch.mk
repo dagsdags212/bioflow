@@ -5,13 +5,13 @@ ENV := bf-fetch
 dependencies := entrez-direct sra-tools ncbi-datasets-cli pdb-tools
 
 # === Parameters for the `sra` command ===
-# Sequencing project accession
-PRJNA ?=
+# Sequencing project accession.
+PRJN ?=
 
-# Sequecing read accession
-SRR ?=
+# Sequecing read accession.
+SRX ?=
 
-# Number of spots to retrieve
+# Number of spots to retrieve.
 X ?=
 
 # If true, separate into forward and reverse reads
@@ -21,10 +21,10 @@ PE ?=
 ACC ?= 
 
 # If true, include annotation file for the assembly
-WITH_GFF ?= false
+GFF ?= false
 
 # If true, include genbank record for the sequence file
-WITH_GB ?= false
+GB ?= false
 
 # === Parameters for the `pdb` command ===
 # Protein structure ID

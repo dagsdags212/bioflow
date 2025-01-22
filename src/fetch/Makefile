@@ -73,16 +73,18 @@ init:
 	$(ENV_MANAGER) create -f $(ENV_ROOT)/$(ENV).yml
 
 # Retrive sequencing reads from the SRA
-fetch_reads_opts := $(if $(filter true, $(PE)), -p)
-fetch_reads_opts += $(if $(X), -x $(X))
+fetch_reads_opts := $(if $(filter true, $(PE)), PE=true)
+fetch_reads_opts += $(if $(X), X=$(X))
+fetch_reads_opts += $(if $(OUTDIR), OUTDIR=$(OUTDIR))
 
 reads:
-# Fetch project metadata and extract a list of SRR accessions
-ifdef PRJNA
-	@. $(MK_ROOT)/fetch_runinfo.sh $(PRJNA) | cut -d, -f1 | tail -n +2 \
-		| parallel ". $(MK_ROOT)/fetch_reads.sh {} $(fetch_reads_opts)"
-else ifdef SRR
-	@. $(MK_ROOT)/fetch_reads.sh $(SRR) $(fetch_reads_opts)
+# Download all reads associated with PRJN.
+ifdef PRJN
+	make -f $(MK_ROOT)/fetch_reads.mk	$(fetch_reads_opts) PRJA=$(PRJN)
+# Download reads from a single sequencing run.
+else ifdef SRX
+	make -f $(MK_ROOT)/fetch_reads.mk	$(fetch_reads_opts) SRX=$(SRX)
+# Accession not provided, do nothing.
 else
 	@echo "Error: please provide either a project (PRJNA) or read (SRR) accession"
 endif
