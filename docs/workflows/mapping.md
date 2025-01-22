@@ -2,7 +2,7 @@
 downloads:
   - file: ../../src/mapping/Makefile
     title: Makefile
-  - file: ../../envs/mapping.yml
+  - file: ../../envs/bf-mapping.yml
     title: env.yml
 ---
 
