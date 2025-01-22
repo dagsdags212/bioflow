@@ -24,53 +24,53 @@ include $(CONFIG_ROOT)/_globals.mk
 # import module configuration
 include $(CONFIG_ROOT)/fetch.mk
 
-.PHONY: help params init clean
+.RECIPEPREFIX = >
 
 # Display help message
 help:
-	@echo
-	@echo "bf-fetch: a module for retrieving biological data"
-	@echo
-	@echo "Usage:"
-	@echo "  bf-fetch <command> [options]"
-	@echo
-	@echo "Commands:"
-	@echo "  reads   - retrieve sequencing data from the SRA"
-	@echo "  seq     - retrieve genomic sequence data from NCBI"
-	@echo "  pdb     - retrieve protein structures from PDB"
-	@echo "  pubmed  - query PubMed for a list of related journals"
-	@echo
+> @echo
+> @echo "bf-fetch: a module for retrieving biological data"
+> @echo
+> @echo "Usage:"
+> @echo "  bf-fetch <command> [options]"
+> @echo
+> @echo "Commands:"
+> @echo "  reads   - retrieve sequencing data from the SRA"
+> @echo "  seq     - retrieve genomic sequence data from NCBI"
+> @echo "  pdb     - retrieve protein structures from PDB"
+> @echo "  pubmed  - query PubMed for a list of related journals"
+> @echo
 
 
 # Display available parameters
 params:
-	@echo
-	@echo "For retrieving SEQUENCE RECORDS"
-	@echo "  ACC               sequence accession identifier"
-	@echo "  INCLUDE_GFF       download annotation file for the accession (if available)"
-	@echo "  INCLUDE_GB        download GenBank record for the accession"
-	@echo
-	@echo "For retrieving READS"
-	@echo "  PRJNA             sequencing PROJECT identifier"
-	@echo "  SRR               sequencing RUN identifier"
-	@echo "  PE                if true, download reads in pair-end mode (default: false)"
-	@echo "  X                 number of spots to download"
-	@echo
-	@echo "For retrieving PROTEIN STRUCTURES"
-	@echo "  PDB               4-character protein identifier"
-	@echo
-	@echo "For retrieving JOURNAL METADATA"
-	@echo "  QUERY             search string used to query Pubmed"
-	@echo
-	@echo "Environment settings"
-	@echo "  ENV               environment name (default: bf-fetch)"
-	@echo "  ENV_MANAGER       environment manager (default: micromamba)"
-	@echo
+> @echo ""
+> @echo "For retrieving SEQUENCE RECORDS"
+> @echo "  ACC               sequence accession identifier"
+> @echo "  GFF               if true, download annotation file for the accession (if available)"
+> @echo "  GB                if true, download GenBank record for the accession"
+> @echo ""
+> @echo "For retrieving READS"
+> @echo "  PRJN              sequencing PROJECT identifier"
+> @echo "  SRX               sequencing RUN identifier"
+> @echo "  PE                if true, download reads in pair-end mode (default: false)"
+> @echo "  X                 number of spots to download"
+> @echo ""
+> @echo "For retrieving PROTEIN STRUCTURES"
+> @echo "  PDB               4-character protein identifier"
+> @echo ""
+> @echo "For retrieving JOURNAL METADATA"
+> @echo "  QUERY             search string used to query Pubmed"
+> @echo ""
+> @echo "Environment settings"
+> @echo "  ENV               environment name (default: bf-fetch)"
+> @echo "  ENV_MANAGER       environment manager (default: micromamba)"
+> @echo ""
 
 
 # Create new self-contained environment
 init:
-	$(ENV_MANAGER) create -f $(ENV_ROOT)/$(ENV).yml
+> $(ENV_MANAGER) create -f $(ENV_ROOT)/$(ENV).yml
 
 # Retrive sequencing reads from the SRA
 fetch_reads_opts := $(if $(filter true, $(PE)), PE=true)
@@ -80,13 +80,13 @@ fetch_reads_opts += $(if $(OUTDIR), OUTDIR=$(OUTDIR))
 reads:
 # Download all reads associated with PRJN.
 ifdef PRJN
-	make -f $(MK_ROOT)/fetch_reads.mk	$(fetch_reads_opts) PRJA=$(PRJN)
+> make -f $(MK_ROOT)/fetch_reads.mk	$(fetch_reads_opts) PRJA=$(PRJN)
 # Download reads from a single sequencing run.
 else ifdef SRX
-	make -f $(MK_ROOT)/fetch_reads.mk	$(fetch_reads_opts) SRX=$(SRX)
+> make -f $(MK_ROOT)/fetch_reads.mk	$(fetch_reads_opts) SRX=$(SRX)
 # Accession not provided, do nothing.
 else
-	@echo "Error: please provide either a project (PRJNA) or read (SRR) accession"
+> @echo "Error: please provide either a project (PRJNA) or read (SRR) accession"
 endif
 
 fetch_sequence_opts := $(if $(filter true,$(WITH_GFF)),-g)
@@ -95,31 +95,34 @@ fetch_sequence_opts += $(if $(filter true,$(WITH_GB)),-b)
 # Retrieve sequence files and records from NCBI
 seq:
 ifdef ACC
-	@. $(MK_ROOT)/fetch_sequence.sh $(ACC) $(fetch_sequence_opts)
+> @. $(MK_ROOT)/fetch_sequence.sh $(ACC) $(fetch_sequence_opts)
 else
-	@echo "Error: sequence accession not provided"
+> @echo "Error: sequence accession not provided"
 endif
 
 # Retrieve structures files from PDB
 pdb:
 ifdef PDB
-	pdb_fetch $(PDB) > $(PDB).pdb
+> @echo "=== Downloading $(PDB) from PDB ==="
+> pdb_fetch $(PDB) > $(PDB).pdb
 else
-	@echo "Error: protein accession not provided"
+> @echo "Error: protein accession not provided"
 endif
 
 # Query Pubmed for a list of jounrnals base on a search string
 pubmed:
 ifdef QUERY
-	@echo '=== Querying Pubmed for search term: "$(QUERY)" ==='
-	@esearch -db pubmed -query "$(QUERY)" |
+> @echo '=== Querying Pubmed for search term: "$(QUERY)" ==='
+> @esearch -db pubmed -query "$(QUERY)" |
 		efetch -format docsum |
 		xtract -pattern DocumentSummary -tab "|" -element Id -year PubDate -element Title |
 		sort -t "|" -k2,2nr -k3,3 |
 		column -t -s "|" -N PMID,Year,Title -W Title
 else
-	@echo "Error: query string not provided"
+> @echo "Error: query string not provided"
 endif
 
 clean:
-	rm -rf reads/ data/
+> rm -rf reads/ data/
+
+.PHONY: help params init clean
