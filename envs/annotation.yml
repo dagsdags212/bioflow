@@ -1,7 +1,0 @@
-name: bf-annotation
-channels:
-- bioconda
-dependencies:
-- busco
-- prokka
-- prodigal
