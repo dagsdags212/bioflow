@@ -1,0 +1,8 @@
+name: bf-phylo
+channels:
+  - bioconda
+dependencies:
+  - iqtree
+  - phylip
+  - raxml-ng
+
