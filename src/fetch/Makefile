@@ -3,7 +3,6 @@
 #
 
 MK_ROOT = $(shell dirname $(abspath $(firstword $(MAKEFILE_LIST))))
-
 # Absoluate path for the `bioflow/config` directory
 CONFIG_ROOT := ${BIOFLOW_PREFIX}/config
 
@@ -110,7 +109,12 @@ endif
 # Query Pubmed for a list of jounrnals base on a search string
 pubmed:
 ifdef QUERY
-	@. $(MK_ROOT)/query_pubmed.sh '$(QUERY)'
+	@echo '=== Querying Pubmed for search term: "$(QUERY)" ==='
+	@esearch -db pubmed -query "$(QUERY)" |
+		efetch -format docsum |
+		xtract -pattern DocumentSummary -tab "|" -element Id -year PubDate -element Title |
+		sort -t "|" -k2,2nr -k3,3 |
+		column -t -s "|" -N PMID,Year,Title -W Title
 else
 	@echo "Error: query string not provided"
 endif
