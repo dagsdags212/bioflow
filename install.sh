@@ -5,11 +5,18 @@ BIOFLOW_PREFIX=~/.local/share/bioflow
 
 # Determine default shell
 determine_shell() {
-  if [[ "${SHELL}" == "/usr/bin/zsh" ]]; then
-    declare -g RC_FILE=~/.zshrc
-  elif [[ "${SHELL}" == "/usr/bin/bash" ]]; then
-    declare -g RC_FILE=~/.bashrc
-  fi
+  case "${SHELL}" in
+  "/usr/bin/zsh")
+    RC_FILE=~/.zshrc
+    ;;
+  "/usr/bin/bash")
+    RC_FILE=~/.bashrc
+    ;;
+  *)
+    echo "Error: cannot determine shell"
+    exit 1
+    ;;
+  esac
 }
 
 clean_target_path() {
