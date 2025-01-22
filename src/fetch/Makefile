@@ -101,7 +101,7 @@ endif
 # Retrieve structures files from PDB
 pdb:
 ifdef PDB
-	@. $(MK_ROOT)/fetch_structure.sh $(PDB)
+	pdb_fetch $(PDB) > $(PDB).pdb
 else
 	@echo "Error: protein accession not provided"
 endif
