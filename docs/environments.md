@@ -14,17 +14,17 @@ downloads:
 ::::{grid} 1 1 2 3
 
 :::{card}
-```{literalinclude} ../envs/alignment.yml
+```{literalinclude} ../envs/bf-alignment.yml
 ```
 :::
 
 :::{card}
-```{literalinclude} ../envs/annotation.yml
+```{literalinclude} ../envs/bf-annotation.yml
 ```
 :::
 
 :::{card}
-```{literalinclude} ../envs/assembly.yml
+```{literalinclude} ../envs/bf-assembly.yml
 ```
 :::
 
@@ -34,22 +34,22 @@ downloads:
 :::
 
 :::{card}
-```{literalinclude} ../envs/mapping.yml
+```{literalinclude} ../envs/bf-mapping.yml
 ```
 :::
 
 :::{card}
-```{literalinclude} ../envs/phylo.yml
+```{literalinclude} ../envs/bf-phylo.yml
 ```
 :::
 
 :::{card}
-```{literalinclude} ../envs/qc.yml
+```{literalinclude} ../envs/bf-qc.yml
 ```
 :::
 
 :::{card}
-```{literalinclude} ../envs/vc.yml
+```{literalinclude} ../envs/bf-vc.yml
 ```
 :::
 ::::
