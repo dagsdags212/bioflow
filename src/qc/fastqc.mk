@@ -28,7 +28,7 @@ READS = $(shell find $(DIR) -type f -name "*.fastq" -o -name "*.fastq.gz")
 CONTAMINANT_FILE ?=
 
 # Output directory to store report.
-OUT ?= qc
+OUT ?= fastqc
 
 # Number of worker threads.
 THREADS ?= 2
@@ -67,10 +67,15 @@ run: $(OUT)
 
 # Remove generated reports.
 run!:
-	rm -f $(OUT)
+	rm -rf $(OUT)
 
 # Alternative rule for run!
 clean: run!
+
+# Run test suite.
+test::
+	make -f $(dir $(ROOT_PATH))fetch/sra.mk SRR=SRR1553425 N=1000
+	make -f $(ROOT_PATH)/fastqc.mk run! run DIR=$(DIR) OUT=$(OUT)
 
 # Command for installing dependencies.
 install::
