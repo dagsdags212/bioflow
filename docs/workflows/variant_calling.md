@@ -1,91 +1,92 @@
 ---
 downloads:
-  - file: ../../src/variant_calling.mk
-    title: Makefile
-  - file: ../../envs/vc.yml
+  - file: ../../src/variant_calling/bcftools.mk
+    title: bcftools.mk
+  - file: ../../src/variant_calling/freebayes.mk
+    title: freebayes.mk
+  - file: ../../envs/bf-vc.yml
     title: env.yml
 ---
 
 (bf-vc)=
-# variant_calling.mk
+# variant_calling
 
 ## Overview
 
-The `variant_calling.mk` workflow contains rules for identifying variants from mapped reads based on a reference genome. Its entry point is the `bf-vc` command.
+The **variant_calling** module contains recipes for calling SNPs using `bcftools` and `freebayes`. Both recipes expect a BAM alignment file and a reference genome in FASTA format.
+
+Invoking the `run` command generates three outputs: (1) a VCF file, (2) an index to the VCF file and (3) a flatfile containing summary statistics for the called variants. The last file is generated from running `bcftools stats` on the output VCF file.
 
 :::{hint} Environment Setup
 :class: dropdown
 
-Prior to using the workflow, download the dependencies within a virtual environment using your manager of choice:
-
+Display the command to install all dependencies:
 ```bash
-bf-vc init ENV_MANAGER=micromamba
+make -f <path/to/makefile> install
 ```
 
-Activate environment to expose dependencies:
+To download all dependencies, run the following command:
 ```bash
-micromamba activate bf-vc
+eval $(make -f <path/to/makefile> install)
 ```
+
+Make sure to replace `<path/to/makefile>` with a path pointing to your recipe.
 :::
 
-## Rules
+## Recipes
 
-### call
+### freebayes.mk
 
-Perform variant calling with `freebayes`.
+Generate SNP calls with `freebayes`.
 
 This commands expects a reference file in FASTA format and an alignment file in BAM format. Both reference and alignment files are indexed prior to calling variants.
 
 **{sc}`Parameters`**
 
-- REF: path to reference genome (FASTA)
-- BAM: path to alignment file (BAM)
-- PLOIDY: ploidy number of reference genome (default: 1)
-- THREADS: number of cores (default: 4)
+- ACC: Genbank accession for the reference file.
+- BAM: an alignment file in BAM format.
+- SRR: an SRA accession to derive the BAM filename (optional).
+- THREADS: number of cores (default: 2)
 
 **{sc}`Example Usage`**
 
-Call variants from a BAM file.
+Call variants from a BAM file:
 ```bash
-bf-vc call \
-    REF=ref/ref.fna BAM=output/bwa/aln.bam
+make -f freebayes.mk ACC=AF086833 BAM=aln.bam run
 ```
 
-Indicate ploidy number of source organism.
+Specify the path to a reference file instead of providing an accession:
 ```bash
-bf-vc call \
-    REF=ref/ref.fna BAM=output/bwa/aln.bam PLOIDY=1
+make -f freebayes.mk ACC=AF086833 REF=refs/genome.fa run
 ```
 
-### stats
+### bcftools.mk
 
-Generate metric file for called variants.
+Generate SNP calls with `bcftools`.
 
 **{sc}`Parameters`**
 
-This command does not accept parameters.
+- ACC: Genbank accession for the reference file.
+- BAM: an alignment file in BAM format.
+- SRR: an SRA accession to derive the BAM filename (optional).
+- THREADS: number of cores (default: 2)
 
 **{sc}`Example Usage`**
 
-Produce a summary file containing metrics on called variants.
+Call variants from a BAM file:
 ```bash
-bf-vc stats \
-    REF=ref/ref.fna BAM=output/bwa/aln.bam PLOIDY=1
+make -f bcftools.mk ACC=AF086833 BAM=aln.bam run
 ```
 
-### filter
-
-Filter called variants based on a score threshold.
-
-**{sc}`Parameters`**
-
-- MINQUAL: variant score threshold for filtering (default: 10)
-
-**{sc}`Example Usage`**
-
-Filter variants with a score less than 15.
+Specify the path to a reference file instead of providing an accession:
 ```bash
-bf-vc filter \
-    REF=ref/ref.fna BAM=output/bwa/aln.bam \
-    MINQUAL=15
+make -f bcftools.mk ACC=AF086833 REF=refs/genome.fa run
 ```
+
+### snpeff.mk
+
+Annotate called variants with `snpeff`.
+
+:::{tip} In Progress
+...
+:::

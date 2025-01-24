@@ -1,7 +1,6 @@
 #
 # Generates SNP calls with freebayes.
 #
-
 # Makefile preamble.
 SHELL := bash
 .DELETE_ON_ERROR:
