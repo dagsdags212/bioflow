@@ -110,7 +110,7 @@ test:
 	# Retrieve reference genome.
 	make -f $(shell dirname $(ROOT_PATH))/fetch/genbank.mk ACC=ON963982 fasta
 	# Map reads to genome with minimap2.
-	make -f $(root_path)/minimap2.mk ref=refs/on963982.fa fq=reads/srr31340505_1.fastq align
+	make -f $(root_path)/minimap2.mk ref=refs/ON963982.fa fq=reads/SRR31340505_1.fastq align
 	# Generate mapping statistics.
 	make -f $(ROOT_PATH)/minimap2.mk REF=refs/ON963982.fa FQ=reads/SRR31340505_1.fastq stats
 
