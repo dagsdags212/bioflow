@@ -13,7 +13,7 @@ MAKEFLAGS += --warn-undefined-variables --no-print-directory
 ROOT_PATH = $(shell dirname $(abspath $(firstword $(MAKEFILE_LIST))))
 
 # Micromamba environment.
-ENV = bf-fetch
+ENV = bf-mapping
 
 # Run command within environment.
 ENV_RUN = micromamba run -n $(ENV)
@@ -59,6 +59,9 @@ LB ?= library1
 PL ?= ILLUMINA
 RG ?= "@RG\tID:$(ID)\tSM:$(SM)\tLB:$(LB)\tPL:$(PL)"
 
+# The name of the stats file.
+STATS = $(basename $(BAM)).stats
+
 # Print the help message.
 help::
 	@echo "#"
@@ -94,12 +97,12 @@ $(REF):
 	fi
 
 # Generate bowtie index for reference.
-$(IDX_FILE):
+$(IDX_FILE): $(REF)
 	# Create output directory for bowtie index.
-	mkdir -p $(dir $(IDX_FILE))
+	mkdir -p $(dir $@)
 
 	# Generate bowtie2 index for the reference.
-	bowtie2-build $(REF) $(IDX)
+	bowtie2-build $< $(IDX)
 
 # Invoke reference indexing.
 index: $(REF) $(IDX_FILE)
@@ -126,21 +129,30 @@ $(BAM): $(R1) $(R2)
 
 # Create the BAM index.
 $(BAM).bai: $(BAM)
-	samtools index $(BAM)
+	samtools index $<
 
 # Invoke the read mapping rule.
-align: $(BAM).bai
-	@ls -lh $(BAM)
+align: $(BAM) $(BAM).bai
+	@ls -lh $^
 
 # Alternative rule for align.
 run: align
 
 # Remove output BAM files.
-run!:
-	rm -rf $(BAM) $(BAM).bai
+run!: $(BAM) $(BAM).bai
+	rm -rf $^
 
 # Alternative rule for run!
 clean: run!
+
+# Generate alignment statistics.
+$(STATS): $(BAM).bai
+	samtools flagstat $(BAM) > $(STATS)
+
+# Trigger stats generation.
+stats: $(STATS)
+	@echo "# $(STATS)"
+	@cat $(STATS)
 
 # Show installation command.
 install::
