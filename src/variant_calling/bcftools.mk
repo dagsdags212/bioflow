@@ -62,19 +62,23 @@ $(VCF): $(BAM) $(REF)
 	bcftools mpileup $(PILE_FLAGS) -O u -f $(REF) $(BAM) | \
 		bcftools call $(CALL_FLAGS) -mv -O u | \
 		bcftools norm -f $(REF) -d all -O u | \
-		bcftools sort -O z > $(VCF)
+		bcftools sort -O z > $@
 
 # Generate index for VCF file.
 $(VCF).tbi: $(VCF)
 	bcftools index -t -f $<
 
+# Generat summary statistics for VCF file.
+$(VCF).stats: $(VCF)
+	bcftools stats $< > $@
+
 # Invoke VCF indexing.
-run:: $(VCF).tbi
+run:: $(VCF).tbi $(VCF).stats
 	@ls -lh $(VCF)
 
 # Remove VCF file and its index.
 run!::
-	rm -rf $(VCF) $(VCF).tbi
+	rm -rf $(VCF) $(VCF).tbi $(VCF).stats
 
 # Alternative rule for run!
 clean:: run!

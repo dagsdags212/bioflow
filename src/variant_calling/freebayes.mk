@@ -69,13 +69,17 @@ $(VCF).tbi: $(VCF)
 	# Generate index for VCF file.
 	bcftools index -t -f $<
 
+# Generate summary statistics for VCF file.
+$(VCF).stats: $(VCF)
+	bcftools stats $< > $@
+
 # Invoke SNP calling.
-run:: $(VCF).tbi
-	@ls -lh $(VCF)
+run:: $(VCF).tbi $(VCF).stats
+	@ls -lh $(VCF) $^
 
 # Delete VCF file.
 run!::
-	rm -rf $(VCF)
+	rm -rf $(VCF) $(VCF).tbi $(VCF).stats
 
 # TODO: Test the entire pipeline.
 # test:
