@@ -1,17 +1,21 @@
 ---
 downloads:
-  - file: ../../src/assembly/Makefile
-    title: Makefile
+  - file: ../../src/assembly/megahit.mk
+    title: megahit.mk
+  - file: ../../src/assembly/minia.mk
+    title: minia.mk
+  - file: ../../src/assembly/spades.mk
+    title: spades.mk
   - file: ../../envs/bf-assembly.yml
     title: env.yml
 ---
 
 (bf-assembly)=
-# assembly.mk
+# assembly
 
 ## Overview
 
-The `assembly` workflow contains rules for performing _de novo_ and reference-based sequence assembly. Its entry point is the `bf-assemble` command.
+The `assembly` module contains recipes for performing _de novo_ and reference-based sequence assembly.
 
 :::{note} TODO
 Rules for reference-based assembly is in progress.
@@ -20,50 +24,94 @@ Rules for reference-based assembly is in progress.
 :::{hint} Environment Setup
 :class: dropdown
 
-Prior to using the workflow, download the dependencies within a virtual environment using your manager of choice:
-
+Display the command to install all dependencies:
 ```bash
-bf-assemble init ENV_MANAGER=micromamba
+make -f <path/to/makefile> install
 ```
 
-Activate environment to expose dependencies:
+To download all dependencies, run the following command:
 ```bash
-micromamba activate bf-assembly
+eval $(make -f <path/to/makefile> install)
 ```
+
+Make sure to replace `<path/to/makefile>` with a path pointing to your recipe.
 :::
 
-## Rules
+## Recipes
 
-### assemble
+### megahit.mk
 
-Run a _de novo_ assembly pipeline using `spades` and `megahit`. Each tool is designated a directory under `assembly` to store all output.
+Run a _de novo_ assembly pipeline using `megahit`.
 
 **{sc}`Parameters`**
 
-- ASSEMBLER: specified tool for running the assembly (default: megahit).
-- PE1: path to reads for first pair-end file.
-- PE2: path to reads for second pair-end file.
-- SE: path to single-end reads; PE1 and PE2 are ignored if SE is specified.
-- MIN_CONTIG_LEN: minimum contig length for filtering contigs (default: 200).
-- KMER_SIZE: k-mer length to use (default: 31).
-- PLATFORM: specify the sequencing platform to be used by spades.
-- PREFIX: prepend a prefix to the output files of minia.
-- OUTDIR: path to directory for storing output.
-- THREADS: number of cores (default: 8)
+- R1: first set of pair-end reads.
+- R2: second set of pair-end reads, if any.
+- KMIN: minimum size of k-mer list (default: 21).
+- KMAX: maximum size of k-mer list (default: 21).
+- KSTEP: step size between k-mers in k-mer list (default: 21).
+- OUTDIR: path to directory for storing output (default: megahit).
+- MEM: maximum memory to allocate (default: 0.5)
+- THREADS: number of cores (default: 4)
 
 **{sc}`Example Usage`**
 
 Assemble pair-end reads into contigs using `megahit`:
 ```bash
-bf-assemble assemble PE1=read1.fq PE2=read2.fq ASSEMBLER=megahit
+make -f megahit.mk R1=reads_1.fq R2=reads_2.fq run
 ```
 
-Utilize 8 threads to assemble single-end reads into contigs using `spades`. Save the output to the `output/spades` directory:
+Allocate a fixed amount of memory and CPU cores for the program:
 ```bash
-bf-assemble assemble SE=reads.fq ASSEMBLER=spades THREADS=8 OUTDIR=output/spades
+make -f megahit.mk R1=reads_1.fq R2=reads_2.fq THREADS=8 MEM=0.8 run
 ```
 
-Assemble single-end reads into contigs using `minia` and specify a prefix:
+### minia.mk
+
+Run a _de novo_ assembly pipeline using `minia`. 
+
+By default, the `minia` assembler only accepts a single FASTQ file as input.
+
+**{sc}`Parameters`**
+
+- R1: FASTA file containing reads.
+- K: specify k-mer size (default: 31).
+- OUTDIR: path to directory for storing output (default: megahit).
+- THREADS: number of cores (default: 4)
+
+**{sc}`Example Usage`**
+
+Assemble inter-leaved reads into contigs using `minia`:
 ```bash
-bf-assemble assemble SE=reads.fq PREFIX=final ASSEMBLER=minia
+make -f minia.mk R1=reads.fq run
+```
+
+Specify k-mer size:
+```bash
+make -f minia.mk R1=reads.fq K=31 run
+```
+
+### spades.mk
+
+Run a _de novo_ assembly pipeline using `spades`.
+
+**{sc}`Parameters`**
+
+- R1: first set of pair-end reads.
+- R2: second set of pair-end reads, if any.
+- PLATFORM: sequencing platform used in reads (optional).
+- K: specify k-mer size (default: auto).
+- OUTDIR: path to directory for storing output (default: spades).
+- THREADS: number of cores (default: 4)
+
+**{sc}`Example Usage`**
+
+Assemble pair-end reads into contigs using `spades`:
+```bash
+make -f spades.mk R1=reads_1.fq R2=reads_2.fq run
+```
+
+Specify k-mer size:
+```bash
+make -f spades.mk R1=reads_1.fq R2=reads_2.fq K=31 run
 ```
