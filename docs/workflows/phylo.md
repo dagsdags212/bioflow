@@ -1,97 +1,76 @@
 ---
 downloads:
-  - file: ../../src/phylo/Makefile
-    title: Makefile
+  - file: ../../src/phylo/iqtree.mk
+    title: iqtree.mk
+  - file: ../../src/phylo/raxml-ng.mk
+    title: raxml-ng.mk
   - file: ../../envs/bf-phylo.yml
     title: env.yml
 ---
 
 (bf-phylo)=
-# phylo.mk
+# phylo
 
 ## Overview
 
-The `phylo` workflow contains rules for performing phylogenetic tree inference using `raxml-ng` and `iqtree`. Its entry point is the `bf-phylo` command.
+The `phylo` module contains rules for performing phylogenetic tree inference using `raxml-ng` and `iqtree`.
 
 Inference is conducted using either [maximum likelihood](wiki:Maximum_likelihood_estimation) or [bootstrapping](wiki:Bootstrapping_(statistics)) methods. To generate the alignment, refer to the [alignment workflow](./alignment.md).
 
 :::{hint} Environment Setup
 :class: dropdown
 
-Prior to using the workflow, download the dependencies within a virtual environment using your manager of choice:
-
+Display the command to install all dependencies:
 ```bash
-bf-phylo init ENV_MANAGER=micromamba
+make -f <path/to/makefile> install
 ```
 
-Activate environment to expose dependencies:
+To download all dependencies, run the following command:
 ```bash
-micromamba activate bf-phylo
+eval $(make -f <path/to/makefile> install)
 ```
+
+Make sure to replace `<path/to/makefile>` with a path pointing to your recipe.
 :::
 
-## Rules
+## Recipes
 
-### boostrap
+### iqtree.mk
 
-Generate multiple phylogenies using bootstrapping and extract the best tree.
+Generate trees with `iqtree`.
 
 **{sc}`Parameters`**
 
-- TOOL: specify tool to perform bootstrapping (default: raxml)
-- MSA: path to multiple alignment file.
+- ALN: a multiple alignment file.
 - MODEL: substitution matrix or evolutionary model to use (default: GTR+G).
-- BOOTSTRAPS: number of bootstrap iterations (default: 1001).
-- PREFIX: add prefix to output files (default: result).
-- SEED: indicate seed used for bootstrapping
-- OUTDIR: path to output directory.
-- THREADS: number of cores (default: 8)
+- SEED: set initial seed.
+- OUTDIR: path to a directory for storing output (default: iqtree).
+- THREADS: number of cores (default: 4)
 
 **{sc}`Example Usage`**
 
-Perform bootstrapping wit 20 iterations using `raxml`:
+Perform basic inference with `iqtree`.
 ```bash
-bf-phylo bootstrap MSA=aln.fasta TOOL=raxml N=20
+make -f iqtree.mk ALN=seq.aln run
 ```
 
-Specify prefix of `iqtree` outputs when running bootstrap analysis:
-```bash
-bf-phylo bootstrap TOOL=iqtree PREFIX=bs
-```
+### raxml-ng.mk
 
-### ML
-
-Compute for maximum-likelihood tree.
+Generate trees with `raxml-ng`.
 
 **{sc}`Parameters`**
 
-- TOOL: specify tool to perform bootstrapping (default: raxml).
-- MSA: path to multiple alignment file.
-- MODEL: substitution matrix or evolutionary model to use in analysis (default: GTR+G).
-- N: number of ML searches to perform (default: 10).
-- PREFIX: add prefix to output files (default: result).
-- SEED: indicate seed used for bootstrapping.
-- OUTDIR: path to output directory.
-- THREADS: number of cores (default: 8).
+- ALN: a multiple alignment file.
+- MODEL: substitution matrix or evolutionary model to use (default: GTR+G).
+- METHOD: tree construction method (default: ml).
+- N: number of ML searches to perform (default: 10)
+- SEED: set initial seed.
+- OUTDIR: path to a directory for storing output (default: raxml).
+- THREADS: number of cores (default: 4)
 
 **{sc}`Example Usage`**
 
-Generate ML tree with 20 searches using `raxml`.
+Perform basic inference with `iqtree`.
 ```bash
-bf-phylo ML TOOL=raxml N=20
-```
-
-### models
-
-List supported substitution models.
-
-**{sc}`Parameters`**
-
-This command does not accept parameters.
-
-**{sc}`Example Usage`**
-
-Print available evolutionary models.
-```bash
-bf-phylo models
+make -f raxml-ng.mk ALN=seq.aln run
 ```
