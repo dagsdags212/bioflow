@@ -1,8 +1,12 @@
 ---
 downloads:
-  - file: ../../src/qc.mk
-    title: Makefile
-  - file: ../../envs/qc.yml
+  - file: ../../src/qc/fastp.mk
+    title: fastp.mk
+  - file: ../../src/qc/fastqc.mk
+    title: fastqc.mk
+  - file: ../../src/qc/multiqc.mk
+    title: multiqc.mk
+  - file: ../../envs/bf-qc.yml
     title: env.yml
 ---
 
