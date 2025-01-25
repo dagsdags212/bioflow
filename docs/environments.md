@@ -1,13 +1,19 @@
 ---
 downloads:
-  - file: ../envs/assembly.yml
-    title: assembly.yml
-  - file: ../envs/fetch.yml
-    title: fetch.yml
-  - file: ../envs/mapping.yml
-    title: mapping.yml
-  - file: ../envs/qc.yml
-    title: qc.yml
+  - file: ../envs/bf-alignment.yml
+    title: bf-alignment.yml
+  - file: ../envs/bf-assembly.yml
+    title: bf-assembly.yml
+  - file: ../envs/bf-fetch.yml
+    title: bf-fetch.yml
+  - file: ../envs/bf-mapping.yml
+    title: bf-mapping.yml
+  - file: ../envs/bf-phylo.yml
+    title: bf-phylo.yml
+  - file: ../envs/bf-qc.yml
+    title: bf-qc.yml
+  - file: ../envs/bf-vc.yml
+    title: bf-vc.yml
 ---
 # Environments
 
