@@ -40,7 +40,7 @@ ALN ?=
 BASENAME = $(basename ALN)
 
 # Output directory.
-OUTDIR ?=
+OUTDIR ?= raxml
 
 # Target output.
 OUT ?= $(OUTDIR)/$(BASENAME).bestTree
@@ -51,7 +51,7 @@ FLAGS += $(if $(SEED),--seed $(SEED))
 FLAGS += $(if $(SEED),--seed $(SEED))
 
 ifeq ($(METHOD),ml)
-	FLAGS += --tree pars{$(N))}
+	FLAGS += --tree pars{$(N)}
 else ifeq ($(METHOD),bootstrap)
 	FLAGS += --boostrap --bs-trees $(N)
 else
@@ -61,7 +61,25 @@ else
 endif
 
 # Compose raxml-ng command.
-RAXML_CMD = raxml-ng $(FLAGS) $(ALN)
+RAXML_CMD = raxml-ng $(FLAGS) --msa $(ALN)
+
+
+help::
+	@echo "raxml-ng.mk: perform tree inference with raxml-ng"
+	@echo ""
+	@echo "Input:"
+	@echo "  ALN=$(ALN)"
+	@echo "  OUTDIR=$(OUTDIR)"
+	@echo ""
+	@echo "Commands:"
+	@echo "  run        perform phylogenetic inference and construct a tree"
+	@echo "  install    print command for installing dependencies"
+	@echo "  clean      remove all raxml-ng output"
+	@echo ""
+	@echo "Invoking 'run' will execute the following command:"
+	@echo ""
+	@echo "  $(RAXML_CMD)"
+	@echo ""
 
 # Alignment file must exist.
 $(ALN):
@@ -86,8 +104,8 @@ run: $(OUT)
 	ls -lh $(dir $^)
 
 # Remove raxml-ng output.
-run!:: $(OUT)
-	rm -rf $(dir $^)
+run!::
+	rm -rf $(dir $(OUT))
 
 # Alias for run!
 clean: run!
