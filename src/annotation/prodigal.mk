@@ -19,7 +19,7 @@ ENV = bf-annotation
 ENV_RUN = micromamba run -n $(ENV)
 
 # Number of worker threads.
-THREADS ?= 4
+THREADS ?= 2
 
 # Supported formats of prodigal output.
 FORMATS ?= gbk gff sco
@@ -34,16 +34,16 @@ IN ?=
 BASE = $(basename $(notdir $(IN)))
 
 # Output directory for prodigal output.
-DIR ?= prodigal
+OUTDIR ?= prodigal
 
 # Prodigal output file.
-OUT ?= $(DIR)/$(BASE)_prodigal_out.$(FORMAT)
+OUT ?= $(OUTDIR)/$(BASE)_prodigal_out.$(FORMAT)
 
 # File containing predicted genes from prodigal.
-GENES = $(DIR)/$(BASE).genes.out
+GENES = $(OUTDIR)/$(BASE).genes.out
 
 # File containing sequences of predicted genes.
-SEQS = $(DIR)/$(BASE).genes.fa
+SEQS = $(OUTDIR)/$(BASE).genes.fa
 
 # Prodigal flags.
 FLAGS := -s $(GENES) -d $(SEQS)
@@ -58,6 +58,7 @@ help::
 	@echo ""
 	@echo "Input:"
 	@echo "  IN=$(IN)"
+	@echo "  OUTDIR=$(OUTDIR)"
 	@echo "  FORMAT=$(FORMAT)"
 	@echo ""
 	@echo "Commands:"
