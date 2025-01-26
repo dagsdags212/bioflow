@@ -17,7 +17,7 @@ A bash script is provided to install the entry points of each workflow to your s
 Install bioworkflows using `git`.
 :::
 
-Once installation is complete, restart your shell to register all the workflow commands.
+After restarting the shell, the `BIOFLOW` variable which points to the project root of bioflow will be globally available. This can be used by the user for invoking the recipes in each module.
 
 ## Installing GNU Make
 
