@@ -4,16 +4,16 @@ A collection of Makefiles for running common tasks for bioinformatics analysis.
 
 ### Modules
 
-| Makefile | Functionality |
+| Module | Functionality |
 | ---- | ------------ |
-| `alignment.mk` | pairwise alignment, multiple sequence alignment |
-| `annotation.mk` | gene prediction, assembly annotation |
-| `assembly.mk` | sequence assembly, assembly evaluation |
-| `fetch.mk` | download biological data |
-| `mapping.mk` | read mapping, mapping assessment |
-| `phylo.mk` | maximum likelihood inference, bootstrapping phylogenies |
-| `qc.mk` | produce FASTQ summary reports, adapter trimming, quality filtering |
-| `variant_calling.mk` | detecting and filtering variants |
+| `alignment` | pairwise alignment, multiple sequence alignment |
+| `annotation` | gene prediction, assembly annotation |
+| `assembly` | sequence assembly, assembly evaluation |
+| `fetch` | download biological data |
+| `mapping` | read mapping, mapping assessment |
+| `phylo` | maximum likelihood inference, bootstrapping phylogenies |
+| `qc` | produce FASTQ summary reports, adapter trimming, quality filtering |
+| `variant_calling` | detecting and filtering variants |
 
 ### Documentation
 
