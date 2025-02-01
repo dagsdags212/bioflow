@@ -115,3 +115,33 @@ Specify k-mer size:
 ```bash
 make -f spades.mk R1=reads_1.fq R2=reads_2.fq K=31 run
 ```
+
+### flye.mk
+
+Assemble contigs from long reads using `flye`.
+
+**{sc}`Parameters`**
+
+- R1: first set of pair-end reads.
+- PLATFORM: sequencing platform used (optional).
+- GENOME_SIZE: estimated genome size.
+- ITER: number of iterations (default: 5)
+- OUTDIR: path to directory for storing output (default: flye_out).
+- THREADS: number of cores (default: 4)
+
+**{sc}`Example Usage`**
+
+Generate contigs from long reads:
+```bash
+make -f flye.mk R1=reads_1.fq run
+```
+
+Specify a sequencing platform:
+```bash
+make -f flye.mk R1=reads_1.fq PLATFORM=ont run
+```
+
+Run assembly with 10 iterations:
+```bash
+make -f flye.mk R1=reads_1.fq ITER=10 run
+```
