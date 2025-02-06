@@ -15,9 +15,18 @@ create_local_copy() {
   cp -r ./* ${BIOFLOW}
 }
 
+# Export BIOFLOW variable.
+export_bioflow_path() {
+  local config_path=~/.zshrc
+  local export_line="export BIOFLOW=${BIOFLOW}"
+  echo "Exporting BIOFLOW path"
+  grep "${export_line}" ${config_path} || echo ${export_line} >>${config_path}
+}
+
 run_setup() {
   clean_target_path
   create_local_copy
+  export_bioflow_path
   sleep 1
   echo "Done!"
 }
