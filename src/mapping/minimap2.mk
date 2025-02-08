@@ -31,7 +31,7 @@ REF ?= refs/${ACC}.fa
 DIR ?= bam
 
 # The alignment file.
-BAM ?= ${DIR}/${BASENAME}.bam
+BAM ?= ${DIR}/${BASENAME}.minimap2.bam
 
 
 # Print usage.
@@ -57,13 +57,15 @@ help::
 
 # Read 1 must exist.
 ${R1}:
-	@echo "# Error: FASTQ file not found {R1=${R1}}"
-	@exit -1
+	@if [ -f ${R1} ]; then
+		echo "# Error: FASTQ file not found (R1=${R1})"
+		exit -1
+	fi
 
 # Reference file must exist.
 ${REF}:
 	@if [ ! -f ${REF} ]; then
-		echo "# Error: Reference file not found {REF=${REF}}"
+		echo "# Error: Reference file not found (REF=${REF})"
 		exit -1
 	fi
 
@@ -76,11 +78,13 @@ ${BAM}: ${REF} ${R1}
 	mkdir -p $(dir $@)
 
 	# Perform read mapping.
-	${ENV_RUN} minimap2 ${FLAGS} ${REF} ${R1} | samtools view -b | samtools sort -@ ${THREADS} > $@
+	${ENV_RUN} minimap2 ${FLAGS} ${REF} ${R1} \
+	  | ${ENV_RUN} samtools view -b \
+	  | ${ENV_RUN} samtools sort -@ ${THREADS} > $@
 
 # Create the BAM index.
 ${BAM}.bai: ${BAM}
-	samtools index ${BAM}
+	${ENV_RUN} samtools index ${BAM}
 
 # Invoke the read mapping rule.
 align: ${BAM} ${BAM}.bai
@@ -99,27 +103,27 @@ clean: run!
 # Generate alignment statistics.
 stats:
 	@echo "==================== MAPPING STATISTICS ===================="
-	@samtools flagstat ${BAM}
-	@echo "============================================================"
+	${ENV_RUN} samtools flagstat ${BAM}
+	echo "============================================================"
 
 # Alias for 'stats'.
 stat: stats
 
 # Run test suite.
 test:
-	# Retrieve FASTQ file.
+	@# Retrieve FASTQ file.
 	make -f ${BIOFLOW}/src/fetch/sra.mk SRR=SRR31340505 MODE=SE run
 	# Retrieve reference genome.
 	make -f ${BIOFLOW}/src/fetch/genbank.mk ACC=ON963982 fasta
 	# Map reads to genome with minimap2.
-	make -f ${BIOFLOW}/src/minimap2.mk ref=refs/on963982.fa r1=reads/srr31340505.fastq align stats
+	make -f ${BIOFLOW}/src/mapping/minimap2.mk REF=refs/ON963982.fa R1=reads/SRR31340505.fastq align stats
 
-	@echo "All tests ran successfully!"
+	echo "All tests ran successfully!"
 
 	# Clean up files.
-	make -f ${BIOFLOW}/src/fetch/sra.mk SRR=SRR31340505 MODE=SE clean
-	make -f ${BIOFLOW}/src/fetch/genbank.mk ACC=ON963982 clean
-	make -f ${BIOFLOW}/src/minimap2.mk ref=refs/on963982.fa r1=reads/srr31340505.fastq clean
+	make -f ${BIOFLOW}/src/fetch/sra.mk SRR=SRR31340505 MODE=SE run!
+	make -f ${BIOFLOW}/src/fetch/genbank.mk ACC=ON963982 fasta!
+	make -f ${BIOFLOW}/src/mapping/minimap2.mk REF=refs/ON963982.fa R1=reads/SRR31340505.fastq align!
 
 DEPS := minimap2 samtools
 # Show installation command.
