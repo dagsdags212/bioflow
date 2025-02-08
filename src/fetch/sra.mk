@@ -62,13 +62,13 @@ help:
 example:
 	@echo ""
 	@echo "# Download reads from a single accession, in pair-end mode"
-	@echo "make -f sra.mk SRR=SRR1554325 MODE=PE"
+	@echo "make -f sra.mk SRR=SRR1554325 MODE=PE run"
 	@echo ""
 	@echo "# Specify a path where reads will be stored"
-	@echo "make -f sra.mk SRR=SRR1554325 OUTDIR=reads"
+	@echo "make -f sra.mk SRR=SRR1554325 OUTDIR=reads run"
 	@echo ""
 	@echo "# Only retrieve a subset"
-	@echo "make -f sra.mk SRR=SRR1554325 N=10000"
+	@echo "make -f sra.mk SRR=SRR1554325 N=10000 run"
 	@echo ""
 
 # fastq-dump options.
@@ -98,6 +98,9 @@ ifdef R2
 else
 	ls -lh ${R1}
 endif
+
+# An alias for 'run'.
+run: get
 
 # Download using aria2c.
 # This process may be more reliable than fastq-dump.
@@ -130,4 +133,4 @@ install::
 	${ENV_RUN} pip install bio --upgrade
 
 # Non-file targets.
-.PHONY: help example run run! test install
+.PHONY: help example run get run! test install
