@@ -25,7 +25,7 @@ R1 ?=
 R2 ?=
 
 # Root name of FASTQ file.
-BASENAME = ${notdir ${basename ${R1}}}
+BASENAME = $(notdir $(basename ${R1}))
 
 # The reference genome.
 REF ?= refs/genome.fa
