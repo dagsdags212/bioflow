@@ -11,11 +11,12 @@ MAKEFLAGS += --warn-undefined-variables --no-print-directory
 
 # Absolute path of parent directory.
 ROOT_PATH = $(shell dirname $(abspath $(firstword $(MAKEFILE_LIST))))
+
 # Micromamba environment.
-ENV = bf-fetch
+ENV = bf-fetch-sra
 
 # Run command within environment.
-ENV_RUN = micromamba run -n $(ENV)
+ENV_RUN = micromamba run -n ${ENV}
 
 # Store the reads in this directory.
 DIR ?= reads
@@ -26,14 +27,18 @@ SRR ?= SRR1554325
 # Number of spots to download.
 N ?= ALL
 
-# Name of the unpacked reads.
-P1 ?= $(DIR)/$(SRR)_1.fastq
-P2 ?= $(DIR)/$(SRR)_2.fastq
+# Specify if pair-end or single-end mode.
+MODE ?= SE
 
-# Your custom name the the reads
-R1 ?= $(P1)
-R2 ?= $(P2)
+# Set targets based on download mode.
+ifeq (${MODE},SE)
+	R1 ?= ${DIR}/${SRR}.fastq
+else
+	R1 ?= ${DIR}/${SRR}_1.fastq
+	R2 ?= ${DIR}/${SRR}_2.fastq
+endif
 
+# Print usage.
 help:
 	@echo ""
 	@echo "sra.mk: download FASTQ files from SRA"
@@ -49,62 +54,65 @@ help:
 	@echo "Options:"
 	@echo "  SRR          an SRA accession in the format (SRX********)"
 	@echo "  N            number of reads to download (default: ALL)"
-	@echo "  R1           a filepath for storing the first of the read pairs"
-	@echo "  R2           a filepath for storing the second of the read pairs"
-	@echo "               if not specified, downloads will be done in single-end mode"
+	@echo "  MODE         specify to download reads in pair-end (PE) or single-end (SE) mode"
+	@echo "               (default: SE)"
 	@echo "  DIR          a directory path for storing reads"
 	@echo ""
 
 example:
 	@echo ""
 	@echo "# Download reads from a single accession, in pair-end mode"
-	@echo "make -f sra.mk SRR=SRR1554325"
+	@echo "make -f sra.mk SRR=SRR1554325 MODE=PE"
 	@echo ""
 	@echo "# Specify a path where reads will be stored"
-	@echo "make -f sra.mk SRR=SRR1554325 R1=reads/read_1.fq R2=reads/read_2.fq"
+	@echo "make -f sra.mk SRR=SRR1554325 OUTDIR=reads"
 	@echo ""
 	@echo "# Only retrieve a subset"
 	@echo "make -f sra.mk SRR=SRR1554325 N=10000"
 	@echo ""
 
-ifeq ($(N),ALL)
-FLAGS ?= -F --split-files
-else
-FLAGS ?= -F --split-files -X $(N)
+# fastq-dump options.
+FLAGS ?= -F
+
+# Download in pair-end mode.
+ifeq (${MODE},PE)
+	FLAGS += --split-files
 endif
 
-$(R1):
+# Download only a subset.
+ifneq (${N},ALL)
+	FLAGS ?= -X ${N}
+endif
+
+${R1}:
 	# Create output directory.
-	mkdir -p $(DIR)
+	mkdir -p ${DIR}
 
-	# Download the reads
-	$(ENV_RUN) fastq-dump $(FLAGS) -O $(DIR) $(SRR)
-
-	# Rename the first in pair if final name is different.
-	if [ "$(P1)" != "$(R1)" ]; then mv -f $(P1) $(R1); fi
-	
-	# Rename the second in pair if it exists and is different.
-	if [ -f "$(P2)" ] && [ "$(P2)" != "$(R2)" ]; then mv -f $(P2) $(R2); fi
-
+	# Download the reads.
+	${ENV_RUN} fastq-dump ${FLAGS} -O ${DIR} ${SRR}
 
 # List the data to check if it is paired.
-run: $(R1)
-	@if [ -f $(R2) ]; then
-		@ls -lh $(R1) $(R2)
-	else
-		@ls -lh $(R1)
-	fi
+run: ${R1}
+ifdef R2
+	ls -lh ${R1} ${R2}
+else
+	ls -lh ${R1}
+endif
 
 # Download using aria2c.
 # This process may be more reliable than fastq-dump.
 aria:
 	# Extract the ftp links for gzipped fastq files and download.
-	$(ENV_RUN) bio search $(SRR) | jq -r '.[].fastq_url[]' | \
-		parallel -j 1 --lb make -f $(ROOT_PATH)/aria.mk URL={} DIR=$(DIR) run
+	${ENV_RUN} bio search ${SRR} | jq -r '.[].fastq_url[]' | \
+		parallel -j 1 --lb make -f ${ROOT_PATH}/aria.mk URL={} DIR=${DIR} run
 
 # Remove downloaded reads.
 clean:
-	rm -f $(P1) $(P2) $(R1) $(R2)
+ifdef R2
+	rm -f ${R1} ${R2}
+else
+	rm -f ${R1}
+endif
 
 # Alternative rule for clean.
 run!: clean
@@ -112,10 +120,14 @@ run!: clean
 # Run the test suite.
 test: clean run
 
+# A list of dependencies to install.
+DEPS := sra-tools jq
+
 # Display dependencies.
 install::
-	@echo micromamba install sra-tools jq
-	@echo pip install bio --upgrade
+	micromamba create -n ${ENV}
+	${ENV_RUN} micromamba install ${DEPS} --yes
+	${ENV_RUN} pip install bio --upgrade
 
 # Non-file targets.
 .PHONY: help example run run! test install
