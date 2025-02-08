@@ -13,7 +13,7 @@ MAKEFLAGS += --warn-undefined-variables --no-print-directory
 ROOT_PATH = $(shell dirname $(abspath $(firstword $(MAKEFILE_LIST))))
 
 # Micromamba environment.
-ENV = bf-fetch
+ENV = bf-fetch-genbank
 
 # Run command within environment.
 ENV_RUN = micromamba run -n $(ENV)
@@ -30,17 +30,40 @@ GBK ?= refs/$(ACC).gb
 # The accession as a annotation file.
 GFF ?= refs/$(ACC).gff
 
+
+# Display usage.
 help:
-	@echo "#"
-	@echo "# genbank.mk: download sequence data from GenBank"
-	@echo "#"
-	@echo "# ACC=$(ACC)"
-	@echo "# REF=$(REF)"
-	@echo "# GBK=$(GBK)"
-	@echo "# GFF=$(GFF)"
-	@echo "#"
-	@echo "# make fasta|gff|genbank|all"
-	@echo "#"
+	@echo ""
+	@echo "genbank.mk: download sequence data from GenBank"
+	@echo ""
+	@echo "Usage:"
+	@echo "  make -f genbank.mk [options]"
+	@echo ""
+	@echo "Commands:"
+	@echo "  fasta          retrieve a sequence file in FASTA format"
+	@echo "  gff            retrieve an annotation file in GFF3 format"
+	@echo "  genbank        retrieve a genbank record"
+	@echo "  all            retrieve all supported records associatiated"
+	@echo "                 with a given accession"
+	@echo ""
+	@echo "Options:"
+	@echo "  ACC            an accession identifier (required)"
+	@echo "  REF            a path for storing the FASTA file (optional)"
+	@echo "  GBK            a path for storing the GenBank record (optional)"
+	@echo "  GFF            a path for storing the annotation file (optional)"
+	@echo ""
+
+example:
+	@echo ""
+	@echo "# Download the sequence and annotation files of Ebola"
+	@echo "make -f genbank.mk ACC=AF086833 fasta gff"
+	@echo ""
+	@echo "# Specify the output path"
+	@echo "make -f genbank.mk ACC=AF086833 GBK=records/ebola.gb genbank"
+	@echo ""
+	@echo "# Download all records associated with an accession"
+	@echo "make -f genbank.mk ACC=AF086833 all"
+	@echo ""
 
 # Obtain a fasta file from NCBI.
 $(REF):
@@ -100,10 +123,13 @@ test:
 	make -f $(ROOT_PATH)/genbank.mk gff! gff ACC=$(ACC) GFF=$(GFF)
 	make -f $(ROOT_PATH)/genbank.mk genbank! genbank ACC=$(ACC) GBK=$(GBK)
 
+DEPS := entrez-direct
+
 # Display dependencies.
 install::
-	@echo micromamba install entrez-direct
-	@echo pip install bio --upgrade
+	micromamba create -n ${ENV}
+	${ENV_RUN} micromamba install ${DEPS}
+	${ENV_RUN} pip install bio --upgrade
 
 # Non-file targets.
-.PHONY: help run run! test install
+.PHONY: help example run run! test install
