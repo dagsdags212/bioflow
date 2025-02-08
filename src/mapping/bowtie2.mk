@@ -49,8 +49,6 @@ LB ?= library1
 PL ?= ILLUMINA
 RG ?= "@RG\tID:${ID}\tSM:${SM}\tLB:${LB}\tPL:${PL}"
 
-# The name of the stats file.
-STATS = $(basename ${BAM}).stats
 
 # Print the help message.
 help::
@@ -95,7 +93,7 @@ ${REF}:
 
 ${IDX_FILE}: ${REF}
 	# Generate bowtie2 index for the reference.
-	bowtie2-build ${REF} ${IDX}
+	${ENV_RUN} bowtie2-build ${REF} ${IDX}
 
 # Invoke reference indexing.
 index: ${REF} ${IDX_FILE}
@@ -108,28 +106,19 @@ index!:
 # Bowtie2 options.
 FLAGS := --sensitive-local -p ${THREADS}
 
-# Compose bowtie2 command.
-ifeq (${R2},)
-	BOWTIE2_CMD := bowtie2 ${FLAGS} -p ${THREADS} -x ${IDX} -U ${R1}
-else
-	BOWTIE2_CMD ?= bowtie2 ${FLAGS} -p ${THREADS} -x ${IDX} -1 ${R1} -2 ${R2}
-endif
-
 # Generate a sorted alignment file.
 ${BAM}: ${R1} ${R2} ${IDX_FILE}
 	# Output directory for BAM files.
-	mkdir -p ${dir $@}
+	mkdir -p $(dir $@)
 
 	# Map reads with bowtie2.
-ifeq (${R2},)
-	${ENV_RUN} bowtie2 ${FLAGS} -x ${IDX} -U ${R1} | samtools view -b | samtools sort -@ ${THREADS} > $@
-else
-	${ENV_RUN} bowtie2 ${FLAGS} -x ${IDX} -1 ${R1} -2 ${R2} | samtools view -b | samtools sort -@ ${THREADS} > $@
-endif
+	${ENV_RUN} bowtie2 ${FLAGS} -x ${IDX} $(if ${R2}, -1 ${R1} -2 ${R2}, -U ${R1}) \
+	  | ${ENV_RUN} samtools view -b \
+	  | ${ENV_RUN} samtools sort -@ ${THREADS} > $@
 
 # Create the BAM index.
 ${BAM}.bai: ${BAM}
-	samtools index ${BAM}
+	${ENV_RUN} samtools index ${BAM}
 
 # Invoke the read mapping rule.
 align: ${BAM} ${BAM}.bai
@@ -151,8 +140,8 @@ clean: run!
 # Generate alignment statistics.
 stats:
 	@echo "==================== MAPPING STATISTICS ===================="
-	@samtools flagstat ${BAM}
-	@echo "============================================================"
+	${ENV_RUN} samtools flagstat ${BAM}
+	echo "============================================================"
 
 # Alias for 'stats'.
 stat: stats

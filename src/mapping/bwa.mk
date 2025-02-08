@@ -12,7 +12,8 @@ MAKEFLAGS += --warn-undefined-variables --no-print-directory
 # Micromamba environment.
 ENV = bf-mapping-bwa
 
-# Run command within environment. ENV_RUN = micromamba run -n ${ENV}
+# Run command within environment.
+ENV_RUN = micromamba run -n ${ENV}
 
 # Number of worker threads.
 THREADS ?= 4
@@ -36,7 +37,7 @@ BASENAME = $(notdir $(basename ${R1}))
 BAM ?= ${DIR}/${BASENAME}.bwa.bam
 
 # The bwa index prefix.
-IDX ?= $(dir ${REF})/$(notdir $(basename ${REF}))
+IDX ?= $(basename ${REF})
 
 # File in the index directory.
 IDX_FILE = ${IDX}.acc
@@ -98,11 +99,11 @@ ${IDX_FILE}: ${REF}
 	mkdir -p $(dir $@)
 
 	# Generate bwa index for the reference.
-	bwa index ${REF}
+	${ENV_RUN} bwa index ${REF}
 
 # Invoke reference indexing.
 index: ${REF} ${IDX_FILE}
-	@echo "# bwa index: ${IDX}"
+	@echo "bwa index: ${IDX}"
 
 # Remove the index.
 index!:
@@ -123,7 +124,7 @@ ${BAM}: ${IDX_FILE} ${R1} ${R2}
 
 # Create the BAM index.
 ${BAM}.bai: ${BAM}
-	samtools index ${BAM}
+	${ENV_RUN} samtools index ${BAM}
 
 # Invoke the read mapping rule.
 align: ${BAM}.bai
@@ -135,8 +136,8 @@ run: align
 # Generate alignment statistics.
 stats:
 	@echo "==================== MAPPING STATISTICS ===================="
-	@samtools flagstat ${BAM}
-	@echo "============================================================"
+	${ENV_RUN} samtools flagstat ${BAM}
+	echo "============================================================"
 
 # Alias for 'stats' target.
 stat: stats
