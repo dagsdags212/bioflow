@@ -69,8 +69,7 @@ ${OUT}: ${DIR}
 	mkdir -p $@
 
 	# Generate quality reports.
-	${ENV_RUN} fastqc ${fastqc_opts} $(shell find ${DIR} -name "*.fastq" -o -name "*.fastq.gz") \
-		|| echo "Error: no FASTQ files detected in ${DIR}"; exit -1
+	${ENV_RUN} fastqc ${fastqc_opts} $(shell find ${DIR} -name "*.fastq" -o -name "*.fastq.gz")
 
 # Generate fastqc reports.
 run: ${OUT}
