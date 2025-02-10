@@ -9,11 +9,8 @@ SHELL := bash
 .SHELLFLAGS := -eu -o pipefail -c
 MAKEFLAGS += --warn-undefined-variables --no-print-directory
 
-# Absolute path of parent directory.
-ROOT_PATH = $(shell dirname $(abspath $(firstword $(MAKEFILE_LIST))))
-
 # Micromamba environment.
-ENV = bf-fetch
+ENV = bf-fetch-pubmed
 
 # Run command within environment.
 ENV_RUN = micromamba run -n $(ENV)
@@ -21,14 +18,24 @@ ENV_RUN = micromamba run -n $(ENV)
 # Pubmed identifier.
 PMID ?= 22388286 19451168
 
+
 help:
-	@echo "#"
-	@echo "# pubmed.mk: query the PubMed database"
-	@echo "#"
-	@echo "# PMID=$(PMID)"
-	@echo "#"
-	@echo "# make abstract|apa|medline|citations"
-	@echo "#"
+	@echo ""
+	@echo "pubmed.mk: query the PubMed database"
+	@echo ""
+	@echo "Usage:"
+	@echo "  make -f pubmed.mk [options]"
+	@echo ""
+	@echo "Commands:"
+	@echo "  abstract         display journal abstract"
+	@echo "  apa              display APA citation"
+	@echo "  medline          retrieve medline metadata"
+	@echo "  citations        retrieve a list of cited articles"
+	@echo "  install          initialize conda environment"
+	@echo ""
+	@echo "Options:"
+	@echo "  PMID             a PubMed accession"
+	@echo ""
 
 # Retrieve abstract.
 abstract:: $(PMID)
@@ -55,9 +62,11 @@ test:
 	make -f $(ROOT_PATH)/pubmed.mk PMID=$(PMID) medline
 	make -f $(ROOT_PATH)/pubmed.mk PMID=$(PMID) citations
 
-# Display dependencies.
+DEPS := entrez-direct
+# Initialize micromamba environment.
 install::
-	@echo micromamba install entrez-direct
+	micromamba create -n ${ENV}
+	${ENV_RUN} micromamba install ${DEPS}
 
 # Non-file targets.
 .PHONY: help $(PMID) abstract apa medline citations
