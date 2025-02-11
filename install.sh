@@ -59,6 +59,12 @@ set_aliases() {
   echo 'alias bf-porechop="make -f ${BIOFLOW}/src/qc/porechop.mk"' >>${alias_file}
   echo 'alias bf-chopper="make -f ${BIOFLOW}/src/qc/chopper.mk"' >>${alias_file}
 
+  # Assembly module aliases.
+  echo 'alias bf-spades="make -f ${BIOFLOW}/src/assembly/spades.mk"' >>${alias_file}
+  echo 'alias bf-megahit="make -f ${BIOFLOW}/src/assembly/megahit.mk"' >>${alias_file}
+  echo 'alias bf-minia="make -f ${BIOFLOW}/src/assembly/minia.mk"' >>${alias_file}
+  echo 'alias bf-flye="make -f ${BIOFLOW}/src/assembly/flye.mk"' >>${alias_file}
+
   # Source alias file
   local config_path=~/.zshrc
   local export_line="source ${alias_file}"
