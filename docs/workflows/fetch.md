@@ -39,17 +39,13 @@ The `fetch` module contains recipes for downloading biological data of various f
 :::{hint} Environment Setup
 :class: dropdown
 
-Display the command to install all dependencies:
-```bash
-make -f <path/to/makefile> install
+Initialize the micromamba environment and install the dependencies:
+```{code-cell} bash
+make -f $BIOFLOW/src/fetch/<recipe>.mk install
 ```
 
-To download all dependencies, run the following command:
-```bash
-eval $(make -f <path/to/makefile> install)
-```
+where `<recipe>` is the makefile for the specific recipe.
 
-Make sure to replace `<path/to/makefile>` with a path pointing to your recipe.
 :::
 
 ## Recipes
@@ -60,20 +56,21 @@ Retrieve FASTQ reads from the SRA using an accession identifier (SRR).
 
 **{sc}`Parameters`**
 
-- `SRR`: an SRA accession.
+- `SRR`: an SRA accession
+- `N`: number of reads to download; set to `ALL` to download all reads (default: ALL)
 - `DIR`: output directory for storing reads (default: reads)
-- `N`: number of reads to download; set to `ALL` to download all reads (default: ALL).
+- `MODE`: download in pair-end (PE) or single-end (SE) mode (default: SE)
 
 **{sc}`Example Usage`**
 
 Retrieve the complete set of reads for **SRR1554325**:
-```bash
+```{code-cell} bash
 make -f sra.mk SRR=SRR1554325 run
 ```
 
 Download a subset of 10,000 reads for **SRR1554325**, specifying the output directory:
-```bash
-make -f sra.mk SRR=SRR1554325 DIR=reads/ run
+```{code-cell} bash
+make -f sra.mk SRR=SRR1554325 N=10000 DIR=reads run
 ```
 
 ### aria.mk
@@ -88,9 +85,9 @@ Download data from a URL using the [aria2c](https://aria2.github.io/) command li
 **{sc}`Example Usage`**
 
 Download the bowtie index for the human reference genome (GRCh38):
-```bash
+```{code-cell} bash
 URL=https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_full_analysis_set.fna.bowtie_index.tar.gz
-make -f aria.mk URL=${URL} run
+make -f aria.mk URL=$URL run
 ```
 
 ### genbank.mk
@@ -107,22 +104,22 @@ Retrieve sequence files from GenBank. This recipe is used to fetch reference seq
 **{sc}`Example Usage`**
 
 Retrieve the sequence file for **AF086833**.
-```bash
+```{code-cell} bash
 make -f genbank.mk ACC=AF086833 fasta
 ```
 
 Retrieve the GenBank record for **AF086833**.
-```bash
+```{code-cell} bash
 make -f genbank.mk ACC=AF086833 genbank
 ```
 
 Retrieve the annotation file for **AF086833**.
-```bash
+```{code-cell} bash
 make -f genbank.mk ACC=AF086833 gff
 ```
 
 Retrieve the sequence, annotation, and GenBank files for **AF086833** in one command.
-```bash
+```{code-cell} bash
 make -f genbank.mk ACC=AF086833 all
 ```
 
@@ -141,7 +138,7 @@ By default, query results are printed to the standard output of your terminal. U
 **{sc}`Example Usage`**
 
 Retrieve the abstract for the **Bowtie2** journal (22388286):
-```bash
+```{code-cell} bash
 make -f pubmed.mk PMID=22388286 abstract
 ```
 
@@ -173,7 +170,7 @@ PMID: 22388286 [Indexed for MEDLINE]
 :::
 
 Retrieve the APA citation for a couple of journals:
-```bash
+```{code-cell} bash
 make -f pubmed.mk PMID="22388286 19451168" apa
 ```
 
@@ -186,7 +183,7 @@ Langmead, B., & Salzberg, S. L. (2012). Fast gapped-read alignment with Bowtie 2
 :::
 
 Get a complete list of cited articles for the **BWA** journal (19451168) and save to a file:
-```bash
+```{code-cell} bash
 make -f pubmed.mk PMID=19451168 citations > references.txt
 ```
 
@@ -242,6 +239,6 @@ PDB identifiers are four-character alphanumerics such as _2HBS_. By conventional
 **{sc}`Example Usage`**
 
 Download the SARS-CoV-2 spike glycoprotein with PDB ID `7FCD`.
-```bash
+```{code-cell} bash
 make -f pdb.mk ID=7FCD
 ```
