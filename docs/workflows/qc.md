@@ -99,3 +99,25 @@ Consolidate all FASTQC reports within the `fastqc` directory:
 ```{code-cell} bash
 bf-multiqc DIR=fastqc run
 ```
+
+### bf-porechop
+
+Perform adapter trimming on **long-reads** using `porechop`.
+
+**{sc}`Parameters`**
+
+- `FQ`: a FASTQ file containing long-read sequences.
+- `OUT`: output directory for trimmed reads (default: .).
+- `THREADS`: number of compute threads to use (default: 4).
+
+**{sc}`Example Usage`**
+
+Trim adapters from PacBio long-reads:
+```{code-cell} bash
+bf-porechop FQ=reads/SRR8848097.fastq run
+```
+
+Specify an output directory:
+```{code-cell} bash
+bf-porechop FQ=reads/SRR8848097.fastq OUT=trimmed_reads run
+```
