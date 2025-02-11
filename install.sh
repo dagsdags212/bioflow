@@ -45,6 +45,7 @@ set_aliases() {
   echo 'alias bf-genbank="make -f ${BIOFLOW}/src/fetch/genbank.mk"' >>${alias_file}
   echo 'alias bf-pubmed="make -f ${BIOFLOW}/src/fetch/pubmed.mk"' >>${alias_file}
   echo 'alias bf-pdb="make -f ${BIOFLOW}/src/fetch/pdb.mk"' >>${alias_file}
+  echo 'alias bf-aria="make -f ${BIOFLOW}/src/fetch/aria.mk"' >>${alias_file}
 
   # Mapping module aliases.
   echo 'alias bf-bwa="make -f ${BIOFLOW}/src/mapping/bwa.mk"' >>${alias_file}
@@ -62,6 +63,18 @@ set_aliases() {
   grep "${export_line}" ${config_path} || echo ${export_line} >>${config_path}
 }
 
+print_success_message() {
+  echo "DONE. Bioflow has been installed at ${BIOFLOW}"
+  echo "To make the recipes accessible in your terminal, run the following:"
+  echo ""
+  echo "# For bash"
+  echo "source ~/.bashrc"
+  echo ""
+  echo "# For zsh"
+  echo "source ~/.zshrc"
+  echo ""
+}
+
 run_setup() {
   clean_target_path
   create_config_dir
@@ -69,7 +82,7 @@ run_setup() {
   export_bioflow_path
   set_aliases
   sleep 1
-  echo "Bioflow has been installed"
+  print_success_message
 }
 
 # Run complete setup
