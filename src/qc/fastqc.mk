@@ -9,9 +9,6 @@ SHELL := bash
 .SHELLFLAGS := -eu -o pipefail -c
 MAKEFLAGS += --warn-undefined-variables --no-print-directory
 
-# Absolute path of parent directory.
-ROOT_PATH = $(shell dirname $(abspath $(firstword $(MAKEFILE_LIST))))
-
 # Micromamba environment.
 ENV = bf-qc-fastqc
 
