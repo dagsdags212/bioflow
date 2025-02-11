@@ -57,6 +57,7 @@ set_aliases() {
   echo 'alias bf-multiqc="make -f ${BIOFLOW}/src/qc/multiqc.mk"' >>${alias_file}
   echo 'alias bf-fastp="make -f ${BIOFLOW}/src/qc/fastp.mk"' >>${alias_file}
   echo 'alias bf-porechop="make -f ${BIOFLOW}/src/qc/porechop.mk"' >>${alias_file}
+  echo 'alias bf-chopper="make -f ${BIOFLOW}/src/qc/chopper.mk"' >>${alias_file}
 
   # Source alias file
   local config_path=~/.zshrc

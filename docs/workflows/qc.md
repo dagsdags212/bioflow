@@ -121,3 +121,27 @@ Specify an output directory:
 ```{code-cell} bash
 bf-porechop FQ=reads/SRR8848097.fastq OUT=trimmed_reads run
 ```
+
+### bf-chopper
+
+Filter long-reads by length and quality using `chopper`.
+
+**{sc}`Parameters`**
+
+- `FQ`: a FASTQ file containing long-read sequences.
+- `MINLEN`: minimum read length (default: 500).
+- `MINQUAL`: minimum read quality (default: 10).
+- `OUT`: output directory for trimmed reads (default: .).
+- `THREADS`: number of compute threads to use (default: 4).
+
+**{sc}`Example Usage`**
+
+Filter long-reads that are less than 1000 bp:
+```{code-cell} bash
+bf-chopper FQ=reads/SRR8848097.fastq MINLEN=1000 run
+```
+
+Filter long-reads with scores below 20:
+```{code-cell} bash
+bf-chopper FQ=reads/SRR8848097.fastq MINQUAL=1000 run
+```
