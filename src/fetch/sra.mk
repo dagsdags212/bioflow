@@ -78,7 +78,7 @@ endif
 
 # Download only a subset.
 ifneq (${N},ALL)
-	FLAGS ?= -X ${N}
+	FLAGS += -X ${N}
 endif
 
 ${R1}:
