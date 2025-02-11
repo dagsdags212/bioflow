@@ -18,17 +18,19 @@ ENV_RUN = micromamba run -n $(ENV)
 # Read file to process.
 FQ ?=
 
-# Basaname of FASTQ file.
-BASENAME = $(shell basename ${FQ})
-
 # Output directory to store .
-OUT ?= $(shell dirname ${FQ})
+OUT ?= $(if ${FQ}, $(shell dirname ${FQ}))
 
 # Trimmed FASTQ file.
-TRIMMED = ${OUT}/trimmed_${BASENAME}
+TRIMMED = ${OUT}/trimmed_$(notdir ${FQ})
 
 # Number of worker threads.
 THREADS ?= 4
+
+name:
+	$(basename ${FQ})
+	$(dir ${FQ})
+	$(notdir ${FQ})
 
 # Display usage.
 help::
@@ -61,7 +63,7 @@ ${FQ}:
 # Run porechop.
 ${TRIMMED}: ${FQ}
 	# Create directory for trimmed reads.
-	mkdir -p ${OUT}
+	mkdir -p $(dir $@)
 
 	# Trim reads.
 	${ENV_RUN} porechop ${porechop_opts} -i ${FQ} > $@
