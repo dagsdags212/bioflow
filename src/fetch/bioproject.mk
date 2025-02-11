@@ -9,9 +9,6 @@ SHELL := bash
 .SHELLFLAGS := -eu -o pipefail -c
 MAKEFLAGS += --warn-undefined-variables --no-print-directory
 
-# Absolute path of parent directory.
-ROOT_PATH = $(shell dirname $(abspath $(firstword $(MAKEFILE_LIST))))
-
 # Micromamba environment.
 ENV = bf-fetch-bioproject
 
@@ -33,7 +30,7 @@ help::
 	@echo "bioproject.mk: downloads runinfo for an SRA bioproject"
 	@echo ""
 	@echo "Usage:"
-	@echo "  make -f bioproject.mk [options]"
+	@echo "  bf-bioproject [options] ID=<ID>"
 	@echo ""
 	@echo "Commands:"
 	@echo "  run            download SRA bioproject metadata"

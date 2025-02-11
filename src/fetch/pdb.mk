@@ -9,9 +9,6 @@ SHELL := bash
 .SHELLFLAGS := -eu -o pipefail -c
 MAKEFLAGS += --warn-undefined-variables --no-print-directory
 
-# Absolute path of parent directory.
-ROOT_PATH = $(shell dirname $(abspath $(firstword $(MAKEFILE_LIST))))
-
 # Micromamba environment.
 ENV = bf-fetch-pdb
 
@@ -33,7 +30,7 @@ help:
 	@echo "pdb.mk: download protein structures from the PDB"
 	@echo ""
 	@echo "Usage:"
-	@echo "  make -f pdb.mk [options]"
+	@echo "  bf-pdb [options] ID=<ID>"
 	@echo ""
 	@echo "Commands:"
 	@echo "  run            retrieve a structure file from PDB"

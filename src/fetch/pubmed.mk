@@ -24,7 +24,7 @@ help:
 	@echo "pubmed.mk: query the PubMed database"
 	@echo ""
 	@echo "Usage:"
-	@echo "  make -f pubmed.mk [options]"
+	@echo "  bf-pubmed [options] PMID=<PMID>"
 	@echo ""
 	@echo "Commands:"
 	@echo "  abstract         display journal abstract"

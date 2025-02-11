@@ -27,12 +27,12 @@ The `fetch` module contains recipes for downloading biological data of various f
 
 | Data Type | Source | Format | Makefile |
 | ------ | ------ | ------ | ------ |
-| Sample reads | SRA | FASTQ | `sra.mk` | 
-| Metagenomic reads | MGnify/SRA | FASTQ | `sra.mk` | 
-| Sequence files | NCBI | FASTA/GenBank | `genbank.mk` |
-| Annotation files | NCBI | GFF | `genbank.mk` |
-| Protein structures | RCSB | PDB | `pdb.mk` |
-| Journal metadata | PubMed | text | `pubmed.mk` |
+| Sample reads | SRA | FASTQ | `bf-sra` | 
+| Metagenomic reads | MGnify/SRA | FASTQ | `bf-sra` | 
+| Sequence files | NCBI | FASTA/GenBank | `bf-genbank` |
+| Annotation files | NCBI | GFF | `bf-genbank` |
+| Protein structures | RCSB | PDB | `bf-pdb` |
+| Journal metadata | PubMed | text | `bf-pubmed` |
 
 :::
 
@@ -41,16 +41,16 @@ The `fetch` module contains recipes for downloading biological data of various f
 
 Initialize the micromamba environment and install the dependencies:
 ```{code-cell} bash
-make -f $BIOFLOW/src/fetch/<recipe>.mk install
+bf-<recipe> install
 ```
 
-where `<recipe>` is the makefile for the specific recipe.
+where `<recipe>` is the name of the specific recipe.
 
 :::
 
 ## Recipes
 
-### sra.mk
+### bf-sra
 
 Retrieve FASTQ reads from the SRA using an accession identifier (SRR).
 
@@ -65,15 +65,15 @@ Retrieve FASTQ reads from the SRA using an accession identifier (SRR).
 
 Retrieve the complete set of reads for **SRR1554325**:
 ```{code-cell} bash
-make -f sra.mk SRR=SRR1554325 run
+bf-sra SRR=SRR1554325 run
 ```
 
 Download a subset of 10,000 reads for **SRR1554325**, specifying the output directory:
 ```{code-cell} bash
-make -f sra.mk SRR=SRR1554325 N=10000 DIR=reads run
+bf-sra SRR=SRR1554325 N=10000 DIR=reads run
 ```
 
-### aria.mk
+### bf-aria
 
 Download data from a URL using the [aria2c](https://aria2.github.io/) command line utility.
 
@@ -87,10 +87,10 @@ Download data from a URL using the [aria2c](https://aria2.github.io/) command li
 Download the bowtie index for the human reference genome (GRCh38):
 ```{code-cell} bash
 URL=https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_full_analysis_set.fna.bowtie_index.tar.gz
-make -f aria.mk URL=$URL run
+bf-aria URL=$URL run
 ```
 
-### genbank.mk
+### bf-genbank
 
 Retrieve sequence files from GenBank. This recipe is used to fetch reference sequences, GenBank records, and annotation files.
 
@@ -105,25 +105,25 @@ Retrieve sequence files from GenBank. This recipe is used to fetch reference seq
 
 Retrieve the sequence file for **AF086833**.
 ```{code-cell} bash
-make -f genbank.mk ACC=AF086833 fasta
+bf-genbank ACC=AF086833 fasta
 ```
 
 Retrieve the GenBank record for **AF086833**.
 ```{code-cell} bash
-make -f genbank.mk ACC=AF086833 genbank
+bf-genbank ACC=AF086833 genbank
 ```
 
 Retrieve the annotation file for **AF086833**.
 ```{code-cell} bash
-make -f genbank.mk ACC=AF086833 gff
+bf-genbank ACC=AF086833 gff
 ```
 
 Retrieve the sequence, annotation, and GenBank files for **AF086833** in one command.
 ```{code-cell} bash
-make -f genbank.mk ACC=AF086833 all
+bf-genbank ACC=AF086833 all
 ```
 
-### pubmed.mk
+### bf-pubmed
 
 Retrieve journal metadata by querying the PubMed literature database.
 
@@ -139,7 +139,7 @@ By default, query results are printed to the standard output of your terminal. U
 
 Retrieve the abstract for the **Bowtie2** journal (22388286):
 ```{code-cell} bash
-make -f pubmed.mk PMID=22388286 abstract
+bf-pubmed PMID=22388286 abstract
 ```
 
 :::{seealso} See Output
@@ -171,7 +171,7 @@ PMID: 22388286 [Indexed for MEDLINE]
 
 Retrieve the APA citation for a couple of journals:
 ```{code-cell} bash
-make -f pubmed.mk PMID="22388286 19451168" apa
+bf-pubmed PMID="22388286 19451168" apa
 ```
 
 :::{seealso} See Output
@@ -184,7 +184,7 @@ Langmead, B., & Salzberg, S. L. (2012). Fast gapped-read alignment with Bowtie 2
 
 Get a complete list of cited articles for the **BWA** journal (19451168) and save to a file:
 ```{code-cell} bash
-make -f pubmed.mk PMID=19451168 citations > references.txt
+bf-pubmed PMID=19451168 citations > references.txt
 ```
 
 :::{seealso} See Output
@@ -224,7 +224,7 @@ make -f pubmed.mk PMID=19451168 citations > references.txt
 ```
 :::
 
-### pdb.mk
+### bf-pdb
 
 Retrieve a structure file from the Protein Data Bank.
 
@@ -240,5 +240,5 @@ PDB identifiers are four-character alphanumerics such as _2HBS_. By conventional
 
 Download the SARS-CoV-2 spike glycoprotein with PDB ID `7FCD`.
 ```{code-cell} bash
-make -f pdb.mk ID=7FCD
+bf-pdb ID=7FCD
 ```
