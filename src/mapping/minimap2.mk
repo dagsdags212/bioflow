@@ -40,7 +40,7 @@ help::
 	@echo "minimap2.mk: map reads against a reference using minimap2"
 	@echo ""
 	@echo "Usage:"
-	@echo "  make -f minimap2.mk [options] <command>"
+	@echo "  bf-minimap2 [options] REF=<REF> R1=<R1> <command>"
 	@echo ""
 	@echo "Commands:"
 	@echo "  align          map reads against a reference using minimap2"
@@ -60,17 +60,13 @@ help::
 
 # Read 1 must exist.
 ${R1}:
-	@if [ -f ${R1} ]; then
-		echo "Error: FASTQ file not found (R1=${R1})"
-		exit -1
-	fi
+	echo "Error: FASTQ file not found (R1=${R1})"
+	exit -1
 
 # Reference file must exist.
 ${REF}:
-	@if [ ! -f ${REF} ]; then
-		echo "Error: Reference file not found (REF=${REF})"
-		exit -1
-	fi
+	echo "Error: Reference file not found (REF=${REF})"
+	exit -1
 
 # Minimap2 options.
 FLAGS := -a -t ${THREADS}

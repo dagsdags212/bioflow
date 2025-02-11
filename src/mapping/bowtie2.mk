@@ -56,7 +56,7 @@ help::
 	@echo "bowtie2.mk: align reads against a reference using bowtie2 "
 	@echo ""
 	@echo "Usage:"
-	@echo "  make -f bowtie2.mk [options] <command>"
+	@echo "  bf-bowtie2 [options] REF=<REV> R1=<R1> <command>"
 	@echo ""
 	@echo "Commands:"
 	@echo "  align          map reads against a reference using bowtie2"
