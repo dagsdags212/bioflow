@@ -46,6 +46,11 @@ set_aliases() {
   echo 'alias bf-pubmed="make -f ${BIOFLOW}/src/fetch/pubmed.mk"' >>${alias_file}
   echo 'alias bf-pdb="make -f ${BIOFLOW}/src/fetch/pdb.mk"' >>${alias_file}
 
+  # Mapping module aliases.
+  echo 'alias bf-bwa="make -f ${BIOFLOW}/src/mapping/bwa.mk"' >>${alias_file}
+  echo 'alias bf-bowtie2="make -f ${BIOFLOW}/src/mapping/bowtie2.mk"' >>${alias_file}
+  echo 'alias bf-minimap2="make -f ${BIOFLOW}/src/mapping/minimap2.mk"' >>${alias_file}
+
   # QC module aliases.
   echo 'alias bf-fastqc="make -f ${BIOFLOW}/src/qc/fastqc.mk"' >>${alias_file}
   echo 'alias bf-multiqc="make -f ${BIOFLOW}/src/qc/multiqc.mk"' >>${alias_file}
