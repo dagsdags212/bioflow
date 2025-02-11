@@ -46,6 +46,11 @@ set_aliases() {
   echo 'alias bf-pubmed="make -f ${BIOFLOW}/src/fetch/pubmed.mk"' >>${alias_file}
   echo 'alias bf-pdb="make -f ${BIOFLOW}/src/fetch/pdb.mk"' >>${alias_file}
 
+  # QC module aliases.
+  echo 'alias bf-fastqc="make -f ${BIOFLOW}/src/qc/fastqc.mk"' >>${alias_file}
+  echo 'alias bf-multiqc="make -f ${BIOFLOW}/src/qc/multiqc.mk"' >>${alias_file}
+  echo 'alias bf-fastp="make -f ${BIOFLOW}/src/qc/fastp.mk"' >>${alias_file}
+
   # Source alias file
   local config_path=~/.zshrc
   local export_line="source ${alias_file}"
