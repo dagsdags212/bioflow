@@ -9,11 +9,8 @@ SHELL := bash
 .SHELLFLAGS := -eu -o pipefail -c
 MAKEFLAGS += --warn-undefined-variables --no-print-directory
 
-# Absolute path of parent directory.
-ROOT_PATH = $(shell dirname $(abspath $(firstword $(MAKEFILE_LIST))))
-
 # Micromamba environment.
-ENV = bf-fetch
+ENV = bf-fetch-aria
 
 # Run command within environment.
 ENV_RUN = micromamba run -n $(ENV)
@@ -22,7 +19,7 @@ ENV_RUN = micromamba run -n $(ENV)
 URL ?= https://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/bigZips/wuhCor1.fa.gz
 
 # The directory to store the data.
-DIR ?= data
+OUT ?= data
 
 # The file destination.
 FILE ?= $(DIR)/$(notdir $(URL))
@@ -30,25 +27,28 @@ FILE ?= $(DIR)/$(notdir $(URL))
 # Aria2c flags.
 FLAGS := -x 5 -c --summary-interval=10
 
-help:
-	@echo "#"
-	@echo "# aria.mk: download data from a URL"
-	@echo "#"
-	@echo "# URL=$(URL)"
-	@echo "# FILE=$(FILE)"
-	@echo "#"
-	@echo "# make run"
-	@echo "#"
+# Print usage.
+help::
+	@echo ""
+	@echo "aria.mk: download data from a link"
+	@echo ""
+	@echo "Usage:"
+	@echo "  bf-aria URL=<URL> [options] run"
+	@echo ""
+	@echo "Options:"
+	@echo "  URL        an FTP/URL/torrent link"
+	@echo "  OUT        a directory path for storing downloads"
+	@echo ""
 
 # Download the file with aria2c.
-$(FILE):
+${FILE}:
 	# Create output directory.
-	mkdir -p $(dir $(FILE))
+	mkdir -p $(dir ${FILE})
 
 	# Download the file
-	$(ENV_RUN) aria2c $(FLAGS) -o $(FILE) $(URL)
+	$(ENV_RUN) aria2c ${FLAGS} -o ${FILE} ${URL}
 
-run: $(FILE)
+run: ${FILE}
 	@ls -lh $<
 
 # Delete the file.
@@ -61,9 +61,11 @@ run!: clean
 # Run test suite.
 test: clean run
 
+DEPS := aria2
 # Display dependencies.
 install::
-	@echo "micromamba install aria2"
+	micromamba create -n ${ENV}
+	${ENV_RUN} micromamba install ${DEPS}
 
 .PHONY: help run run! test install
 
