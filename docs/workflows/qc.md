@@ -6,8 +6,6 @@ downloads:
     title: fastqc.mk
   - file: ../../src/qc/multiqc.mk
     title: multiqc.mk
-  - file: ../../envs/bf-qc.yml
-    title: env.yml
 ---
 
 (bf-qc)=
@@ -20,22 +18,18 @@ The `qc` module contains recipes for performing quality control on sequencing re
 :::{hint} Environment Setup
 :class: dropdown
 
-Display the command to install all dependencies:
-```bash
-make -f <path/to/makefile> install
+Initialize the micromamba environment and install the dependencies:
+```{code-cell} bash
+bf-<recipe> install
 ```
 
-To download all dependencies, run the following command:
-```bash
-eval $(make -f <path/to/makefile> install)
-```
+where `<recipe>` is the name of the specific recipe.
 
-Make sure to replace `<path/to/makefile>` with a path pointing to your recipe.
 :::
 
 ## Recipes
 
-### fastp
+### bf-fastp
 
 Perform adapter trimming and quality score filtering with `fastp`.
 
@@ -45,47 +39,54 @@ By default, the processed set of reads are saved in the same directory as the ra
 
 - `P1`: path to the first FASTQ file in pair-end reads.
 - `P2`: path to the FASTQ file in pair-end reads; if not specified, `fastp` is run in single-end mode.
+- `ADAPTER`: an adapter file or sequence for trimming
+- `MINLEN`: minimum read length to keep (default: 50)
+- `MINQUAL`: minimum read quality to keep (default: 30)
+- `OUT`: path to directory for storing fastp output
+- `THREADS`: number of worker threads to use (default: 4).
 
 **{sc}`Example Usage`**
 
 Trim reads in pair-end mode.
-```bash
+```{code-cell} bash
 SRR=SRR1554324
-make -f fastp.mk P1=${SRR}_1.fastq P2=${SRR}_2.fastq run
+bf-fastp P1=${SRR}_1.fastq P2=${SRR}_2.fastq run
 ```
 
 Trim reads in single-end mode.
-```bash
+```{code-cell} bash
 SRR=SRR1554324
-make -f fastp.mk P1=${SRR}.fastq run
+bf-fastp P1=${SRR}.fastq run
 ```
 
-### fastqc
+### bf-fastqc
 
 Generate a summary report on read quality.
 
-FASTQ files are automatically discovered from the path specified by the `TARGET` parameter. If not given, the target defaults to the `READ_DIR` value. Reports are stored in the `output/fastqc/report#` directory where `#` is an auto-incrementing integer.
+FASTQ files are automatically discovered from the path specified by the `DIR` parameter. If not given, FASTQ files are searched in the _reads_ directory. Reports are stored in the `fastqc` directory by default.
 
 **{sc}`Parameters`**
 
 - `DIR`: path to directory containing the reads (default: reads).
+- `CONTAMINANT_FILE`: a file containing contaminant sequences for filtering
 - `OUT`: output directory for reports (default: fastqc).
+- `THREADS`: number of worker threads to use (default: 4).
 
 **{sc}`Example Usage`**
 
 Generate a FASTQC report on all reads stored in the `raw` directory:
-```bash
-make -f fastqc.mk DIR=raw run
+```{code-cell} bash
+bf-fastqc DIR=raw run
 ```
 
 Save reports in the `reports` directory:
-```bash
-make -f fastqc.mk DIR=raw OUT=reports run
+```{code-cell} bash
+bf-fastqc DIR=raw OUT=reports run
 ```
 
-### multiqc
+### bf-multiqc
 
-Aggregate FASTQC reports into a single interactive interface. 
+Aggregate FASTQC output into a single interactive report.
 
 **{sc}`Parameters`**
 
@@ -95,6 +96,6 @@ Aggregate FASTQC reports into a single interactive interface.
 **{sc}`Example Usage`**
 
 Consolidate all FASTQC reports within the `fastqc` directory:
-```bash
-make -f multiqc DIR=fastqc run
+```{code-cell} bash
+bf-multiqc DIR=fastqc run
 ```
