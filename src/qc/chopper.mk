@@ -70,7 +70,7 @@ ${FILTERED}: ${FQ}
 	mkdir -p $(dir $@)
 
 	# Filter reads.
-	${ENV_RUN} chopper ${porechop_opts} -i ${FQ} | gzip > $@.gz
+	${ENV_RUN} chopper ${chopper_opts} -i ${FQ} | gzip > $@.gz
 
 # Invoke chopper.
 run: ${FILTERED}
