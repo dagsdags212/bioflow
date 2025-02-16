@@ -1,5 +1,5 @@
 #
-# Assemble long reads into contigs using flye.
+# Assemble long reads into contigs using canu.
 #
 
 # Makefile preamble.
@@ -16,7 +16,7 @@ ENV = bf-assembly-flye
 ENV_RUN = micromamba run -n ${ENV}
 
 # Number of worker threads.
-THREADS ?= 4
+THREADS ?= 8
 
 # Long read file.
 R1 ?=
